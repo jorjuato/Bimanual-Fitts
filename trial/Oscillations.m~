@@ -1,0 +1,76 @@
+classdef Oscillations < handle
+   properties
+     peakVel
+     MT
+     accTime
+     decTime
+     accQ
+     IPerf
+     IPerfEf
+   end
+   
+   methods      
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      %Constructor
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      
+        function osc = Oscillations(tr,hand)
+            if strcmp(hand,'')
+                data.peaks = tr.ts.peaks;
+                data.peakNo = size(data.peaks,1)-1;
+                data.x = tr.ts.x;
+                data.v = tr.ts.v;
+                data.a = tr.ts.a;
+                data.ID = tr.ts.ID;
+                data.IDef = tr.ts.IDef;
+            elseif strcmp(hand,'L')
+                %Left hand kinematics
+                data.peaks = tr.ts.Lpeaks;
+                data.peakNo = size(data.peaks,1)-1;
+                data.x = tr.ts.Lx;
+                data.v = tr.ts.Lv;
+                data.a = tr.ts.La;
+                data.ID = tr.ts.IDLeft;
+                data.IDef = tr.ts.IDefL;
+            elseif strcmp(hand,'R')
+                %Right hand kinematics
+                data.peaks = tr.ts.Rpeaks;
+                data.x = tr.ts.Rx;
+                data.v = tr.ts.Rv;
+                data.a = tr.ts.Ra;
+                data.ID = tr.ts.IDRight;
+                data.IDef = tr.ts.IDefR;
+            end
+      
+            osc.peakVel = zeros(data.peakNo,1);
+            osc.MT = zeros(data.peakNo,1);
+            osc.accTime = zeros(data.peakNo,1):
+            osc.decTime = zeros(data.peakNo,1);
+            osc.accQ = zeros(data.peakNo,1);
+            osc.IPerf = zeros(data.peakNo,1);
+            osc.IPerfEf = zeros(data.peakNo,1);
+            
+           for i=1:data.peakNo
+              x0 = data.peaks(i,1);
+              x1 = data.peaks(i+1,1);
+              osc.peakVel(i) = max(abs(data.v(x0:x1)));
+              osc.MT(i) = (x1-x0)/1000;
+              osc.accTime(i) = length(find(data.a(x0:x1)>0))/(x1-x0);
+              %osc.accelerationTime = length(find(data.a(x0:x1)>0));
+              osc.decTime(i) = length(find(data.a(x0:x1)<0))/(x1-x0);
+              %osc.decelerationTime = length(find(data.a(x0:x1)<0));
+              osc.accQ(i) = length(find(data.a(x0:x1)<0))/length(find(data.a(x0:x1)>0));
+              %osc.indexPerformance = (x1-x0)/data.ID;
+              osc.IPerf(i) = data.ID*1000/(x1-x0);
+              %osc.IPerfEf = (x1-x0)/data.ID;
+              osc.IPerfEf(i) = data.IDef*1000/(x1-x0);
+           end
+       end %Constructor
+       
+       function plot(obj)
+          %for property in obj
+          %   p = get(property,obj)
+          %   plot(property)
+          %   title(property)
+       end
+   end
+end

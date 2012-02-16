@@ -1,0 +1,23 @@
+function info = get_trial_info_uni(data)
+    info = struct;
+    TP = data.TRIAL.TP;
+    info.TP = TP;
+    info.eventLabels = data.EVENTS.LABELS;
+    info.eventTimes = data.EVENTS.TIMES;
+    info.scale = data.TP_TABLE.ScaleY(TP);
+    info.shift = data.TP_TABLE.FeedBackShift(TP)/100;
+    targetD = data.TP_TABLE.TargetD(TP);
+    targetU = data.TP_TABLE.TargetU(TP);
+    info.D0 = data.TARGET_TABLE.Y(targetD);
+    info.U0 = data.TARGET_TABLE.Y(targetU);
+    info.minY = data.TARGET_TABLE.Y(targetD)/100;
+    info.maxY = data.TARGET_TABLE.Y(targetU)/100;
+    info.W = data.TARGET_TABLE.Height(targetD)/100;
+    info.offset = info.minY+info.shift;
+    info.origin = (info.minY+info.maxY)/2;
+    LOAD = data.TP_TABLE.Load(TP);
+    info.visc = data.LOAD_TABLE.D_e_visc(LOAD);
+    info.A = info.maxY - info.minY;
+    info.ID = log2(2*(info.A)/(info.W));
+    info.skipOsc = data.TP_TABLE.TrainOsc(TP);
+end

@@ -1,0 +1,7 @@
+function display(obj)
+disp('Nothing to plot at this level...')
+    %for property in obj
+    %   p = get(property,obj)
+    %   plot(property)
+    %   title(property)
+end

@@ -1,0 +1,51 @@
+function info  = get_trial_info_bi(data,factor2)
+    if nargin<2, factor2='Targets';end   
+    %Get basic information about the trial
+    info = struct;
+    info.Factor2Name = factor2;
+    TP = data.TRIAL.TP;
+    info.TP = TP;
+    info.eventLabels = data.EVENTS.LABELS;
+    info.eventTimes = data.EVENTS.TIMES;
+    tLD = data.TP_TABLE.TargetLD(TP);
+    tLU = data.TP_TABLE.TargetLU(TP);
+    tRD = data.TP_TABLE.TargetRD(TP);
+    tRU = data.TP_TABLE.TargetRU(TP);
+    minY = data.TARGET_TABLE.Y(tLD)/100;
+    maxY = data.TARGET_TABLE.Y(tLU)/100;
+    LOAD = data.TP_TABLE.Load(TP);
+    info.visc = data.LOAD_TABLE.D_e_visc(LOAD);
+    L0 = data.TP_TABLE.InitTargetNonDom(TP);
+    R0 = data.TP_TABLE.InitTargetDom(TP);
+    info.inPhase = (L0 == R0);
+    info.shift = data.TP_TABLE.FeedBackShift(TP)/100;
+    info.W = data.TARGET_TABLE.Height(tLU)/100;
+    info.A = maxY - minY;
+    info.ID = log2(2*(maxY - minY)/info.W);
+    info.scale = data.TP_TABLE.ScaleY(TP);
+    info.offset = minY+info.shift;
+    info.origin = (minY+maxY)/2;
+    info.skipOsc = data.TP_TABLE.TrainOsc(TP);
+    
+    %Select the appropiate value for factor 2
+    if strcmp(factor2,'Viscosity')
+        info.Factor2 = info.visc;
+    elseif strcmp(factor2,'Phase')
+        info.Factor2 = info.inPhase;
+    elseif strcmp(factor2,'Targets')
+        %In this case, lets rename things a bit
+        info.WLeft = info.W;
+        info.WRight = data.TARGET_TABLE.Height(tRU)/100;
+        maxYL = maxY; minYL = minY;
+        maxYR = data.TARGET_TABLE.Y(tRU)/100;
+        minYR = data.TARGET_TABLE.Y(tRD)/100;
+        info.minY = minYR;
+        info.maxY = maxYR;
+        info.ALeft = maxYL - minYL;
+        info.ARight = maxYR - minYR;
+        info.LID = log2(2*info.ALeft/info.WLeft);
+        info.IDR = log2(2*info.ARight/info.WRight);
+        info.Factor2 = info.WRight;
+    end
+end
+        

@@ -1,0 +1,22 @@
+Release Notes for c3d_load files for MATLAB
+
+V2.7 (Feb 21 2009)
+Fixed LIMB_readC3D.m to be able to read files with > 127 events (255 max now), and in general, with > 127 elements per dimension in any parameter's data (255 max).
+
+V2.6 (Jan 26 2008)
+Fixed LIMB_readC3D.m to files with no analog channels, just parameters.  Changed precision of fread from int16 to uint16 on POINT.FRAMES param
+% to allow trials with > 32767 frames (up to 65535 frames now).
+
+V2.5 (Feb 26 2008)
+Fixed LIMB_readC3D.m to be able to handle parametergroup descriptions longer than 128 characters (up to 255 is now allowed)
+
+V2.4 (Jan. 3, 2008)
+Field names are now forced to be valid using genvarname
+
+V2.1 to 2.3 (Aug. 2007)
+Characters that are disallowed in fieldnames (e.g. -, /, [, ) etc…) are replaced with underscore to create valid fieldnames.
+Parametergroups that do not have a separate DESCRIPTIONS parameter now get one created based on the descriptions of the individual parameters.
+
+V2.0 (July 2007)
+Re-organized structure of function calls to be more intuitive and user-friendly.
+

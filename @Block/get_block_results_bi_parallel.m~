@@ -1,0 +1,40 @@
+function DS = get_block_results_bi_parallel(data,factor2,WList,f2List,rep)    
+    if rep > 1
+        DS = cell(length(WList),length(f2List),rep+1);
+    else
+        DS = cell(length(WList),length(f2List),1);
+    end
+    
+    %Load data into DS
+    for idx_1=drange(1:size(DS,1))
+        for idx_2=drange(1:size(DS,2))
+            for ridx=drange(1:rep)
+                for i=1:length(data)
+                    %Check for a valid trial
+                    if findstr(data(i).EVENTS.LABELS{end},'INVALID_TRIAL')
+                        continue
+                    elseif isfield(data(i), 'done')
+                        continue
+                    end
+                    tr = struct('info',[],'data',[],'kinematicsL',[],'kinematicsR',[]);
+                    %Get configuration of the trial
+                    tr.info = get_trial_info_bi(data(i),factor2);
+
+                    %Compute indexes (f1,f2,rep) for DS
+                    idx1 = find(WList==tr.W);
+                    idx2 = find(f2List==tr.Factor2);
+                    if idx1 == idx_1 && idx2==idx_2
+                        %Get kinematic data
+                        tr = get_trial_data_bi(data(i),tr);
+                        %Get angular properties
+                        tr = get_trial_angular_properties(tr);
+                        data(i).done = true;
+                        break
+                    end
+                end
+                DS{idx_1,idx_2,ridx} = tr;
+            end           
+        end
+    end
+    if rep > 1, DS = concatenate_block_results_bi(DS); end
+end

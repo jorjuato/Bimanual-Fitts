@@ -1,0 +1,28 @@
+% Get kinematic properties of data from a bimanual Fitts experiment withvariation of 
+% either the phase (in-phase/anti-phase) or the viscosity.
+% All plotting functionare included in the file. It should work
+% with DS structures generated with getMultiResults_fb because it doesn't  
+% depend on any parameter of DS structure, only its dimensions.
+
+function DS = get_block_kinematics(DS)
+    if length(size(DS))==2
+        F2 = 1;
+        rep = size(DS,2);
+    else
+        F2 = size(DS,2);
+        rep = size(DS,3);
+    end
+    for i=1:size(DS,1)
+        for j=1:F2
+            for r=1:rep
+                if F2 == 1
+                    if isempty(DS{i,r}), continue; end
+                    DS{i,r}=get_trial_kinematics(DS{i,r});
+                else
+                    if isempty(DS{i,j,r}), continue; end
+                    DS{i,j,r}=get_trial_kinematics(DS{i,j,r});
+                end
+            end
+        end
+    end
+end

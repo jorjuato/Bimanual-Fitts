@@ -1,0 +1,218 @@
+classdef TimeSeriesBimanual
+   properties
+      Lxraw
+      Lvraw
+      Laraw
+      Lpeaks
+      LIDef
+      IDL
+      Rxraw
+      Rvraw
+      Raraw
+      Rpeaks
+      RIDef
+      IDR
+   end % properties
+   
+   properties (Dependent = true, SetAccess = private)
+      Lx
+      Lv
+      La
+      Lxnorm
+      Lvnorm
+      Lanorm
+      Lph
+      Lamp
+      Rx
+      Rv
+      Ra
+      Rxnorm
+      Rvnorm
+      Ranorm
+      Rph
+      Ramp
+   end
+   
+   methods
+      %Properties getters and setter
+      %function obj = set.Material(obj,material)
+      %   obj.Material = material;
+      %end % set.Material
+
+      function Lx = get.Lx(obj)
+         Lx = filterdata(obj.Lxraw);
+      end
+      
+      function Lv = get.Lv(obj)
+         Lv = filterdata(obj.Lvraw);
+      end
+      
+      function La = get.La(obj)
+         La = filterdata(obj.Laraw);
+      end
+      
+      function Rx = get.Rx(obj)
+         Rx = filterdata(obj.Rxraw);
+      end
+      
+      function Rv = get.Rv(obj)
+         Rv = filterdata(obj.Rvraw);
+      end
+      
+      function Ra = get.Ra(obj)
+         Ra = filterdata(obj.Raraw);
+      end
+      
+      function Lxnorm = get.Lxnorm(obj)
+         Lxnorm = obj.Lx/max(abs(obj.Lx));
+      end
+      
+      function Lvnorm = get.Lvnorm(obj)
+         Lvnorm = obj.Lv/max(abs(obj.Lv));
+      end
+      
+      function Lanorm = get.Lanorm(obj)
+         Lanorm = obj.La/max(abs(obj.La));
+      end
+      function Rxnorm = get.Rxnorm(obj)
+         Rxnorm = obj.Rx/max(abs(obj.Rx));
+      end
+      
+      function Rvnorm = get.Rvnorm(obj)
+         Rvnorm = obj.Rv/max(abs(obj.Rv));
+      end
+      
+      function Ranorm = get.Ranorm(obj)
+         Ranorm = obj.Ra/max(abs(obj.Ra));
+      end
+
+      function Rph = get.Rph(obj)
+         Rph = unwrap(angle(hilbert(obj.Rx)));
+      end
+      
+      function Lph = get.Lph(obj)
+         Lph = unwrap(angle(hilbert(obj.Lx)));
+      end
+      
+      function Ramp = get.Ramp(obj)
+         Ramp = abs(hilbert(obj.Rx));
+      end
+      
+      function Lamp = get.Lamp(obj)
+         Lamp = abs(hilbert(obj.Lx));
+      end
+            
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      %Constructor
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      function ts = TimeSeriesBimanual(data,info)
+        %Skip first 'skiposc' oscillations
+        idx = skip_oscillations(data.Left_L2Ang-data.Left_L1Ang,info.skipOsc);
+
+        %Compute left hand trial kinematic data
+        ts.Lxraw = (data.Left_L2Ang(idx)-data.Left_L1Ang(idx))*info.scale + info.offset-info.origin;
+        ts.Lvraw = (data.Left_L2Vel(idx)-data.Left_L1Vel(idx))*info.scale;
+        ts.Laraw = (data.Left_L2Acc(idx)-data.Left_L1Acc(idx))*info.scale;
+
+        %Compute right hand trial kinematic data
+        ts.Rxraw = (pi/4-(data.Right_L2Ang(idx)-data.Right_L1Ang(idx)))*info.scale + info.offset -info.origin - 0.095;
+        ts.Rvraw = (-(data.Right_L2Vel(idx)-data.Right_L1Vel(idx)))*info.scale;
+        ts.Raraw = (-(data.Right_L2Acc(idx)-data.Right_L1Acc(idx)))*info.scale;
+
+        %Get peaks for later processing
+        [maxPeaksL, minPeaksL] = peakdet(ts.Lx, 0.00005);
+        [maxPeaksR, minPeaksR] = peakdet(ts.Rx, 0.00005);
+        ts.Lpeaks = sort([maxPeaksL(:,1);minPeaksL(:,1)]);
+        ts.Rpeaks = sort([maxPeaksR(:,1);minPeaksR(:,1)]);    
+        ts.LIDef = get_ID_effective(ts.Lx,ts.Lpeaks,info.ALeft);
+        ts.RIDef = get_ID_effective(ts.Rx,ts.Rpeaks,info.ARight);
+        ts.IDL = info.IDL;
+        ts.IDR = info.IDR;
+      end
+      
+      function plot(obj,graphPath,ext)
+        if nargin<3, ext='fig';end
+        if nargin<2, graphPath='';end
+        
+        [fcns, names, xlabels, ylabels] = get_plots();
+        %Create figure for this function
+        if graphPath
+            fig = figure('visible','off');
+        else
+            fig = figure();
+        end
+        %Apply plotting methods
+        for f=1:length(fcns)
+            %Create subplot and call plotting function
+            subplot(1,f,f1);           
+            fcns{f}(obj);
+            ylabel(ylabels{f});
+            xlabel(xlabels{f});
+        end
+        if graphPath
+            %Generate random sequence and append to the end (based on seconds or whatever)
+            filename = 'TimeSeriesPlot';
+            figname = joinpath(graphPath,filename);
+            saveas(fig,figname,ext);
+            close(fig);
+        end
+        
+        function [fcns, names, xlabels, ylabels] = get_plots(obj)
+            idx=[1,2,3,6];
+            fcns = {...
+                 @plot_time_series...
+                ,@plot_phase_plane...
+                ,@plot_hook_plane...
+                ,@plot_relative_phase...
+                ,@plot_relative_phase_hist...
+                ,@plot_frequencies...
+                ,@plot_tsdiff_hist...
+                ,@plot_tsdiff_mixed_distributions...
+                ,@plot_spectrogram_computed...
+                ,@plot_freq_continous...
+                }; fcns=fcns{idx};
+            
+            names = {...
+                'time_series'...
+                ,'phase_plane'...
+                ,'hook_plane'...
+                ,'relative_phase'...
+                ,'relative phase histogram'...
+                ,'frequencies'...
+                ,'histogram of Rx - Lx'...
+                ,'triple mixed normal distribution fitting'...
+                ,'Spectrogram of combined signals'...
+                ,'Instantaneous frequency'...
+                }; names=names{idx};
+            
+            ylabels = {...
+                'Position/Speed(m;m/s)'...
+                ,'Speed(m/s)'...
+                ,'Accel (m/s^2)'...
+                ,'Phase Diff (rad)'...
+                ,'proportion'...
+                ,'Power(dB)'...
+                ,'Distance (m)'...
+                ,'Distance (m)'...
+                ,'Frequency (Hz)'...
+                ,'Frequency (Hz)'...
+                }; ylabels=ylabels{idx};
+            
+            xlabels = {...
+                'Time (ms)'...
+                ,'Position (m)'...
+                ,'Position (m)'...
+                ,'Time (ms)'...
+                ,'Relative Phase (rad)'...
+                ,'Frequency (Hz)'...
+                ,'Time (ms)'...
+                ,'probability'...
+                ,'Time (ms)'...
+                ,'Time (ms)'...
+                }; xlabels=xlabels{idx};
+        end
+    end
+        
+        
+   end % methods
+end% classdef

@@ -1,0 +1,38 @@
+classdef Block < handle
+    properties(SetAccess = private)
+        size
+        data_set
+        path
+    end%properties
+    
+    methods%Constructor
+        function obj = Block(blockpath)
+            if nargin == 0
+                obj.size = size(obj.data_set);
+            else
+                obj.path=blockpath;
+                obj.get_dataset();
+                if findstr(blockpath,'uni')
+                    obj.data_set = obj.get_unimanual(blockpath);
+                else
+                    obj.data_set = obj.get_bimanual(blockpath);                    
+                end
+                obj.concatenate();
+                obj.size = size(obj.data_set);
+            end
+        end
+    end
+    
+    methods
+        plot(obj,figname)
+        obj.ge
+        B = subsref(obj,S)
+        new = copy(obj)
+        concatenate(obj)
+    end
+    
+    methods(Static)
+        data_set = get_bimanual(blockpath)
+        data_set = get_unimanual(blockpath)
+    end
+end

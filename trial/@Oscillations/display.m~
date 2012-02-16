@@ -1,0 +1,8 @@
+function disp(obj)
+    props = properties(obj);
+    disp('Displaying properties of object Oscillations...')
+    for i=1:length(props)
+        str = sprintf('%s = %f.\n', props{i}, obj.(props{i}));
+        disp(str)        
+    end
+end

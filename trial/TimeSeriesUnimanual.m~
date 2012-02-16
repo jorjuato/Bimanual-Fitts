@@ -1,0 +1,143 @@
+classdef TimeSeriesUnimanual < handle
+   properties
+      xraw
+      vraw
+      araw
+      Peaks      
+      IDEff
+      ID
+   end % properties
+   
+   properties (Dependent = true, SetAccess = private)
+      x
+      v
+      a
+      xnorm
+      vnorm
+      anorm
+   end
+   
+   methods
+      %Properties getters and setter
+      %function obj = set.Material(obj,material)
+      %   obj.Material = material;
+      %end % set.Material
+
+      function x = get.x(obj)
+         x = filterdata(obj.xraw);
+      end
+      
+      function v = get.v(obj)
+         v = filterdata(obj.vraw);
+      end
+      
+      function a = get.a(obj)
+         a = filterdata(obj.araw);
+      end
+      
+      function xnorm = get.xnorm(obj)
+         xnorm = obj.x/max(abs(obj.x));
+      end
+      
+      function vnorm = get.vnorm(obj)
+         vnorm = obj.v/max(abs(obj.v));
+      end
+      
+      function anorm = get.anorm(obj)
+         anorm = obj.a/max(abs(obj.a));
+      end
+
+      %Constructor
+      function ts = TimeSeriesUnimanual(data,info,hand)
+        if ~isempty(strfind(hand,'L'))       
+            %Skip first 'skiposc' oscillations
+            idx = skip_oscillations(data.Left_L2Ang-data.Left_L1Ang,info.skipOsc);
+            %Compute left hand trial kinematic data
+            ts.xraw = (data.Left_L2Ang(idx)-data.Left_L1Ang(idx))*info.scale + info.offset-info.origin;
+            ts.vraw = (data.Left_L2Vel(idx)-data.Left_L1Vel(idx))*info.scale;
+            ts.araw = (data.Left_L2Acc(idx)-data.Left_L1Acc(idx))*info.scale;
+        else
+            %Skip first 'skiposc' oscillations
+            idx = skip_oscillations(data.Right_L2Ang-data.Right_L1Ang,info.skipOsc);
+            info.offset = info.offset - 0.073;
+            %Compute right hand trial kinematic data
+            ts.xraw = (pi/4-(data.Right_L2Ang(idx)-data.Right_L1Ang(idx)))*info.scale + info.offset -info.origin - 0.095;
+            ts.vraw = (-(data.Right_L2Vel(idx)-data.Right_L1Vel(idx)))*info.scale;
+            ts.araw = (-(data.Right_L2Acc(idx)-data.Right_L1Acc(idx)))*info.scale;
+            
+        end
+        %Get peaks for later processing
+        [maxPeaks, minPeaks] = peakdet(ts.x, 0.00005);
+        ts.peaks = sort([maxPeaks(:,1);minPeaks(:,1)]);   
+        ts.IDef = get_ID_effective(ts.x,ts.peaks,info.A);
+      end
+      
+      function plot(obj,graphPath,ext)
+        if nargin<3, ext='fig';end
+        if nargin<2, graphPath='';end
+        
+        [fcns, names, xlabels, ylabels] = get_plots();
+        %Create figure for this function
+        if graphPath
+            fig = figure('visible','off');
+        else
+            fig = figure();
+        end
+        %Apply plotting methods
+        for f=1:length(fcns)
+            %Create subplot and call plotting function
+            subplot(1,f,f1);           
+            fcns{f}(obj);
+            ylabel(ylabels{f});
+            xlabel(xlabels{f});
+        end
+        if graphPath
+            %Generate random sequence and append to the end (based on seconds or whatever)
+            filename = "TimeSeriesPlot";
+            figname = joinpath(graphPath,filename);
+            saveas(fig,figname,ext);
+            close(fig);
+        end
+      
+      end % plot
+      
+      function [fcns, names,xlabels,ylabels] = get_plots(obj)
+        idx = [1,2,3,4];
+        fcns = {...
+                @plot_time_series...
+                ,@plot_phase_plane...
+                ,@plot_hook_plane...
+                ,@plot_frequencies...
+                ,@plot_spectrogram_computed...
+                ,@plot_freq_continous...
+                }; fcns=fcns{idx};
+            
+        names = {...
+                  'time_series'...
+                 ,'phase_plane'...
+                 ,'hook_plane'...
+                 ,'frequencies'...
+                 ,'spectrogram'...
+                 ,'freqContinousUni'
+                 }; names=names{idx};
+             
+        ylabels = {'Position/Speed(m;m/s)'...
+                   ,'Speed(m/s)'...
+                   ,'Accel (m/s^2)'...
+                   ,'Power(dB)'...
+                   ,'Frequency (Hz)'...
+                   ,'Frequency (Hz)'...
+                   }; ylabels=ylabels{idx};
+               
+        xlabels = {...
+                    'Time (ms)'...
+                   ,'Position (m)'...
+                   ,'Position (m)'...
+                   ,'Frequency (Hz)'...
+                   ,'Time(ms)'...
+                   ,'Time(ms)'...
+                   }; xlabels=xlabels{idx};
+    end % get_plots
+    
+   end % methods
+end% classdef
