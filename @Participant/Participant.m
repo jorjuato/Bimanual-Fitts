@@ -22,6 +22,9 @@ classdef Participant
         
         plot_learning_vf(obj,graphPath,ext);
         
+        save(obj);
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -31,7 +34,7 @@ classdef Participant
                 obj.size = size(obj.sessions);
             else
                 if ~isa(name,'str')
-                    name=strcat('subject',num2str(name,'%03d'));
+                    name=strcat('participant',num2str(name,'%03d'));
                 end
                 obj.name=name;
                 subject_dir = getSubjectDir(obj.name);
@@ -43,4 +46,9 @@ classdef Participant
             end
         end        
     end % methods
+    
+        
+    methods(Static=true)            
+        part=load(p);    
+    end
 end% classdef

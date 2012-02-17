@@ -1,6 +1,6 @@
 
 function plot_lockingStrength(obj,graphPath,rootname,ext)
-    if nargin<4, ext='fig';end
+    if nargin<4, ext='png';end
     if nargin<3, rootname='nosession';end
     if nargin<2, graphPath='';end
     

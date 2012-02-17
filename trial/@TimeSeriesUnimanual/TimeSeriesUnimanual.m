@@ -20,7 +20,7 @@ classdef TimeSeriesUnimanual < handle
    methods%Prototypes
       concatenate(obj,obj1)
       
-      plot(obj,graphPath,ext)
+      plot(obj,graphPath,rootname,ext)
       
       [fcns, names,xlabels,ylabels] = get_plots(obj) 
    end

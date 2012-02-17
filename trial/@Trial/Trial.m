@@ -13,13 +13,10 @@ classdef Trial < handle
     end % properties
 
     methods
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Prototypes of static methods
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         [fcns, names, xlabels, ylabels] = get_plots(obj)
         
-        plot(obj,graphPath,ext)
+        plot(obj,graphPath,rootname,ext)
         
         new=copy(obj)
         
@@ -61,7 +58,7 @@ classdef Trial < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Prototypes of static methods
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        info = get_trial_info_bi(data,factor2)
+        info = get_trial_info_bi(data)
         info = get_trial_info_uni(data)
         
     end % methods

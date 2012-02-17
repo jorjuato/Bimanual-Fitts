@@ -1,5 +1,9 @@
-function  plot_trial_unimanual(data,hand)
-    if nargin==1, hand='R'; end
+function  plot_trial_unimanual(data,hand,graphPath,rootname,ext)
+    if nargin<5, ext='png';end
+    if nargin<4, rootname='nosession';end
+    if nargin<3, graphPath='';end
+    if nargin<2, hand='R'; end
+    
     %Get trial setup
     ne = length(data.EVENTS.TIMES);
     TP = data.TRIAL.TP;

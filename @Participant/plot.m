@@ -9,15 +9,33 @@ function  plot(obj,graphPath,ext)
     if nargin<2, graphPath=joinpath(joinpath(getuserdir(),'KINARM'),'plots');end
     
     mode=1;
+    if ischar(obj.name)
+        name=obj.name;
+    else
+        name=num2str(obj.name,'%03d');
+    end
+    root_dir           =joinpath(graphPath,name);
+    learning_dir       =joinpath(root_dir,    'Learning');
+    oscillations_dir   =joinpath(learning_dir,'oscillations');
+    relative_dir       =joinpath(learning_dir,'relative');
+    lockingStrength_dir=joinpath(learning_dir,'lockingStrength');
+    vf_dir             =joinpath(learning_dir,'vectorFields');
+    mkdir(root_dir);
+    mkdir(learning_dir);
+    mkdir(oscillations_dir);
+    mkdir(relative_dir);
+    mkdir(lockingStrength_dir);
+    mkdir(vf_dir);
     
-    %obj.plot_learning_oscillations(graphPath,ext);
-    %obj.plot_learning_relative(mode,graphPath,ext);    
-    %obj.plot_learning_lockingStrength(graphPath,ext);
-    %obj.plot_learning_vf(graphPath,ext);
+    obj.plot_learning_oscillations(oscillations_dir,ext);
+    obj.plot_learning_relative(mode,relative_dir,ext);    
+    obj.plot_learning_lockingStrength(lockingStrength_dir,ext);
+    obj.plot_learning_vf(vf_dir,ext);
 
     for s=1:obj.size
         if obj.sessions(s).train == 0
-            obj.sessions(s).plot(1,graphPath,ext)
+            rootname=strcat('session',num2str(s));
+            obj.sessions(s).plot(mode,root_dir,rootname,ext);
         end
     end
 end

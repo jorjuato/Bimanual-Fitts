@@ -8,18 +8,19 @@
 
 
 function  plot_timeSeries(obj,rep,graphPath,rootname,ext)
-    if nargin<5, ext='fig';end
+    if nargin<5, ext='png';end
     if nargin<4, rootname='nosession';end
     if nargin<3, graphPath='';end
     if nargin<2, rep=4; end
     
+    
+    DS = obj.data_set;
+    fNo=length(size(DS));
     %Retrieve sorted data and processing methods from auxiliar functions
-    if length(obj.size)==3
-        DS = obj.data_set;
+    if fNo==3        
         [F1, F2, ~] = size(DS);
         [fcns, names, xlabels, ylabels] = DS{1,1,rep}.ts.get_plots();
     else
-        DS = obj.data_set;
         [F1, ~] = size(DS);        
         [fcns, names, xlabels, ylabels] = DS{1,rep}.ts.get_plots();
     end
@@ -34,7 +35,7 @@ function  plot_timeSeries(obj,rep,graphPath,rootname,ext)
             figs{f}=figure();
         end
     end
-    if length(obj.size)==3
+    if fNo==3
         %Fill it with subplots, one for each exp. condition
         for f1=1:F1
             for f2=1:F2
@@ -74,7 +75,7 @@ function  plot_timeSeries(obj,rep,graphPath,rootname,ext)
                 end%for f=1:length(fcns)
             end%for f2=1:F2
         end%for f1=1:F1
-    elseif length(obj.size)==2
+    elseif length(size(DS))==2
         for f1=1:F1
             %Create subplots 
             ax=cell(length(fcns));

@@ -1,6 +1,7 @@
 function new = copy(obj)
-    save('temp.mat', 'obj');
-    Foo = load('temp.mat');
+    filename=strcat('temp',random_string(5));
+    save(filename, 'obj');
+    Foo = load(filename);
     new = Foo.obj;
-    delete('temp.mat');
+    delete(strcat(filename,'.mat'));
 end

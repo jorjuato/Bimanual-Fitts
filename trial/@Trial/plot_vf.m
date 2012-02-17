@@ -1,5 +1,8 @@
-function plot_vf(tr,figname)
-    if nargin<2, figname=''; end
+function plot_vf(tr,,graphPath,rootname,ext)
+    if nargin<4, ext='png';end
+    if nargin<3, rootname='nosession';end
+    if nargin<2, graphPath='';end
+    
     fig=figure();
     if isfield(tr.ts,'x')
         %unimanual trial

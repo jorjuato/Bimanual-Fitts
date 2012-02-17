@@ -1,5 +1,7 @@
-function plot(obj,figname)
-    if nargin<2, figname=''; end
+function plot(obj,graphPath,rootname,ext)
+    if nargin<4, ext='png';end
+    if nargin<3, rootname='nosession';end
+    if nargin<2, graphPath=[];end
 
     fig=figure();
     subplot(1,3,1);
@@ -15,7 +17,11 @@ function plot(obj,figname)
     subplot(1,3,3);
     imagesc(flipud(obj.angles{2}),[0,pi]);
 
-    if ~isempty(figname)
-        hgsave(fig,figname); close fig;
+    if ischar(graphPath)
+        %Generate random sequence and append to the end (based on seconds or whatever)
+        filename = 'VectorField';
+        figname = joinpath(joinpath(graphPath,rootname),filename));
+        saveas(fig,figname,ext);
+        close(fig);
     end
 end % plot

@@ -1,8 +1,7 @@
-function info  = get_trial_info_bi(data,factor2)
-    if nargin<2, factor2='Targets';end   
+function info  = get_trial_info_bi(data)
     %Get basic information about the trial
     info = struct;
-    info.Factor2Name = factor2;
+    info.Factor2Name = 'Targets';
     TP = data.TRIAL.TP;
     info.TP = TP;
     info.eventLabels = data.EVENTS.LABELS;
@@ -27,25 +26,18 @@ function info  = get_trial_info_bi(data,factor2)
     info.origin = (minY+maxY)/2;
     info.skipOsc = data.TP_TABLE.TrainOsc(TP);
     
-    %Select the appropiate value for factor 2
-    if strcmp(factor2,'Viscosity')
-        info.Factor2 = info.visc;
-    elseif strcmp(factor2,'Phase')
-        info.Factor2 = info.inPhase;
-    elseif strcmp(factor2,'Targets')
-        %In this case, lets rename things a bit
-        info.LW = info.W;
-        info.RW = data.TARGET_TABLE.Height(tRU)/100;
-        maxYL = maxY; minYL = minY;
-        maxYR = data.TARGET_TABLE.Y(tRU)/100;
-        minYR = data.TARGET_TABLE.Y(tRD)/100;
-        info.minY = minYR;
-        info.maxY = maxYR;
-        info.LA = maxYL - minYL;
-        info.RA = maxYR - minYR;
-        info.LID = log2(2*info.LA/info.LW);
-        info.RID = log2(2*info.RA/info.RW);
-        info.Factor2 = info.RW;
-    end
+    %Lets rename things a bit
+    info.LW = info.W;
+    info.RW = data.TARGET_TABLE.Height(tRU)/100;
+    maxYL = maxY; minYL = minY;
+    maxYR = data.TARGET_TABLE.Y(tRU)/100;
+    minYR = data.TARGET_TABLE.Y(tRD)/100;
+    info.minY = minYR;
+    info.maxY = maxYR;
+    info.LA = maxYL - minYL;
+    info.RA = maxYR - minYR;
+    info.LID = log2(2*info.LA/info.LW);
+    info.RID = log2(2*info.RA/info.RW);
+    info.Factor2 = info.RW;
 end
         

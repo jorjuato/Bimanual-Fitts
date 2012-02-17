@@ -1,4 +1,8 @@
-function  plot_trial_bimanual(data)
+function  plot_trial_bimanual(data,graphPath,rootname,ext)
+    if nargin<4, ext='png';end
+    if nargin<3, rootname='nosession';end
+    if nargin<2, graphPath='';end
+    
     %Get trial configuration
     ne = length(data.EVENTS.TIMES);
     TP = data.TRIAL.TP;

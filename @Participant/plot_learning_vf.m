@@ -1,6 +1,6 @@
 function arr = plot_learning_vf(obj,graphPath,ext)
-    if nargin<3, ext='fig';end
-    if nargin<2, graphPath='';end
+    if nargin<3, ext='png';end
+    if nargin<2, graphPath=joinpath(joinpath(getuserdir(),'KINARM'),'plots');end
 
     S= obj.sessions;
     session=S(1);

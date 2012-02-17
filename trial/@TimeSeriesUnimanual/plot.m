@@ -1,6 +1,7 @@
-function plot(obj,graphPath,ext)
-    if nargin<3, ext='fig';end
-    if nargin<2, graphPath='';end
+function plot(obj,graphPath,rootname,ext)
+    if nargin<4, ext='png';end
+    if nargin<3, rootname='nosession';end
+    if nargin<2, graphPath=[];end
 
     [fcns, names, xlabels, ylabels] = obj.get_plots();
     %Create figure for this function
@@ -26,8 +27,8 @@ function plot(obj,graphPath,ext)
     end
     if ischar(graphPath)
         %Generate random sequence and append to the end (based on seconds or whatever)
-        filename = 'TimeSeriesPlot';
-        figname = joinpath(graphPath,filename);
+        filename = 'TimeSeriesUnimanual';
+        figname = joinpath(joinpath(graphPath,rootname),filename);
         saveas(fig,figname,ext);
         close(fig);
     end

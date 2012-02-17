@@ -4,7 +4,7 @@ function plot_vectorFields(obj,mode,graphPath,rootname,ext)
     % 2 -> Left and right fields in different figures
     % 3 -> One figure for each couple of L/R per trial
     % 4 -> One figure for each couple of L/R per trial, with vector angles    
-    if nargin<5, ext='fig';end
+    if nargin<5, ext='png';end
     if nargin<4, rootname='nosession';end
     if nargin<3, graphPath='';end
     if nargin<2, mode=1;end

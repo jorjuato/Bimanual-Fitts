@@ -1,0 +1,3 @@
+function analyze(obj)
+
+end
