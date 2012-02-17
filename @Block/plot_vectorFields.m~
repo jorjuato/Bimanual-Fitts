@@ -37,7 +37,7 @@ function plot_vectorFields(obj,mode,graphPath,rootname,ext)
                     title(sprintf('\t IDL=%1.2f',DS{1,1,1}.info.LID),'fontsize',12,'fontweight','b');                     
                     titledone = 1;
                 elseif i==1 & j==2 & titledone == 1
-                    title(sprintf('\t IDL=%1.2f',DS{2,1,1}.info.LID),'fontsize',12,'fontweight','b');                     
+                    title(sprintf('\t IDL=%1.2f',DS{2,1,1}.info.IDL),'fontsize',12,'fontweight','b');                     
                     titledone = 2;
                 end 
                 %Right hand vector field

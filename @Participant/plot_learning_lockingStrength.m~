@@ -10,24 +10,25 @@ function  plot_learning_lockingStrength(obj,graphPath,ext)
     
     S = obj.sessions;
     session=S(1);
-    [f1, f2, ~] = size(session.bimanual.data_set);  
     [fields, names, labels, ylims] = get_ls_plots();
     
     for f=1:length(fields)        
-        rootname = sprintf('Learning-%s',fields{f});       
-        sessions = getValidSessions(obj);
+        rootname = sprintf('Learning-%s',fields{f});            
+        [f1, f2, ~] = size(session.bimanual.data_set);  
+        %FIX IT!!! 
+        sessions = getValidSessions(S);
         Sno = length(sessions);
         %Fetch data
         for i=1:f1
             bar_grps = zeros(f2,Sno,2);
             IDs = zeros(f2,1);
             for j=1:f2
-                IDs(j) = S(sessions(1)).bimanual.data_set{i,j,end}.info.RID;
+                IDs(j) = S(sessions(1)).bimanual{i,j,end}.info.IDR;
                 for s=1:Sno
-                    DS = S(sessions(s)).bimanual.data_set;                            
+                    DS = S(sessions(s)).bimanual;                            
                     ls = DS{i,j,end}.ls;
-                    bar_grps(j,s,1) = mean(filterOutliers(ls.(fields{f})));
-                    bar_grps(j,s,2) = ste(filterOutliers(ls.(fields{f})));
+                    bar_grps(j,s,1) = mean(filterOutliers(ls.(names{f})));
+                    bar_grps(j,s,2) = ste(filterOutliers(ls.(names{f})));
                 end
             end
              %ylim(ylims{f});
@@ -36,18 +37,18 @@ function  plot_learning_lockingStrength(obj,graphPath,ext)
             else
                 fig = figure();
             end
-            set(fig,'Name',names{f});
+            set(fig,'Name',names{b});
             hold('off');
             set(0,'CurrentFigure',fig);
             %subpl = subplot(1,f1,i);
             subpl = gca;
-            title(sprintf('ID Left=%1.1f / %s Learning',DS{i,1,1}.info.LID,names{f}),'fontsize',14,'fontweight','b');
+            title(sprintf('ID Left=%1.1f / %s Learning',DS{i,1,1}.info.IDL,names{f}),'fontsize',14,'fontweight','b');
             xlabel('ID Right','fontweight','b');
             ylabel(labels{f},'fontweight','b','Rotation',90);
             hold on;
             h = bar(IDs,bar_grps(:,:,1),'grouped');
             red = [1,0,0];
-            %blue = [0,0,1];
+            blue = [0,0,1];
             legendCell = cell(Sno);
             for s=1:Sno                    
                 set(h(s),'FaceColor',red/s,'EdgeColor','k');
@@ -62,16 +63,16 @@ function  plot_learning_lockingStrength(obj,graphPath,ext)
             ymin = min(min(bar_grps(:,:,1)));
             ymax = max(max(bar_grps(:,:,1)));
             ylim = [ymin-ymin/10,ymax+ymax/10 ];
-            if strcmp(names{f},'Acceleration Time') || strcmp(names{f},'Deceleration Time')
+            if strcmp(fcns{f},'Acceleration Time') || strcmp(fcns{f},'Deceleration Time')
                 xmin = min(min(get(get(h(1),'children'),'xdata')));
                 xmax = max(max(get(get(h(end),'children'),'xdata')));
                 line([xmin,xmax],[0.5,0.5],'Color','k','LineWidth',2);
             end
             set(subpl,'XTick',sort(round(IDs*10)/10));
-            %set(subpl,'ylim',ylim{f});
+            set(subpl,'ylim',ylim);
             hold off;
             if graphPath
-                filename = sprintf('%s-IDLeft-%d',rootname,round(DS{i,1,1}.info.LID));
+                filename = sprintf('%s-IDLeft-%d',rootname,round(DS{i,1,1}.info.IDL));
                 figname = joinpath(graphPath,filename);
                 if strcmp(ext,'fig')
                     hgsave(fig,figname,'all');

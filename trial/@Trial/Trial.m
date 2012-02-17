@@ -16,9 +16,16 @@ classdef Trial < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Prototypes of static methods
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         [fcns, names, xlabels, ylabels] = get_plots(obj)
+        
         plot(obj,graphPath,ext)
-        copy(obj)
+        
+        new=copy(obj)
+        
+        concatenate(obj,obj2)
+        
+        set_concatenated(obj)
         
         %%%%%%%%%%%%%
         % Constructor

@@ -4,7 +4,7 @@
 % with DS structures generated with getMultiResults_fb because it doesn't  
 % depend on any parameter of DS structure, only its dimensions.
 
-function  plot_learning_relative(obj,mode,graphPath,ext)     
+function  plot_learning_relative(obj,mode,graphPath,ext) d    
     if nargin<4, ext='png';end
     if nargin<3, graphPath=joinpath(joinpath(getuserdir(),'KINARM'),'plots');end
     if nargin<2, mode=1; end

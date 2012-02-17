@@ -3,15 +3,15 @@ function arr = plot_learning_vf(obj,graphPath,ext)
     if nargin<2, graphPath='';end
 
     S= obj.sessions;
-    session=S(1)
-    blk=S(1).bimanual;
-    [IDL IDR rep]=session.bimanual;
+    session=S(1);
+    blk=S(1).bimanual.data_set;
+    [IDL IDR rep]=size(blk);
     %vfSize = size(data(1).bimanual{1,1,end}.Lva{1},2);    
     arr = cell([IDL, IDR, 6]);   
     
     for n=1:3
         s=3*(n-1)+1;
-        DSB = S(s).bimanual;
+        DSB = S(s).bimanual.data_set;
         %DSL = data(s).uniLeft;
         %DSR = data(s).uniRight;
         for r=1:IDR
@@ -29,6 +29,7 @@ function arr = plot_learning_vf(obj,graphPath,ext)
     end
     %return
     %Now plot all the stuff
+    rootname = sprintf('Learning-vf');
     if graphPath
         fig = figure('visible','off');
     else
@@ -49,15 +50,15 @@ function arr = plot_learning_vf(obj,graphPath,ext)
             ylim([0,pi]);
             hold off;
             if r==1 & l==1 & titledone == 0
-                title(sprintf('\t\t IDL=%1.2f',blk{1,1,1}.info.IDL),'fontsize',18,'fontweight','b');
+                title(sprintf('\t\t IDL=%1.2f',blk{1,1,1}.info.LID),'fontsize',18,'fontweight','b');
                 titledone = 1;
             end
             if r==1 & l==2 & titledone == 1
-                title(sprintf('\t\t IDL=%1.2f',blk{2,1,1}.info.IDL),'fontsize',18,'fontweight','b');
+                title(sprintf('\t\t IDL=%1.2f',blk{2,1,1}.info.LID),'fontsize',18,'fontweight','b');
                 titledone = 2;
             end
             if l==1
-                txt = sprintf('IDR=%1.2f',blk{l,r,1}.IDR);
+                txt = sprintf('IDR=%1.2f',blk{l,r,1}.info.RID);
                 ylabel(txt,'fontsize',10,'fontweight','b');
             end
             if r==IDR, xlabel('Left Hand'); end

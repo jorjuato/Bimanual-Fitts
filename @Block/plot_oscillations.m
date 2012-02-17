@@ -14,11 +14,11 @@ function  plot_oscillations(obj,graphPath,rootname,ext)
         
     if obj.unimanual==1
         oscData = properties(DS{1,end}.osc);
-        [f1, ~] = obj.size;
+        [f1, ~] = size(DS);
         [names, labels, ylims] = DS{1,1,end}.osc.get_plots();
     else
         oscData = properties(DS{1,1,end}.oscL);
-        [f1, f2, ~] = obj.size;
+        [f1, f2, ~] = size(DS);
         [names, labels, ylims] = DS{1,1,end}.oscL.get_plots();
     end
     
@@ -62,7 +62,7 @@ function  plot_oscillations(obj,graphPath,rootname,ext)
                 bar_grps = zeros(f2,2,2);
                 IDs = zeros(f2,1);
                 for j=1:f2
-                    IDs(j) = DS{i,j,end}.info.IDR;
+                    IDs(j) = DS{i,j,end}.info.RID;
                     oscL = DS{i,j,end}.oscL;
                     oscR = DS{i,j,end}.oscR;
                     bar_grps(j,1,1) = mean(filterOutliers(oscL.(oscData{f})));
@@ -74,7 +74,7 @@ function  plot_oscillations(obj,graphPath,rootname,ext)
                 hold('off');
                 set(0,'CurrentFigure',fig);
                 subplot(1,f1,i);
-                title(sprintf('ID Left=%1.1f, %s',DS{i,1,1}.info.IDL,oscData{f}),'fontsize',14,'fontweight','b');
+                title(sprintf('ID Left=%1.1f, %s',DS{i,1,1}.info.LID,oscData{f}),'fontsize',14,'fontweight','b');
                 xlabel('ID Right','fontweight','b');
                 ylabel(labels{f},'fontweight','b','Rotation',90);
                 hold on;

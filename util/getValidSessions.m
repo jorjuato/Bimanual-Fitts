@@ -1,7 +1,8 @@
-function validS = getValidSessions(S,blockname)
+function validS = getValidSessions(obj,blockname)
     if nargin < 2, blockname = ''; end
     
     validS = [];
+    S=obj.sessions;
     if ~isempty(blockname)
         for i=1:length(S)
             if ~isempty(S(i).(blockname))

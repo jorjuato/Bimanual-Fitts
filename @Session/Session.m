@@ -9,9 +9,9 @@ classdef Session < handle
     
     methods
     
-        plot(obj,figname);
+        plot(obj,mode,graphPath,rootname,ext);
         
-        plot_relative_osc(obj);
+        plot_relative_osc(obj,mode,graphPath,rootname,ext);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor

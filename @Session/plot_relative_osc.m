@@ -4,14 +4,14 @@ function plot_relative_osc(obj,mode,graphPath,rootname,ext)
     if nargin<3, graphPath='';end  
     if nargin<2, mode=1; end
     
-    bimanual=obj.bimanual;
-    uniRight=obj.uniRight;
-    uniLeft=obj.uniLeft;
+    bimanual=obj.bimanual.data_set;
+    uniRight=obj.uniRight.data_set;
+    uniLeft=obj.uniLeft.data_set;
     tr=uniLeft{1,end};
     oscData = properties(tr.osc);
     [names, labels, ylims] = tr.osc.get_plots();
 
-    [f1, f2, ~] = obj.bimanual.size;
+    [f1, f2, ~] = size(bimanual);
 
     for f=1:length(oscData)
         if graphPath
@@ -25,7 +25,7 @@ function plot_relative_osc(obj,mode,graphPath,rootname,ext)
             bar_grps = zeros(f2,2,2);
             IDs = zeros(f2,1);
             for j=1:f2
-                IDs(j) = bimanual{i,j,end}.info.IDR;
+                IDs(j) = bimanual{i,j,end}.info.RID;
                 oscL   = bimanual{i,j,end}.oscL;
                 oscLu  = uniLeft{i,end}.osc;
                 oscR   = bimanual{i,j,end}.oscR;
@@ -39,7 +39,7 @@ function plot_relative_osc(obj,mode,graphPath,rootname,ext)
             hold('off');
             %set(0,'CurrentFigure',fig);
             subpl = subplot(1,f1,i);
-            title(sprintf('ID Left=%1.1f',bimanual{i,1,1}.info.IDL),'fontsize',14,'fontweight','b');
+            title(sprintf('ID Left=%1.1f',bimanual{i,1,1}.info.LID),'fontsize',14,'fontweight','b');
             xlabel('ID Right','fontweight','b');
             ylabel(labels{f},'fontweight','b','Rotation',90);
             hold on;

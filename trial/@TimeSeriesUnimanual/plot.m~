@@ -13,16 +13,14 @@ function plot(obj,graphPath,ext)
     for f=1:length(fcns)
         %Create subplot and call plotting function
         if iscell(graphPath)
-            fcns{f}(obj,graphPath{f});
-            ylabel(graphPath{f},ylabels{f});
-            xlabel(graphPath{f},xlabels{f});
+            %set(0,'CurrentAxes',graphPath{f})
+            axes(graphPath{f});
         else
             subplot(1,length(fcns),f);
-            fcns{f}(obj);
-            ylabel(ylabels{f});
-            xlabel(xlabels{f});
         end
-
+        fcns{f}(obj,graphPath{f});
+        ylabel(graphPath{f},ylabels{f});
+        xlabel(graphPath{f},xlabels{f});
     end
     if ischar(graphPath)
         %Generate random sequence and append to the end (based on seconds or whatever)

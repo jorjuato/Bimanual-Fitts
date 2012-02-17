@@ -10,7 +10,7 @@ function plot_lockingStrength(obj,graphPath,rootname,ext)
     
     DS = obj.data_set;    
         
-    [IDL, IDR, rep] = size(DS);
+    [IDL, IDR, rep] = obj.size;
     [fields, names, labels, ylims] = get_ls_plots();
     
 
@@ -21,17 +21,17 @@ function plot_lockingStrength(obj,graphPath,rootname,ext)
     for f2=1:IDR
         for f=1:length(fields)
             for r=1:rep-1
-                tmp1(r)=DS{1,f2,r}.ts.RIDef;
-                tmp2(r)=DS{2,f2,r}.ts.RIDef;
-                tmp3(r)=DS{1,f2,r}.ls.(fields{f});
-                tmp4(r)=DS{2,f2,r}.ls.(fields{f});
+                tmp1{r}=DS{1,f2,r}.ts.RIDef;
+                tmp2{r}=DS{2,f2,r}.ts.RIDef;
+                tmp3{r}=DS{1,f2,r}.ls.(fields{f});
+                tmp4{r}=DS{2,f2,r}.ls.(fields{f});
             end
-            data1{f,1}=mean(tmp1);            
-            data1{f,2}=mean(tmp3);
-            data1{f,3}=ste(tmp3);
-            data2{f,1}=mean(tmp2);
-            data2{f,2}=mean(tmp4);
-            data2{f,3}=ste(tmp4);
+            data1{f2,1}=mean(tmp1);            
+            data1{f2,2}=mean(tmp3);
+            data1{f2,3}=ste(tmp3);
+            data2{f2,1}=mean(tmp2);
+            data2{f2,2}=mean(tmp4);
+            data2{f2,3}=ste(tmp4);
         end
     end
                    
@@ -45,11 +45,11 @@ function plot_lockingStrength(obj,graphPath,rootname,ext)
         set(fig,'Name',names{f});
 
         hold on;
-        errorbar(data1{f,1},data1{f,2},data1{f,3},'r');
-        errorbar(data2{f,1},data2{f,2},data2{f,3},'b');
+        errorbar(data1{:,1},data1{:,2},data1{:,3},'r');
+        errorbar(data2{:,1},data2{:,2},data2{:,3},'b');
         h = legend('IDL=2.4','IDL=5.7');
         ylabel(labels{f});
-%        ylim(ylims{f});
+        ylim(ylims{f});
         hold off;
         if graphPath
             filename = sprintf('%s-%s',rootname,fields{f});

@@ -18,7 +18,7 @@ classdef Oscillations < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         plot(obj)
         display(obj)
-        concatenate(obj)
+        concatenate(obj,obj2)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor

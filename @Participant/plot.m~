@@ -10,14 +10,15 @@ function  plot(obj,graphPath,ext)
     
     mode=1;
     
-    %obj.plot_learning_oscillations(graphPath,ext);
-    %obj.plot_learning_relative(mode,graphPath,ext);    
-    %obj.plot_learning_lockingStrength(graphPath,ext);
-    %obj.plot_learning_vf(graphPath,ext);
+    obj.plot_learning_oscillations(graphPath,ext);
+    obj.plot_learning_relative(mode,graphPath,ext);    
+    obj.plot_learning_lockingStrength(graphPath,ext);D
+    obj.plot_learning_vf(graphPath,ext);
 
-    for s=1:obj.size
-        if obj.sessions(s).train == 0
-            obj.sessions(s).plot(1,graphPath,ext)
+    for i=1:obj.size
+        S = obj(s);
+        if S.train == 0
+            S.plot()
         end
     end
 end

@@ -25,10 +25,17 @@ function [fcns, names, xlabels, ylabels] = get_plots(obj)
         }; %xlabels=xlabels{idx};
 end
 
-function  plot_time_series(ts)
+function  plot_time_series(ts,ax)
     hold('on');
-    plot(ts.Lx, 'r'); plot(ts.Rx, 'b');
-    axis([0 length(ts.Lx) -0.1 0.1]);
+    if nargin==1, 
+        plot(ts.Lx, 'r'); 
+        plot(ts.Rx, 'b');
+        axis([0 length(ts.Lx) -0.1 0.1]);
+    else
+        plot(ax,ts.Lx, 'r'); 
+        plot(ax,ts.Rx, 'b');
+        axis(ax,[0 length(ts.Lx) -0.1 0.1]);
+    end
     %Plot targets positions
     %line([0,length(tr.Rxraw)],[tr.minY-tr.W/2,tr.minY-tr.W/2],'Color','k');
     %line([0,length(tr.Rxraw)],[tr.minY+tr.W/2,tr.minY+tr.W/2],'Color','k');
@@ -37,12 +44,28 @@ function  plot_time_series(ts)
     hold('off');
 end
 
-function  plot_phase_plane(ts)
-    plot(ts.Lx,ts.Lv, 'r'); plot(ts.Rx,ts.Rv, 'b');
+function  plot_phase_plane(ts,ax)
+    hold on
+    if nargin==1, 
+        plot(ts.Lx,ts.Lv, 'r'); 
+        plot(ts.Rx,ts.Rv, 'b');
+    else
+        plot(ax,ts.Lx,ts.Lv, 'r'); 
+        plot(ax,ts.Rx,ts.Rv, 'b');
+    end
+    hold off
     %axis([min(tr.Lx) max(tr.Lx) min(tr.Lv) max(tr.Lv)]);
 end
 
-function  plot_hook_plane(ts)
-    plot(ts.Lx,ts.La,'r'); plot(ts.Rx,ts.Ra, 'b');
+function  plot_hook_plane(ts,ax)
+    hold on
+    if nargin==1, 
+        plot(ts.Lx,ts.La,'r'); 
+        plot(ts.Rx,ts.Ra, 'b');
+    else
+        plot(ax,ts.Lx,ts.La,'r'); 
+        plot(ax,ts.Rx,ts.Ra, 'b');
+    end
+    hold on
     %axis([min(tr.Lx) max(tr.Lx) min(tr.La) max(tr.La)]);
 end

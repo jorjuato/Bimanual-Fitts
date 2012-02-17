@@ -1,4 +1,4 @@
-function concatenate(obj)
+function tr = concatenate(obj)
     ds=obj.data_set;
     if obj.unimanual==0
         for idx1=1:obj.size(1)
@@ -9,8 +9,8 @@ function concatenate(obj)
                     tr.concatenate(ds{idx1,idx2,rep});
                 end
                 % Add concatenated trial to DS cell array
-                tr.concatenated = 1;
-                ds{idx1,idx2,end}=tr;
+                tr.set_concatenated();
+                obj.data_set{idx1,idx2,end}=tr;
             end
         end
     else
@@ -21,8 +21,8 @@ function concatenate(obj)
                 tr.concatenate(ds{idx1,rep});
             end
             % Add concatenated trial to DS cell array
-            tr.concatenated = 1;
-            ds{idx1,end}=tr;
+            tr.set_concatenated();
+            obj.data_set{idx1,end}=tr;
         end
     end
 end

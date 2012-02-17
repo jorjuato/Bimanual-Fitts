@@ -4,23 +4,31 @@ function plot(obj,graphPath,ext)
 
     [fcns, names, xlabels, ylabels] = obj.get_plots();
     %Create figure for this function
-    if graphPath
+    if ischar(graphPath) 
         fig = figure('visible','off');
-    else
+    elseif ~iscell(graphPath)
         fig = figure();
     end
     %Apply plotting methods
     for f=1:length(fcns)
         %Create subplot and call plotting function
-        subplot(1,length(fcns),f);
-        fcns{f}(obj);
-        ylabel(ylabels{f});
-        xlabel(xlabels{f});
+        if iscell(graphPath)
+            fcns{f}(obj,graphPath{f});
+            ylabel(graphPath{f},ylabels{f});
+            xlabel(graphPath{f},xlabels{f});
+        else
+            subplot(1,length(fcns),f);
+            fcns{f}(obj);
+            ylabel(ylabels{f});
+            xlabel(xlabels{f});
+        end
+        
     end
-    if graphPath
+    if ischar(graphPath)
         %Generate random sequence and append to the end (based on seconds or whatever)
         filename = 'TimeSeriesPlot';
         figname = joinpath(graphPath,filename);
         saveas(fig,figname,ext);
         close(fig);
+    end
 end

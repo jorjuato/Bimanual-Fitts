@@ -8,7 +8,9 @@ classdef Participant
 
     methods
     
-        B = subsref(obj,ref)
+        %B = subsref(obj,ref)
+        
+        concatenate(obj)
         
         plot(obj,graphPath,ext)
             
