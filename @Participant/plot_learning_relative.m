@@ -17,12 +17,20 @@ function  plot_learning_relative(obj,mode,graphPath,ext)
     [fcns, labels, ylims] = blk{1,1,1}.oscL.get_plots();
     
     for f=1:length(fcns)        
-        rootname = sprintf('Learning-Relative_mode-%d_%s',mode,fcns{f});                    
+        rootname = sprintf('Learning-Rel_%s',fcns{f});                    
         sessions = getValidSessions(obj);
-        Sno = length(sessions);        
+        Sno = length(sessions);
+        bar_grps = zeros(f2,2*Sno,f1,2);
+        IDs = zeros(f2,1);
+        
+        if graphPath
+            fig = figure('visible','off');
+        else
+            fig = figure();
+        end
+        
+        set(fig,'Name',fcns{f});
         for i=1:f1
-            bar_grps = zeros(f2,2*Sno,2);
-            IDs = zeros(f2,1);
             for j=1:f2
                 IDs(j) = S(sessions(1)).bimanual.data_set{i,j,end}.info.RID;
                 for s=1:Sno                         
@@ -30,57 +38,61 @@ function  plot_learning_relative(obj,mode,graphPath,ext)
                     oscR = S(sessions(s)).bimanual.data_set{i,j,end}.oscR;
                     oscLu = S(sessions(s)).uniLeft.data_set{i,end}.osc;
                     oscRu = S(sessions(s)).uniRight.data_set{j,end}.osc;
-                    bar_grps(j,s,1) = get_mean(oscL.(oscNames{f}),oscLu.(oscNames{f}),mode);
-                    bar_grps(j,s,2) = get_stderr(oscL.(oscNames{f}),oscLu.(oscNames{f}),mode);
-                    bar_grps(j,Sno+s,1) = get_mean(oscR.(oscNames{f}),oscRu.(oscNames{f}),mode);
-                    bar_grps(j,Sno+s,2) = get_stderr(oscR.(oscNames{f}),oscRu.(oscNames{f}),mode);
+                    bar_grps(j,s,i,1) = get_mean(oscL.(oscNames{f}),oscLu.(oscNames{f}),mode);
+                    bar_grps(j,s,i,2) = get_stderr(oscL.(oscNames{f}),oscLu.(oscNames{f}),mode);
+                    bar_grps(j,Sno+s,i,1) = get_mean(oscR.(oscNames{f}),oscRu.(oscNames{f}),mode);
+                    bar_grps(j,Sno+s,i,2) = get_stderr(oscR.(oscNames{f}),oscRu.(oscNames{f}),mode);
                 end
             end
             %ylim(ylims{f});
-            if graphPath
-                fig = figure('visible','off');
-            else
-                fig = figure();
+
+            %hold('off');
+            %set(0,'CurrentFigure',fig);
+            subpl = subplot(1,f1,i);    
+                    
+            %Plot bars and errorbars
+            hold on;           
+            h = bar(IDs,bar_grps(:,:,i,1),'grouped');
+            for j = 1:2*Sno
+                x = getBarCentroids(get(get(h(j),'children'),'xdata'));
+                errorbar(x,bar_grps(:,j,i,1),bar_grps(:,j,i,2),'k', 'linestyle', 'none', 'linewidth', 0.5);
             end
-            set(fig,'Name',fcns{f});
-            hold('off');
-            set(0,'CurrentFigure',fig);
-            subpl = gca;
-            title(sprintf('ID Left=%1.1f / Relative %s Learning',S(1).bimanual.data_set{i,1,1}.info.LID,oscNames{f}),'fontsize',14,'fontweight','b');
-            xlabel('ID Right','fontweight','b');
-            ylabel(labels{f},'fontweight','b','Rotation',90);
-            hold on;
-            h = bar(IDs,bar_grps(:,:,1),'grouped');
+            hold off
+            
+            %Define legend traits
             red = [1,0,0];
             blue = [0,0,1];
-            legendCell = cell(2*Sno);
             for s=1:Sno                    
                 set(h(s),'FaceColor',red/s,'EdgeColor','k');
                 set(h(Sno+s),'FaceColor',blue/s,'EdgeColor','k');
                 legendCell{s} = sprintf('Left S%d',s);
                 legendCell{Sno+s} = sprintf('Right S%d',s);
+            end            
+            %and show only in second graph
+            if i==2
+                hl = legend(h(1:Sno*2),legendCell{1:Sno*2},'Location','Best');  
+                set(hl,'FontSize',8);
             end
-            for j = 1:2*Sno
-                x = getBarCentroids(get(get(h(j),'children'),'xdata'));
-                errorbar(x,bar_grps(:,j,1),bar_grps(:,j,2),'k', 'linestyle', 'none', 'linewidth', 0.5);
-            end
-            hl = legend(h(1:Sno*2),legendCell{1:Sno*2},'Location','Best');  
-            set(hl,'FontSize',8);
-            ymin = min(min(bar_grps(:,:,1)));
-            ymax = max(max(bar_grps(:,:,1)));
+            
+            %More plot traits...
+            title(sprintf('IDL=%1.1f Learning Relative %s',S(1).bimanual.data_set{i,1,1}.info.LID,oscNames{f}),'fontsize',14,'fontweight','b');
+            xlabel('ID Right','fontweight','b');
+            ylabel(labels{f},'fontweight','b','Rotation',90);
+            ymin = min(min(bar_grps(:,:,i,1)));
+            ymax = max(max(bar_grps(:,:,i,1)));
             ylim = [ymin-abs(ymin)/10,ymax+abs(ymax)/10 ];
             ylabel(labels{f});
             set(subpl,'XTick',sort(round(IDs*10)/10));
             set(subpl,'ylim',ylim);
-            hold off;
-            if graphPath
-                filename = sprintf('%s_IDLeft-%d',rootname,round(S(1).bimanual.data_set{i,1,1}.info.LID));
-                figname = joinpath(graphPath,filename);
-                if strcmp(ext,'fig')
-                    hgsave(fig,figname,'all');
-                else
-                    saveas(fig,figname,ext); close(fig);
-                end
+        end
+        %Decide whether to save or not
+        if graphPath
+            %filename = sprintf('%s_IDLeft-%d',rootname,round(S(1).bimanual.data_set{i,1,1}.info.LID));
+            figname = joinpath(graphPath,rootname);
+            if strcmp(ext,'fig')
+                hgsave(fig,figname,'all');
+            else
+                saveas(fig,figname,ext); close(fig);
             end
         end                           
     end

@@ -12,8 +12,12 @@ function tr = concatenate(obj)
                 %Create a list of LS replications
                 fields=properties(tr.ls);
                 for f=1:length(fields)
-                    if length(size(tr.ls.(fields{f})))==1
-                        tr.ls.(fields{f}) = [ ds{idx1,idx2,1}.ls.(fields{f}), ds{idx1,idx2,2}.ls.(fields{f}), ds{idx1,idx2,3}.ls.(fields{f})];
+                    if numel(tr.ls.(fields{f}))==1
+                        tr.ls.(fields{f}) = [ ds{idx1,idx2,1}.ls.(fields{f}); ds{idx1,idx2,2}.ls.(fields{f}); ds{idx1,idx2,3}.ls.(fields{f})];
+                    else
+                        'putada'
+                        
+                        %tr.ls.(fields{f})
                     end
                 end
                 % Add concatenated trial to DS cell array
