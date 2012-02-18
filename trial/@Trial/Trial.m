@@ -7,10 +7,13 @@ classdef Trial < handle
         osc
         oscL
         oscR
-        ls
         info
         concatenated=0
     end % properties
+    
+    properties
+        ls
+    end
 
     methods
         
