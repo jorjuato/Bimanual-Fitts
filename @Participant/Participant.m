@@ -13,6 +13,10 @@ classdef Participant
         concatenate(obj)
         
         plot(obj,graphPath,ext)
+        
+        plot_vf(obj,graphPath,ext)
+        
+        plot_va(obj,graphPath,ext)
             
         plot_learning_oscillations(obj,graphPath,ext);
         

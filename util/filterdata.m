@@ -1,5 +1,5 @@
 function xf = filterdata(x,cutoff,nyqfreq)
-    %Raoul's version
+    %Raoul's parameters
     if nargin<3, nyqfreq = 500; end
     if nargin<2, cutoff  = 12 ; end
     

@@ -3,7 +3,7 @@ classdef VectorField < handle
       pc
       xo
       neighbourhood=[3,3]
-      binnumber=41
+      binnumber=11
       fs = 1E3
       step=3
       minValsToComputeCondProb=1%11
