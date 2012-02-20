@@ -5,5 +5,5 @@ function save(obj)
     else
         name=strcat('participant',num2str(obj.name,'%03d'));
     end
-    save(joinpath(root_dir,name),'obj');
+    save(joinpath(root_dir,name),'obj','-v7.3');
 end

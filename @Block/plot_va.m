@@ -1,4 +1,4 @@
-function plot_vf(obj,graphPath,rootname,ext)
+function plot_va(obj,graphPath,rootname,ext)
     % Plotting Modes:
     % 1 -> All graphs in same figure
     % 2 -> Left and right fields in different figures
@@ -21,40 +21,41 @@ function plot_vf(obj,graphPath,rootname,ext)
         for i=1:ID
             ax=subpot(1,ID,i);
             tr=DS{i,end};
-            tr.plot_vf(tr,graphPath,rootname,ext)
+            tr.plot_va(tr,graphPath,rootname,ext)
             %ylabel(sprintf('ID=%1.2f',DS{i,1}.info.ID),'fontsize',10,'fontweight','b'); 
             %xlabel('Left Hand','fontsize',10,'fontweight','b');
             if ID==2
                 hand='Left';
             else
                 hand='Right';
+            end
             title(sprintf('\t ID=%1.2f %s',DS{i,1}.info.ID, hand),'fontsize',12,'fontweight','b');  
         end
     else
         [IDL IDR ~] = size(DS);
         for i=1:IDL
             for j=1:IDR
-                tr=DS{i,,jend};
+                tr=DS{i,j,1};
                 axL=subplot(IDL*2,IDR, (i-1)*2*IDR + j);
-                axR=subplot(IDL*2,IDR,((i-1)*2+1)*IDR+j);
-                tr.plot_vf(axL,'L');
-                tr.plot_vf(axR,'R');
+                tr.plot_va(axL,'L');
+                axR=subplot(IDL*2,IDR,((i-1)*2+1)*IDR+j);                
+                tr.plot_va(axR,'R');
                 %Now put titles and axes
                 if i==1                    
-                    ylabel(axL,sprintf("Left ID=%d",tr.info.LID);
+                    ylabel(axL,sprintf('Left ID=%d',tr.info.LID));
                 end
                 if j==IDR
                     ylabel(axL,'Left Hand');
                     ylabel(axR,'Right Hand');
                 end
                 if i==IDL
-                    xlabel(axR,sprintf("Right ID=%d",tr.info.RID);
+                    xlabel(axR,sprintf('Right ID=%d',tr.info.RID));
                 end
             end
         end    
     end
     if graphPath
-        filename = sprintf('%s-BlockVectorFields',rootname);
+        filename = sprintf('%s-BlockVectorAngles',rootname);
         figname = joinpath(graphPath,filename);
         saveas(fig,figname,ext);
         close(fig);

@@ -8,18 +8,6 @@ function tr = concatenate(obj)
                 for rep=2:obj.size(3)-1
                     tr.concatenate(ds{idx1,idx2,rep});
                 end
-                tr.ls=LockingStrength(tr.ts);
-                %Create a list of LS replications
-                fields=properties(tr.ls);
-                for f=1:length(fields)
-                    if numel(tr.ls.(fields{f}))==1
-                        tr.ls.(fields{f}) = [ ds{idx1,idx2,1}.ls.(fields{f}); ds{idx1,idx2,2}.ls.(fields{f}); ds{idx1,idx2,3}.ls.(fields{f})];
-                    else
-                        'putada'
-                        
-                        %tr.ls.(fields{f})
-                    end
-                end
                 % Add concatenated trial to DS cell array
                 tr.set_concatenated();
                 obj.data_set{idx1,idx2,end}=tr;

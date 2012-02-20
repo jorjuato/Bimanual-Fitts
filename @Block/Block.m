@@ -26,10 +26,11 @@ classdef Block < handle
     
     methods%Prototypes
         plot(obj,graphPath,rootname,ext)
+        plot_va(obj,graphPath,rootname,ext)
+        plot_vf(obj,graphPath,rootname,ext)
         plot_lockingStrength(obj,graphPath,rootname,ext)
         plot_oscillations(obj,graphPath,rootname,ext)
         plot_timeSeries(obj,rep,graphPath,rootname,ext)
-        plot_vectorFields(obj,mode,graphPath,rootname,ext)
         
         get_dataset(obj)
         %B = subsref(obj,S)

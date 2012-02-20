@@ -38,28 +38,28 @@ classdef LockingStrength
         function flsPC = get.flsPC(obj)
             %Compute FLS Pure Coordination
             %with formula from Huys et al. (2004), HMS
-            N=sqrt( (obj.rho.^2+1) ./ ((obj.rho+1)*8) );
+            N=sqrt( (obj.rho^2+1) ./ ((obj.rho+1)*8) );
             flsPC = N * trapz(obj.freqs,obj.RPxx_t.*obj.LPxx) / trapz(obj.freqs,obj.RPxx_t.^2+obj.LPxx.^2);
         end
         
         function flsAmp = get.flsAmp(obj)
             %Compute FLS Amplitude
             %with formula from Huys et al. (2004), HMS
-            N=sqrt( (obj.rho.^2+1) ./ ((obj.rho+1)*8) );
+            N=sqrt( (obj.rho^2+1) / ((obj.rho+1)*8) );
             flsAmp = N * trapz(obj.freqs,obj.RPxx_t.*obj.LPxx_t) / trapz(obj.freqs,obj.RPxx_t.^2+obj.LPxx_t.^2);
         end
         
         function phDiffMean = get.phDiffMean(obj)
-            [phDiffMean,~]=circstat(obj.q.*obj.Rph-obj.p.*obj.Lph);
+            [phDiffMean,~]=circstat(obj.q*obj.Rph-obj.p*obj.Lph);
         end
         
         function phDiffStd = get.phDiffStd(obj)
             %Get Kramers-Moyal coefficients
-            phDiffStd=circstat(obj.q.*obj.Rph-obj.p.*obj.Lph);
+            phDiffStd=circstat(obj.q*obj.Rph-obj.p*obj.Lph);
         end
         
         function rho = get.rho(obj)
-            rho = obj.p./obj.q;
+            rho = obj.p/obj.q;
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

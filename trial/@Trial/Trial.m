@@ -21,6 +21,10 @@ classdef Trial < handle
         
         plot(obj,graphPath,rootname,ext)
         
+        plot_va(obj,graphPath,rootname,ext)
+        
+        plot_vf(obj,graphPath,rootname,ext)
+        
         new=copy(obj)
         
         concatenate(obj,obj2)

@@ -3,7 +3,7 @@ classdef VectorField < handle
       pc
       xo
       neighbourhood=[3,3]
-      binnumber=11
+      binnumber=41
       fs = 1E3
       step=3
       minValsToComputeCondProb=1%11
@@ -32,6 +32,10 @@ classdef VectorField < handle
        get_combined_vf(obj,DS)
        
        plot(obj,graphPath,rootname,ext)
+       
+       plot_vf(obj,graphPath,rootname,ext);
+           
+       plot_va(obj,graphPath,rootname,ext);
        
        xo = get_bincenters_normalized(obj)
        
