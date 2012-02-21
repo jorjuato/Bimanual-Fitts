@@ -11,7 +11,7 @@ classdef LockingStrength
         RPxx_t
         p
         q
-        peak_delta=3;
+        peak_delta=2;
     end % properties
     
     properties (Dependent = true, SetAccess = private)
@@ -55,7 +55,7 @@ classdef LockingStrength
         
         function phDiffStd = get.phDiffStd(obj)
             %Get Kramers-Moyal coefficients
-            phDiffStd=circstat(obj.q*obj.Rph-obj.p*obj.Lph);
+            [~, phDiffStd]=circstat(obj.q*obj.Rph-obj.p*obj.Lph);
         end
         
         function rho = get.rho(obj)
@@ -79,18 +79,17 @@ classdef LockingStrength
             %Get locking ratio as (p,q) pair, choose ratios
             %bigger than 1 and change arrays names acordingly
             [ls.p, ls.q, ls.Lf, ls.Rf]=ls.get_locking_ratio(ls.LPxx,ls.RPxx,ls.freqs,ls.peak_delta);
-            %ls.p=p; ls.q=q; ls.Lf=Lf; ls.Rf=Rf;
             if ls.q>ls.p
                 rho=ls.q/ls.p;
-                tmp=ls.RPxx;
-                ls.RPxx=ls.LPxx;
-                ls.LPxx=tmp;
-                tmp=ls.Rph;
-                ls.Rph=ls.Lph;
-                ls.Lph=tmp;
-                tmp=ls.Rf;
-                ls.Rf=ls.Lf;
-                ls.Lf=tmp;
+                %tmp=ls.RPxx;
+                %ls.RPxx=ls.LPxx;
+                %ls.LPxx=tmp;
+                %tmp=ls.Rph;
+                %ls.Rph=ls.Lph;
+                %ls.Lph=tmp;
+                %tmp=ls.Rf;
+                %ls.Rf=ls.Lf;
+                %ls.Lf=tmp;
             else
                 rho=ls.p/ls.q;
             end

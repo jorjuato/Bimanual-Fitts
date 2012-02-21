@@ -9,11 +9,11 @@ function [p, q, Lf, Rf] = get_locking_ratio(LPxx,RPxx,freqs,peak_delta)
         %plot(freqs,RPxx,'g');
         %xlim([0,10]);
         %hold off;
-        p=1;q=1;
-        Lf=1;Rf=1;
+        p=1.1;q=1.1;
+        Lf=0;Rf=0;
     else
-        Lf=Lmax(2);
-        Rf=Rmax(2);
+        Lf=freqs(Lmax(1));
+        Rf=freqs(Rmax(1));
         [p,q]=rat(freqs(Lmax(1))/freqs(Rmax(1)));
     end
 end

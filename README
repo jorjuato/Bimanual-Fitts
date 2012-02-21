@@ -1,0 +1,90 @@
+﻿HOW TO USE THESE SCRIPTS
+
+0-INTRODUCTION
+These scripts can read, organize, store, analyze and plot the output files from KINARM system. It is totally custom for the results from the bimanual Fitts experiment that we developed  (cannot be used elsewhere in its present form), but it is designed to be easily extendible and reusable. 
+Due to strong computational constraints, there are many hacks and optimizations spread throughout the code. The most obvious one is the use of MATLAB's object oriented programming framework. This makes it necessary the use of a modern version of the software (2010 or above). The whole code is hierarchically organized in a small set of classes that naturally match the components of the experiment (like time series, vector field, trial, block, session, participant or experiment). For each class, a certain set of methods are defined (like load, plot, save, analyze, get...) to manipulate the data encapsulated in the class.  Although many things can be corrected to improve integration of the different components  and the user experience, it can perform all the expected behaviors. 
+
+1-INPUT AND OUTPUT
+-The scripts assume as root directory for all analysis  $USERDIR/KINARM
+-It should work in linux or windows with no modification (for linux, $USERDIR is /home/username and for windows it is My Documents). 
+-The input files of the scripts, KINARM recorded data files in c3d format, are stored in the folder $ROOT/data/participantXXX. 
+-By default, processed objects are stored in $ROOT (root directory) when save method is issued.
+-Saved figures generated when issuing a plot method are stored in $ROOTDIR/plots
+-The scripts themselves can be stored anywhere in the filesystem. You should remember of adding that directory and all its subdirectories to Matlab path.
+-To run the whole script, a machine with a minimum of 8GBand 64bit operative system is required, together with quite some hours. To run the script for a single participant, a more modest machine can be used (but not too modest!). The more cores, the better (there is support for paralelization, see below).
+
+2-BASIC WORKFLOW
+ -Load all experimental data
+	exp = Experiment(); %Serial version
+	exp = Experiment(1); %Parallel version
+-Load a single participant
+	part = Participant(N)%Where N is the number of participant
+-Save either a participant or a experiment
+	save(exp);
+	save(part);
+-Load a previously saved participant or experiment
+	exp = Experiment.load();
+	part = Participant.load(N); %Where N is the number of participant
+-Plot the whole experiment or just a participant
+	plot(exp);
+	plot(part);
+
+The same behaviour can be expected for the rest of classes in the project, although some combinations are not consistent (like plot saving in $ROOTDIRECTORY and overwriting previously plotted figures, or not saving but interactively displaying for some classes but not others). This can, however, be easily improved with your feedback when facing some unexpected behavior. 
+
+
+2-RATIONALE:DIRECTORY STRUCTURE
+@Experiment
+@Participant
+@Session
+@Block 
+trial---> @Trial
+	@TimeSeriesBimanual
+	@TimeSeriesUnimanual
+	@VectorField
+	@LockingStrength
+	@Oscillations
+util
+C3D
+
+3-CLASS HIERARCHY
+
+Experiment----->	| some properties and methods
+	          	| participants (10 element Participants array)
+		|	|
+		|	|
+		|            V
+		|     Participant-->| some properties and methods
+		|		| sessions (7 element Session array)
+		|		|	 |
+		|		|	 |
+		|		|             V
+		|		|       Session---->	| some properties and methods
+		|		|		| bimanual (Block instance)
+		|		|		| uniLeft (Block instance)
+		|		|		| uniRight (Block instance)
+		|		|		|       	 |
+		|		|		|	 |
+		|		|		|	V
+		|		|		|          Block--->	| some properties and methods 
+		|		|		|		| data_set (cell array of Trial objects) 
+		|		|		|		| size= [IDL, IDR, Replication Number +1]
+		|_____________	|_____________	|___________________________________________________
+
+
+Trial  (uni) ----->	| ts: TimeSeriesUnimanual
+		| vf: VectorField
+		|osc: Oscillation
+		|_________________
+
+
+Trial  (bi) ----->	| ts: TimeSeriesBimanual
+		| vfR: VectorField
+		| vfL: VectorField
+		| oscR: Oscillation
+		| oscL: Oscillation
+		| ls: LockingStrength
+		|___________________
+
+
+
+4-SUBTLE DETAILS

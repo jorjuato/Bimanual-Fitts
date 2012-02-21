@@ -1,4 +1,4 @@
-function save(experiment)
+function load(experiment)
     root_dir=joinpath(getuserdir(),'KINARM');
-    save(joinpath(root_dir,'experiment'),'experiment');
+    load(joinpath(root_dir,'experiment'));
 end
