@@ -14,20 +14,20 @@ Due to strong computational constraints, there are many hacks and optimizations 
 -To run the whole script, a machine with a minimum of 8GBand 64bit operative system is required, together with quite some hours. To run the script for a single participant, a more modest machine can be used (but not too modest!). The more cores, the better (there is support for paralelization, see below).
 
 2-BASIC WORKFLOW
- -Load all experimental data
-	exp = Experiment(); %Serial version
-	exp = Experiment(1); %Parallel version
+-Load all experimental data
+          exp = Experiment(); %Serial version
+          exp = Experiment(1); %Parallel version
 -Load a single participant
-	part = Participant(N)%Where N is the number of participant
+          part = Participant(N)%Where N is the number of participant
 -Save either a participant or a experiment
-	save(exp);
-	save(part);
+          save(exp);
+          save(part);
 -Load a previously saved participant or experiment
-	exp = Experiment.load();
-	part = Participant.load(N); %Where N is the number of participant
+          exp = Experiment.load();
+          part = Participant.load(N); %Where N is the number of participant
 -Plot the whole experiment or just a participant
-	plot(exp);
-	plot(part);
+          plot(exp);
+          plot(part);
 
 The same behaviour can be expected for the rest of classes in the project, although some combinations are not consistent (like plot saving in $ROOTDIRECTORY and overwriting previously plotted figures, or not saving but interactively displaying for some classes but not others). This can, however, be easily improved with your feedback when facing some unexpected behavior. 
 
@@ -38,52 +38,52 @@ The same behaviour can be expected for the rest of classes in the project, altho
 @Session
 @Block 
 trial---> @Trial
-	@TimeSeriesBimanual
-	@TimeSeriesUnimanual
-	@VectorField
-	@LockingStrength
-	@Oscillations
+          @TimeSeriesBimanual
+          @TimeSeriesUnimanual
+          @VectorField
+          @LockingStrength
+          @Oscillations
 util
 C3D
 
 3-CLASS HIERARCHY
 
-Experiment----->	| some properties and methods
-	          	| participants (10 element Participants array)
-		|	|
-		|	|
-		|            V
-		|     Participant-->| some properties and methods
-		|		| sessions (7 element Session array)
-		|		|	 |
-		|		|	 |
-		|		|             V
-		|		|       Session---->	| some properties and methods
-		|		|		| bimanual (Block instance)
-		|		|		| uniLeft (Block instance)
-		|		|		| uniRight (Block instance)
-		|		|		|       	 |
-		|		|		|	 |
-		|		|		|	V
-		|		|		|          Block--->	| some properties and methods 
-		|		|		|		| data_set (cell array of Trial objects) 
-		|		|		|		| size= [IDL, IDR, Replication Number +1]
-		|_____________	|_____________	|___________________________________________________
+Experiment----->    | some properties and methods
+                    | participants (10 element Participants array)
+                    |         |
+                    |         |
+                    |            V
+                    |     Participant-->| some properties and methods
+                    |                   | sessions (7 element Session array)
+                    |                   |          |
+                    |                   |          |
+                    |                   |          V
+                    |                   |       Session---->| some properties and methods
+                    |                   |                   | bimanual (Block instance)
+                    |                   |                   | uniLeft (Block instance)
+                    |                   |                   | uniRight (Block instance)
+                    |                   |                   |          |
+                    |                   |                   |          |
+                    |                   |                   |          V
+                    |                   |                   |          Block--->| some properties and methods 
+                    |                   |                   |                   | data_set (cell array of Trial objects) 
+                    |                   |                   |                   | size= [IDL, IDR, Replication Number +1]
+                    |_____________      |_____________      |___________________________________________________
 
 
-Trial  (uni) ----->	| ts: TimeSeriesUnimanual
-		| vf: VectorField
-		|osc: Oscillation
-		|_________________
+Trial  (uni) -----> | ts: TimeSeriesUnimanual
+                    | vf: VectorField
+                    |osc: Oscillation
+                    |_________________
 
 
-Trial  (bi) ----->	| ts: TimeSeriesBimanual
-		| vfR: VectorField
-		| vfL: VectorField
-		| oscR: Oscillation
-		| oscL: Oscillation
-		| ls: LockingStrength
-		|___________________
+Trial  (bi) ----->  | ts: TimeSeriesBimanual
+                    | vfR: VectorField
+                    | vfL: VectorField
+                    | oscR: Oscillation
+                    | oscL: Oscillation
+                    | ls: LockingStrength
+                    |___________________
 
 
 
