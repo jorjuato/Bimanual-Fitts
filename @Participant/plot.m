@@ -30,8 +30,10 @@ function  plot(obj,graphPath,ext)
     obj.plot_learning_oscillations(oscillations_dir,ext);
     obj.plot_learning_relative(mode,relative_dir,ext);    
     obj.plot_learning_lockingStrength(lockingStrength_dir,ext);
-    obj.plot_learning_vf(vf_dir,ext);
-
+    %obj.plot_learning_vf(vf_dir,ext);
+	obj.plot_vf(vf_dir,ext);
+	obj.plot_va(vf_dir,ext);
+	
     for s=1:obj.size
         if obj.sessions(s).train == 0
             rootname=strcat('session',num2str(s));

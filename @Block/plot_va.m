@@ -19,9 +19,9 @@ function plot_va(obj,graphPath,rootname,ext)
     if obj.unimanual
         [ID ~] = size(DS);
         for i=1:ID
-            ax=subpot(1,ID,i);
-            tr=DS{i,end};
-            tr.plot_va(tr,graphPath,rootname,ext)
+            ax=subplot(1,ID,i);
+            tr=DS{i,1};
+            tr.plot_va(ax);
             %ylabel(sprintf('ID=%1.2f',DS{i,1}.info.ID),'fontsize',10,'fontweight','b'); 
             %xlabel('Left Hand','fontsize',10,'fontweight','b');
             if ID==2

@@ -1,9 +1,8 @@
 classdef VectorField < handle
-   properties(SetAccess = private)
-      pc
+   properties(SetAccess = private)      
       xo
       neighbourhood=[3,3]
-      binnumber=11
+      binnumber=41
       fs = 1E3
       step=3
       minValsToComputeCondProb=1%11
@@ -12,9 +11,13 @@ classdef VectorField < handle
       unimanual=false
    end % properties
    
+   properties(Hidden, SetAccess = private)
+      pc_
+   end
    properties (Dependent = true, SetAccess = private)
       vectors
       angles
+      pc
    end
    
    
@@ -50,6 +53,14 @@ classdef VectorField < handle
            %Get Kramers-Moyal coefficients
            [vectors, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.fs,[1,2]);
            vectors{end+1} = xo;
+       end
+       
+       function pc = get.pc(obj)
+           pc=dunzip(obj.pc_);
+       end
+       
+       function set.pc(obj,value)
+           obj.pc_= dzip(value);
        end
        
        function angles = get.angles(obj)

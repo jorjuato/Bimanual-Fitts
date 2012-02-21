@@ -1,20 +1,17 @@
-classdef TimeSeriesBimanual
+classdef TimeSeriesBimanual < handle
     properties
-        Lxraw
-        Lvraw
-        Laraw
         Lpeaks
         LIDef
         LID
-        Rxraw
-        Rvraw
-        Raraw
         Rpeaks
         RIDef
         RID
     end % properties
     
     properties (Dependent = true, SetAccess = private)
+        Lxraw
+        Lvraw
+        Laraw
         Lx
         Lv
         La
@@ -23,6 +20,9 @@ classdef TimeSeriesBimanual
         Lanorm
         Lph
         Lamp
+        Rxraw
+        Rvraw
+        Raraw
         Rx
         Rv
         Ra
@@ -33,11 +33,76 @@ classdef TimeSeriesBimanual
         Ramp
     end
     
+    properties (SetAccess = private, Hidden)
+        Lxraw_
+        Lvraw_
+        Laraw_
+        Rxraw_
+        Rvraw_
+        Raraw_
+    end
+        
     methods
         %Properties getters and setter
-        %function obj = set.Material(obj,material)
-        %   obj.Material = material;
-        %end % set.Material
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Compressed Raw data retrieval
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function Lxraw = get.Lxraw(obj)
+            Lxraw = dunzip(obj.Lxraw_);
+        end
+        
+        function Lvraw = get.Lvraw(obj)
+            Lvraw = dunzip(obj.Lvraw_);
+        end
+                
+        function Laraw = get.Laraw(obj)
+            Laraw = dunzip(obj.Laraw_);
+        end
+        
+        function Rxraw = get.Rxraw(obj)
+            Rxraw = dunzip(obj.Rxraw_);
+        end
+        
+        function Rvraw = get.Rvraw(obj)
+            Rvraw = dunzip(obj.Rvraw_);
+        end
+        
+        function Raraw = get.Raraw(obj)
+            Raraw = dunzip(obj.Raraw_);
+        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Compressed Raw data storage
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function set.Lxraw(obj,value)
+            obj.Lxraw_ = dzip(value);
+        end   
+        
+        function set.Lvraw(obj,value)
+            obj.Lvraw_ = dzip(value);
+        end
+        
+        function set.Laraw(obj,value)
+            obj.Laraw_ = dzip(value);
+        end
+        
+        function set.Rxraw(obj,value)
+            obj.Rxraw_ = dzip(value);
+        end
+        
+        function set.Rvraw(obj,value)
+            obj.Rvraw_ = dzip(value);
+        end
+        
+        function set.Raraw(obj,value)
+            obj.Raraw_ = dzip(value);
+        end
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Compressed Raw data storage
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function Lx = get.Lx(obj)
             Lx = filterdata(obj.Lxraw);

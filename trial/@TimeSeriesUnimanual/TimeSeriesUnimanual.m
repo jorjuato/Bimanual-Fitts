@@ -1,8 +1,6 @@
 classdef TimeSeriesUnimanual < handle
    properties
-      xraw
-      vraw
-      araw
+
       peaks      
       IDef
       ID
@@ -12,10 +10,19 @@ classdef TimeSeriesUnimanual < handle
       x
       v
       a
+      xraw
+      vraw
+      araw
       xnorm
       vnorm
       anorm
    end
+   
+    properties (SetAccess = private, Hidden)
+        xraw_
+        vraw_
+        araw_
+    end
    
    methods%Prototypes
       concatenate(obj,obj1)
@@ -26,6 +33,39 @@ classdef TimeSeriesUnimanual < handle
    end
    
    methods%Properties getters and setter
+   
+        function xraw = get.xraw(obj)
+            xraw = dunzip(obj.xraw_);
+        end
+        
+        function vraw = get.vraw(obj)
+            vraw = dunzip(obj.vraw_);
+        end
+        
+        function araw = get.araw(obj)
+            araw = dunzip(obj.araw_);
+        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Compressed Raw data storage
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function set.xraw(obj,value)
+            obj.xraw_ = dzip(value);
+        end   
+        
+        function set.vraw(obj,value)
+            obj.vraw_ = dzip(value);
+        end
+        
+        function set.araw(obj,value)
+            obj.araw_ = dzip(value);
+        end   
+   
+   
+   
+   
+   
       function x = get.x(obj)
          x = filterdata(obj.xraw);
       end

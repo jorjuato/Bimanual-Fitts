@@ -15,7 +15,9 @@ function plot(obj,graphPath,rootname,ext)
     
     obj.plot_timeSeries(obj.size(end),timeseries_dir,rootname,ext);    
     obj.plot_oscillations(oscillations_dir,rootname,ext);
-    obj.plot_vectorFields(1,vf_dir,rootname,ext);
+    %obj.plot_vectorFields(1,vf_dir,rootname,ext);
+    obj.plot_va(vf_dir,rootname,ext);
+    obj.plot_vf(vf_dir,rootname,ext);
     
     if obj.unimanual==0
         lockingStrength_dir=joinpath(graphPath,'lockingStrength');

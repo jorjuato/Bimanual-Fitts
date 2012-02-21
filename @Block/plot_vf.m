@@ -19,7 +19,7 @@ function plot_vf(obj,graphPath,rootname,ext)
     if obj.unimanual
         [ID ~] = size(DS);
         for i=1:ID
-            ax=subpot(1,ID,i);
+            ax=subplot(1,ID,i);
             tr=DS{i,1};
             tr.plot_vf(ax)
             %ylabel(sprintf('ID=%1.2f',DS{i,1}.info.ID),'fontsize',10,'fontweight','b'); 
