@@ -48,27 +48,27 @@ C3D
 
 3-CLASS HIERARCHY
 
-Experiment----->    | some properties and methods
-                    | participants (10 element Participants array)
-                    |         |
-                    |         |
-                    |            V
-                    |     Participant-->| some properties and methods
-                    |                   | sessions (7 element Session array)
-                    |                   |          |
-                    |                   |          |
-                    |                   |          V
-                    |                   |       Session---->| some properties and methods
-                    |                   |                   | bimanual (Block instance)
-                    |                   |                   | uniLeft (Block instance)
-                    |                   |                   | uniRight (Block instance)
-                    |                   |                   |          |
-                    |                   |                   |          |
-                    |                   |                   |          V
-                    |                   |                   |          Block--->| some properties and methods 
-                    |                   |                   |                   | data_set (cell array of Trial objects) 
-                    |                   |                   |                   | size= [IDL, IDR, Replication Number +1]
-                    |_____________      |_____________      |___________________________________________________
+Experiment->| some properties and methods
+            | participants (10 element Participants array)
+            |         |
+            |         |
+            |         V
+            |     Participant-->| some properties and methods
+            |                   | sessions (7 element Session array)
+            |                   |          |
+            |                   |          |
+            |                   |          V
+            |                   |       Session---->| some properties and methods
+            |                   |                   | bimanual (Block instance)
+            |                   |                   | uniLeft (Block instance)
+            |                   |                   | uniRight (Block instance)
+            |                   |                   |    |
+            |                   |                   |    |
+            |                   |                   |    V
+            |                   |                   | Block--->| some properties and methods 
+            |                   |                   |          | data_set (cell array of Trial objects) 
+            |                   |                   |          | size= [IDL, IDR, Replication Number +1]
+            |___________________|___________________|___________________________________________________
 
 
 Trial  (uni) -----> | ts: TimeSeriesUnimanual
