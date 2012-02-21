@@ -66,8 +66,8 @@ Experiment->| some properties and methods
             |               |           |    |
             |               |           |    V
             |               |           | Block-->| some properties and methods 
-            |               |           |         | data_set (cell array of Trial objects) 
-            |               |           |         | size= [IDL, IDR, Replication Number +1]
+            |               |           |         | data_set{IDL, IDR, rep+1}
+            |               |           |         |          of Trial objects 
             |_______________|___________|_________|__________________________________________
 
 
