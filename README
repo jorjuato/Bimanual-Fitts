@@ -68,7 +68,7 @@ Experiment->| some properties and methods
             |               |           | Block-->| some properties and methods 
             |               |           |         | data_set{IDL, IDR, rep+1}
             |               |           |         |          of Trial objects 
-            |_______________|___________|_________|__________________________________________
+            |_______________|___________|_________|_____________________________
 
 
 Trial  (uni) -----> | ts: TimeSeriesUnimanual
