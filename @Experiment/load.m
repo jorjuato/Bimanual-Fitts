@@ -1,4 +1,5 @@
-function load(experiment)
+function exp = load(experiment)
     root_dir=joinpath(getuserdir(),'KINARM');
-    load(joinpath(root_dir,'experiment'));
+    tmp=load(joinpath(root_dir,'experiment'));
+    exp=tmp.experiment;
 end

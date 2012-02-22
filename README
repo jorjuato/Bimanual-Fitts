@@ -17,22 +17,37 @@ Due to strong computational constraints, there are many hacks and optimizations 
 -Load all experimental data
           exp = Experiment(); %Serial version
           exp = Experiment(1); %Parallel version
+          
 -Load a single participant
-          part = Participant(N)%Where N is the number of participant
+          p = Participant(N)%Where N is the number of participant
+          
 -Save either a participant or a experiment
           save(exp);
           save(part);
+          
 -Load a previously saved participant or experiment
           exp = Experiment.load();
           part = Participant.load(N); %Where N is the number of participant
+          
 -Plot the whole experiment or just a participant
           plot(exp);
           plot(part);
+          plot(exp.participants(3));
 
+-Get a whole block from a certain participant:
+          blk=exp.participants()
+          
 The same behaviour can be expected for the rest of classes in the project, although some combinations are not consistent (like plot saving in $ROOTDIRECTORY and overwriting previously plotted figures, or not saving but interactively displaying for some classes but not others). This can, however, be easily improved with your feedback when facing some unexpected behavior. 
 
 
 2-RATIONALE:DIRECTORY STRUCTURE
+All directories beggining with @ contain class definitions. The implementation
+of a class can be found in a .m file named as the class itself. The directory 
+"trial" contains all the classes required to load and analyze a single trial.
+The behaviour of these classes is a bit different from the rest with respect 
+to methods like plot and save. Many improvements in usability can be performed
+here.
+
 @Experiment
 @Participant
 @Session
@@ -44,7 +59,24 @@ trial---> @Trial
           @LockingStrength
           @Oscillations
 util
-C3D
+
+3-PLOT DIRECTORY LAYOUT
+When issued at the highest level, that is, plot(exp), it will generate
+the following directory layout for each participant:
+-Learning: It includes cross-session comparisons of different magnitudes:
+    -Oscillations: variables contained in Oscillation class
+    -Relative: the same as oscillation, but bimanual data is scaled with
+     respect to the performance in the unimanual experiment for the same 
+     session.
+    -LockingStreng: variables contained in LockingStrength
+    -VectorField: vector fields and angle differences across sessions and
+     with unimanual cases on the side to compare.
+-Session[1|4|7]: For each session, contains plots of each block, and also 
+ oscillation variables from bimanual block scaled with respect to the 
+ unimanual performace (Relative dir).
+-Each block, contain similar plots as the Learning directory, excepcion made
+ for time series. 
+ 
 
 3-CLASS HIERARCHY
 
@@ -85,6 +117,58 @@ Trial  (bi) ----->  | ts: TimeSeriesBimanual
                     | ls: LockingStrength
                     |___________________
 
+Timeseries[Bi|Uni]manual--> Stores raw data (x,v,a time series) and allow
+                            access to different transformations of them
+                            using dependent properties. It also contains
+                            the code to extract and organize data from
+                            KINARM's output files (.c3d).
 
+Oscillation-------------->  Computes and stores per-oscillation variables
+                            such as peak velocity, acceleration time,
+                            index of performance...
+
+LockingStrengh----------->  Computes and stores power-spectrum, maximum 
+                            frequency, locking strength, phase difference.
+
+VectorField-------------->  Computes conditional probabilities of state
+                            transitions in (x,v) space using Daffersthoffer's
+                            implementation of Kramers-Moyal expansion. 
+                            It gives access to related vector fields and angle
+                            differences.
+                            
 
 4-SUBTLE DETAILS
+Due to the huge amount of data, there are only two types of variables with
+a considerable size that are actually stored by the algorithm: [x,v,a] raw time series
+and conditional probability matrices. The rest of derived magnitudes are computed
+on the fly. Besides, the raw data is stored in memory as gzipped data, so 
+decompression is performed on the fly for each access. 
+Both factors contribute to making the plotting algorithms pretty slow, but
+it's the only way I found to fit all data in a less than 8GB memory systems.
+Another approach, which I've been using until recently, is to process data
+separatedly for each participant. The main reason to try to store all data
+in a single and relatively small data structure is that cross-participant
+analysis will be painful, due to the overhead of reading from disk some GBs
+for each computation, and because MATLAB memory management in linux is less
+than poor (rendering it almost impossible).  
+
+5-THINGS TO DO/KNOWN ISSUES
+-Improve integration and coherente usage.
+
+-Try to get indexing to work. The initial intention was that container
+ classes (like Experiment containing 10 Participants) could be directly
+ indexed without reference to the underlying array storing them. Like:
+    
+    exp = Experiment(1);    %Get data from c3d files
+    part = exp(2);          %Get the second participant
+    blk = exp(1,4).bimanual %Get bimanual block of 4th session of 1st participant
+    plot(exp(5,1).bimanual) %Plot the selected block
+    new=copy(exp(2));       %Full copy of participant 2
+    
+ However, MATLAB made it difficult to me to get subsref method working.
+ For now, you have to access in a bit long way like:
+    blk = exp(1).participants(4).bimanual.data_set;
+    
+-Desing and code cross-participant analysis.
+
+-Improve vector field extraction. It is very noisy yet.

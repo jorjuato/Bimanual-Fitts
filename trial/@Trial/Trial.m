@@ -1,9 +1,6 @@
 classdef Trial < handle
     properties(SetAccess = private)
         ts
-        vf
-        vfL
-        vfR
         osc
         oscL
         oscR
@@ -13,6 +10,9 @@ classdef Trial < handle
     
     properties
         ls
+        vf
+        vfL
+        vfR
     end
 
     methods

@@ -17,9 +17,11 @@ classdef VectorField < handle
    properties (Dependent = true, SetAccess = private)
       vectors
       angles
-      pc
    end
    
+   properties (Dependent = true, SetAccess = public)
+      pc
+   end
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %Public methods
