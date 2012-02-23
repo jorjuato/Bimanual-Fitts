@@ -1,8 +1,8 @@
 ﻿HOW TO USE THESE SCRIPTS
 
 0-INTRODUCTION
-These scripts can read, organize, store, analyze and plot the output files from KINARM system. It is totally custom for the results from the bimanual Fitts experiment that we developed  (cannot be used elsewhere in its present form), but it is designed to be easily extendible and reusable. 
-Due to strong computational constraints, there are many hacks and optimizations spread throughout the code. The most obvious one is the use of MATLAB's object oriented programming framework. This makes it necessary the use of a modern version of the software (2010 or above). The whole code is hierarchically organized in a small set of classes that naturally match the components of the experiment (like time series, vector field, trial, block, session, participant or experiment). For each class, a certain set of methods are defined (like load, plot, save, analyze, get...) to manipulate the data encapsulated in the class.  Although many things can be corrected to improve integration of the different components  and the user experience, it can perform all the expected behaviors. 
+These scripts read, organize, store, analyze and plot the output files from KINARM system. It is customized for the results from the bimanual Fitts experiment that we developed  (cannot be used elsewhere in its present form), but it is designed to be easily extendible and reusable. 
+Due to strong computational constraints, there are many hacks and optimizations spread throughout the code. The most obvious one is the use of MATLAB's object oriented programming framework, which makes necessary the use of a modern version of the software (2010 or above). The whole code is hierarchically organized in a small set of classes that naturally match the components of the experiment (like time series, vector field, trial, block, session, participant or experiment). For each class, a certain set of methods are defined (like load, plot, save, analyze, get...) to manipulate the data encapsulated in the class.  Although many things can be corrected to improve integration of the different components  and the user experience, it can perform all the expected behaviors. 
 
 1-INPUT AND OUTPUT
 -The scripts assume as root directory for all analysis  $USERDIR/KINARM
@@ -11,7 +11,7 @@ Due to strong computational constraints, there are many hacks and optimizations 
 -By default, processed objects are stored in $ROOT (root directory) when save method is issued.
 -Saved figures generated when issuing a plot method are stored in $ROOTDIR/plots
 -The scripts themselves can be stored anywhere in the filesystem. You should remember of adding that directory and all its subdirectories to Matlab path.
--To run the whole script, a machine with a minimum of 8GBand 64bit operative system is required, together with quite some hours. To run the script for a single participant, a more modest machine can be used (but not too modest!). The more cores, the better (there is support for paralelization, see below).
+-To run the whole script, a machine with a minimum of 8GB RAM (12GB recommendable) and 64bit operative system is required, together with quite some hours. To run the script for a single participant, a more modest machine can be used (but not too modest!). The more cores, the better (there is support for paralelization, see below).
 
 2-BASIC WORKFLOW
 -Load all experimental data
@@ -35,13 +35,13 @@ Due to strong computational constraints, there are many hacks and optimizations 
           plot(exp.participants(3));
 
 -Get a whole block from a certain participant:
-          blk=exp.participants()
+          blk=exp.participants(3).session(1).bimanual;
           
-The same behaviour can be expected for the rest of classes in the project, although some combinations are not consistent (like plot saving in $ROOTDIRECTORY and overwriting previously plotted figures, or not saving but interactively displaying for some classes but not others). This can, however, be easily improved with your feedback when facing some unexpected behavior. 
+The same behaviour can be expected for the rest of classes in the project, although some combinations are not consistent yet (specifically for Trial and below classes, where plot saving in $ROOTDIRECTORY and overwriting previously plotted figures, or not saving but interactively displaying for some classes but not others). This can, however, be easily improved with your feedback when facing some unexpected behavior. 
 
 
-2-RATIONALE:DIRECTORY STRUCTURE
-All directories beggining with @ contain class definitions. The implementation
+2-RATIONALE: DIRECTORY STRUCTURE
+All directories beggining with @ contain MATLAB class definitions. The implementation
 of a class can be found in a .m file named as the class itself. The directory 
 "trial" contains all the classes required to load and analyze a single trial.
 The behaviour of these classes is a bit different from the rest with respect 
@@ -68,7 +68,7 @@ the following directory layout for each participant:
     -Relative: the same as oscillation, but bimanual data is scaled with
      respect to the performance in the unimanual experiment for the same 
      session.
-    -LockingStreng: variables contained in LockingStrength
+    -LockingStrength: variables contained in LockingStrength
     -VectorField: vector fields and angle differences across sessions and
      with unimanual cases on the side to compare.
 -Session[1|4|7]: For each session, contains plots of each block, and also 
@@ -153,6 +153,8 @@ for each computation, and because MATLAB memory management in linux is less
 than poor (rendering it almost impossible).  
 
 5-THINGS TO DO/KNOWN ISSUES
+-Improve source comments. Now many file headers are out of date, coming from previous versions or from unrelated files.
+
 -Improve integration and coherente usage.
 
 -Try to get indexing to work. The initial intention was that container

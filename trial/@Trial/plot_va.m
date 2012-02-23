@@ -25,7 +25,7 @@ function plot_va(tr,graphPath,rootname,ext)
         ax=graphPath;
     end
     
-    vf.plot_va(ax);    
+    vf.plot_va(ax);
     
     if ischar(graphPath) & ~isempty(graphPath)
         hgsave(fig,figname); close fig;

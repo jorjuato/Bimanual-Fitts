@@ -20,12 +20,25 @@ function  plot(obj,graphPath,ext)
     relative_dir       =joinpath(learning_dir,'relative');
     lockingStrength_dir=joinpath(learning_dir,'lockingStrength');
     vf_dir             =joinpath(learning_dir,'vectorFields');
-    mkdir(root_dir);
-    mkdir(learning_dir);
-    mkdir(oscillations_dir);
-    mkdir(relative_dir);
-    mkdir(lockingStrength_dir);
-    mkdir(vf_dir);
+    
+    if ~exist(root_dir,'dir')
+        mkdir(root_dir);
+    end
+    if ~exist(learning_dir,'dir')
+        mkdir(learning_dir);
+    end
+    if ~exist(oscillations_dir,'dir')
+        mkdir(oscillations_dir);
+    end
+    if ~exist(relative_dir,'dir')
+        mkdir(relative_dir);
+    end
+    if ~exist(lockingStrength_dir,'dir')
+        mkdir(lockingStrength_dir);
+    end
+    if ~exist(vf_dir,'dir')
+        mkdir(vf_dir);
+    end
     
     obj.plot_learning_oscillations(oscillations_dir,ext);
     obj.plot_learning_relative(mode,relative_dir,ext);    

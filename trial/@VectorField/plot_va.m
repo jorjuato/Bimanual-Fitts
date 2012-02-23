@@ -10,7 +10,9 @@ function plot_va(obj,graphPath,rootname,ext)
         ax=graphPath;
     end
 
-    imagesc(flipud(obj.angles{2}),[0,2*pi]);
+    imagesc(flipud(obj.angles{2}),[0,pi]);
+    set(ax, 'XTick',[], 'XTickLabel',[]);
+    set(ax, 'YTick',[], 'YTickLabel',[]);
     
     if ischar(graphPath)
         %Generate random sequence and append to the end (based on seconds or whatever)

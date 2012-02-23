@@ -21,7 +21,7 @@ function plot_vf(obj,graphPath,rootname,ext)
     [IDL IDR ~] = size(DSb);
     for i=1:IDL
         for j=1:IDR
-            tr=DSb{i,j,1};
+            tr=DSb{i,j,end};
             
             %Plot left hand
             axL=subplot(IDL*2+1,IDR+1, (i-1)*2*(IDR+1) + j);            
@@ -44,7 +44,7 @@ function plot_vf(obj,graphPath,rootname,ext)
         end
     end 
     for i=1:IDL
-        tr=DSl{i,1};
+        tr=DSl{i,end};
         %ax=subplot(IDL*2+1,IDR+1, (i-1)*2*(IDR+1) + 4);                
         ax=subplot(IDL*2+1,IDR+1, [4 8]+8*(i-1));                
         tr.plot_va(ax);
@@ -53,7 +53,7 @@ function plot_vf(obj,graphPath,rootname,ext)
         set(ax,'LooseInset',get(ax,'TightInset'));   
     end
     for i=1:IDR
-        tr=DSr{i,1};
+        tr=DSr{i,end};
         ax=subplot(IDL*2+1,IDR+1, 4*(IDR+1) + i);                
         tr.plot_va(ax);
         xlabel(ax,sprintf('Right ID=%1.1f',tr.info.ID),'fontsize',12,'fontweight','b');

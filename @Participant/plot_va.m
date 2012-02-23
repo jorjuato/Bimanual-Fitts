@@ -1,11 +1,15 @@
 function arr = plot_vf(obj,graphPath,ext)
     if nargin<3, ext='png';end
-    if nargin<2, graphPath=joinpath(joinpath(getuserdir(),'KINARM'),'plots');end
+    if nargin<2, graphPath=joinpath(joinpath(joinpath(getuserdir(),'KINARM'),'plots'),obj.name);end
     %if nargin<2, graphPath='';end
+
+    if ~exist(graphPath,'dir')
+        mkdir(graphPath);
+    end
 
     S= obj.sessions;
     [IDL, IDR, ~] = size(S(1).bimanual.data_set);
-    
+
     for i=1:IDL
         for j=1:IDR
             %Create figure and name it
@@ -22,7 +26,7 @@ function arr = plot_vf(obj,graphPath,ext)
                 DSr = obj.sessions(s).uniRight.data_set;      
                 
                 ax=subplot(3,4,(n-1)*4+1);
-                DSl{i,1}.plot_va(ax);
+                DSl{i,end}.plot_va(ax);
                 ylabel(sprintf('S%d',n),'fontsize',9,'fontweight','b');
                 set(get(gca,'YLabel'),'Rotation',0);
                 
@@ -32,18 +36,18 @@ function arr = plot_vf(obj,graphPath,ext)
 
 
                 ax=subplot(3,4,(n-1)*4+2); 
-                DSb{i,j,1}.plot_va(ax,'L');
+                DSb{i,j,end}.plot_va(ax,'L');
                 if n==1
                     title('Bimanual Left','fontsize',9,'fontweight','b');
                 end
                 
                 ax=subplot(3,4,(n-1)*4+3); 
-                DSb{i,j,1}.plot_va(ax,'R');
+                DSb{i,j,end}.plot_va(ax,'R');
                 if n==1
                     title('Bimanual Right','fontsize',9,'fontweight','b');
                 end
                 ax=subplot(3,4,(n-1)*4+4);
-                DSr{j,1}.plot_va(ax);
+                DSr{j,end}.plot_va(ax);
                 if n==1
                     title('Unimanual Right','fontsize',9,'fontweight','b');
                 end

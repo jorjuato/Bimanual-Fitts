@@ -1,7 +1,7 @@
 classdef VectorField < handle
    properties(SetAccess = private)      
       xo
-      neighbourhood=[3,3]
+      neighbourhood=[2,2]
       binnumber=41
       fs = 1E3
       step=3
