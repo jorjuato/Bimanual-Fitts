@@ -19,7 +19,7 @@ classdef Block < handle
                 obj.get_dataset();
                 obj.size = size(obj.data_set);
                 if length(obj.size)==2, obj.unimanual=1; end
-                obj.concatenate();                                
+                obj.concatenate();
             end
         end
     end
@@ -36,5 +36,6 @@ classdef Block < handle
         %B = subsref(obj,S)
         new = copy(obj)
         tr = concatenate(obj)
+        update_vf(obj);
     end
 end

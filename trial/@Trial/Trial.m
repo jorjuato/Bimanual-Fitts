@@ -47,15 +47,15 @@ classdef Trial < handle
                 obj.info = obj.get_trial_info_uni(data);
                 obj.ts   = TimeSeriesUnimanual(data,obj.info,hand);
                 obj.osc  = Oscillations(obj.ts,'');
-                obj.vf   = VectorField(obj,'');
+                obj.vf   = VectorField(obj.ts,'');
             else
                 obj.info = obj.get_trial_info_bi(data);
                 obj.ts   = TimeSeriesBimanual(data,obj.info);
                 obj.oscL = Oscillations(obj.ts,'L');
                 obj.oscR = Oscillations(obj.ts,'R');
                 obj.ls   = LockingStrength(obj.ts);
-                obj.vfL  = VectorField(obj,'L');
-                obj.vfR  = VectorField(obj,'R');                
+                obj.vfL  = VectorField(obj.ts,'L');
+                obj.vfR  = VectorField(obj.ts,'R');                
             end
         end
     end

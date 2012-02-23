@@ -17,6 +17,8 @@ classdef Session < handle
         
         plot_relative_osc(obj,mode,graphPath,rootname,ext);
         
+        update_vf(obj);
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

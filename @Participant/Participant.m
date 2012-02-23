@@ -10,13 +10,13 @@ classdef Participant
     
         %B = subsref(obj,ref)
         
-        concatenate(obj)
+        concatenate(obj);
         
-        plot(obj,graphPath,ext)
+        plot(obj,graphPath,ext);
         
-        plot_vf(obj,graphPath,ext)
+        plot_vf(obj,graphPath,ext);
         
-        plot_va(obj,graphPath,ext)
+        plot_va(obj,graphPath,ext);
             
         plot_learning_oscillations(obj,graphPath,ext);
         
@@ -25,6 +25,8 @@ classdef Participant
         plot_learning_lockingStrength(obj,graphPath,ext);
         
         plot_learning_vf(obj,graphPath,ext);
+        
+        update_vf(obj);
         
         save(obj);
         

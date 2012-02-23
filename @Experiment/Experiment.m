@@ -13,6 +13,8 @@ classdef Experiment
         analyze(obj)
         
         save(obj);
+        
+        update_vf(obj);
 
         %%%%%%%%%%%%%
         % Constructor

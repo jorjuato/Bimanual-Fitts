@@ -1,7 +1,7 @@
 classdef VectorField < handle
    properties(SetAccess = private)      
       xo
-      neighbourhood=[2,2]
+      neighbourhood=[3,3]
       binnumber=41
       fs = 1E3
       step=3
@@ -74,22 +74,11 @@ classdef VectorField < handle
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        %Constructor
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-       function obj = VectorField(DS,hand)%dim,binnumber,hand,use_norm)
-           %if nargin<5, use_norm=true; end
-           %if nargin<4, hand=''; end
-           
-           %Check what data is exactly, depending on the input class,
-           %behave accordinly (either a Trial instance or a Cell Array)
-           %Use varargin to avoid complications with parameters
+       function obj = VectorField(ts,hand)
+           if nargin < 2, hand=''; end
            obj.hand = hand;
            disp('Wait while computing conditional probabilites...')
-           if isa(DS,'Trial')
-               obj.get_trial_vf(DS.ts);
-           elseif isa(DS,'Block')
-               obj.get_combined_vf(obj,DS);
-           else
-               disp('WTFF!!')
-           end
+           obj.get_trial_vf(ts);
        end
        
    end % methods
