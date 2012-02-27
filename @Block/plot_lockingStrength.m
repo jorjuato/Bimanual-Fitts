@@ -1,10 +1,11 @@
 
-function plot_lockingStrength(obj,graphPath,rootname,ext)
-    if nargin<4, ext='png';end
-    if nargin<3, rootname='nosession';end
-    if nargin<2, graphPath='';end
+function plot_lockingStrength(obj)
+    graphPath=joinpath(obj.conf.plot_block_path,'lockingStrength');
+    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+        mkdir(graphPath);
+    end
     
-    if obj.unimanual==1
+    if obj.conf.unimanual==1
         return
     end
     
@@ -31,7 +32,7 @@ function plot_lockingStrength(obj,graphPath,rootname,ext)
                    
     %Plot all        
     for f=1:length(fields)
-        if graphPath
+        if obj.conf.interactive==0
             fig = figure('visible','off');
         else
             fig = figure();
@@ -59,10 +60,9 @@ function plot_lockingStrength(obj,graphPath,rootname,ext)
         ylabel(labels{f});
 %        ylim(ylims{f});
         hold off;
-        if graphPath
-            filename = sprintf('%s-%s',rootname,fields{f});
-            figname = joinpath(graphPath,filename);
-            saveas(fig,figname,ext); close(fig);
+        if exist(graphPath) & obj.conf.interactive==0
+            figname = joinpath(graphPath,fields{f});
+            saveas(fig,figname,obj.conf.ext); close(fig);
         end
     end
 end

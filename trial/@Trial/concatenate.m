@@ -6,7 +6,7 @@ function concatenate(obj,obj2)
         %VF concatenation done at block level
         %obj.vfL.concatenate(obj2.vfL);
         %obj.vfR.concatenate(obj2.vfR);
-        obj.ls = LockingStrength(obj.ts);
+        obj.ls = LockingStrength(obj.ts,copy(obj.conf));
     else
         obj.osc.concatenate(obj2.osc);
         %VF concatenation done at block level

@@ -7,6 +7,7 @@ classdef Oscillations < handle
         accQ
         IPerf
         IPerfEf
+        conf
     end
     
     %%%%%%%%%%%%%%%%%%
@@ -23,7 +24,8 @@ classdef Oscillations < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function osc = Oscillations(ts,hand)
+        function osc = Oscillations(ts,hand,conf)
+            osc.conf=conf;
             if strcmp(hand,'')
                 data.peaks = ts.peaks;
                 data.peakNo = size(data.peaks,1)-1;

@@ -1,6 +1,6 @@
 function tr = concatenate(obj)
     ds=obj.data_set;
-    if obj.unimanual==0
+    if obj.conf.unimanual==0
         for idx1=1:obj.size(1)
             for idx2=1:obj.size(2)
                 tr=ds{idx1,idx2,1}.copy();

@@ -4,15 +4,16 @@
 % with DS structures generated with getMultiResults_fb because it doesn't  
 % depend on any parameter of DS structure, only its dimensions.
 
-function  plot_oscillations(obj,graphPath,rootname,ext)
-    if nargin<4, ext='png';end
-    if nargin<3, rootname='nosession';end
-    if nargin<2, graphPath='';end
+function  plot_oscillations(obj)
+    graphPath=joinpath(obj.conf.plot_block_path,'oscillations');
+    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+        mkdir(graphPath);
+    end
     
     DS = obj.data_set;
     
         
-    if obj.unimanual==1
+    if obj.conf.unimanual==1
         oscData = properties(DS{1,end}.osc);
         [f1, ~] = size(DS);
         [names, labels, ylims] = DS{1,1,end}.osc.get_plots();
@@ -24,14 +25,14 @@ function  plot_oscillations(obj,graphPath,rootname,ext)
     
 
     for f=1:length(oscData)
-        if graphPath
+        if obj.conf.interactive==0
             fig = figure('visible','off');
         else
             fig = figure();
         end
         set(fig,'Name',names{f});
         
-        if obj.unimanual==1
+        if obj.conf.unimanual==1
             bar_grps = zeros(f1,2);
             IDs = zeros(f1,1);
             for i=1:f1
@@ -89,10 +90,9 @@ function  plot_oscillations(obj,graphPath,rootname,ext)
                 hold off;
             end
          
-            if graphPath
-                filename = sprintf('%s-%s',rootname,oscData{f});
-                figname = joinpath(graphPath,filename);
-                saveas(fig,figname,ext); close(fig);
+            if exist(graphPath) & obj.conf.interactive==0
+                figname = joinpath(graphPath,oscData{f});
+                saveas(fig,figname,obj.conf.ext); close(fig);
             end
         end
     end

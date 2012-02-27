@@ -7,13 +7,13 @@
 % in TP table. 
 
 
-function  plot_timeSeries(obj,rep,graphPath,rootname,ext)
-    if nargin<5, ext='png';end
-    if nargin<4, rootname='nosession';end
-    if nargin<3, graphPath='';end
-    if nargin<2, rep=4; end
+function  plot_timeSeries(obj)
+    graphPath=joinpath(obj.conf.plot_block_path,'timeSeries');
+    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+        mkdir(graphPath);
+    end
     
-    
+    rep=obj.conf.replication_ts;
     DS = obj.data_set;
     fNo=length(size(DS));
     %Retrieve sorted data and processing methods from auxiliar functions
@@ -29,7 +29,7 @@ function  plot_timeSeries(obj,rep,graphPath,rootname,ext)
     %Create figures    
     figs=cell(length(fcns));
     for f=1:length(fcns)
-        if graphPath
+        if obj.conf.interactive==0
             figs{f} = figure('visible','off');
         else
             figs{f}=figure();
@@ -98,10 +98,9 @@ function  plot_timeSeries(obj,rep,graphPath,rootname,ext)
     
     for f=1:length(fcns)
         set(figs{f},'Name',sprintf('%s Replication %i',names{f},rep));
-        if graphPath
-            filename = sprintf('%s-%s',rootname,names{f});
-            figname = joinpath(graphPath,filename);
-            saveas(figs{f},figname,ext);
+        if exist(graphPath) & obj.conf.interactive==0
+            figname = joinpath(graphPath,names{f});
+            saveas(figs{f},figname,obj.conf.ext);
             close(figs{f});
         end
     end

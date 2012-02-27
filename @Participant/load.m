@@ -1,7 +1,8 @@
-function part = load(p,path)
-    if nargin<2, path=joinpath(getuserdir(),'KINARM'); end
+function part = load(p,conf)
+    if nargin<2, conf=Config(); end
     
     p_name=strcat(strcat('participant',num2str(p,'%03d')),'.mat');
-    tmp=load(joinpath(path,p_name));
+    tmp=load(joinpath(conf.save_dir,p_name));
     part=tmp.obj;
+    part.conf = conf;
 end

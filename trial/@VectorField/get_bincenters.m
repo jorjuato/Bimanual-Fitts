@@ -20,11 +20,11 @@ function xo = get_bincenters(obj,DS,dim)
             vmax = max([max(DS{dim(1),dim(2),r}.Rv),vmax]);
         end
     end
-    if length(obj.binnumber) == 1
-        xo = {linspace(xmin,xmax,obj.binnumber)'...
-            linspace(vmin,vmax,obj.binnumber)'};
+    if length(obj.conf.binnumber) == 1
+        xo = {linspace(xmin,xmax,obj.conf.binnumber)'...
+            linspace(vmin,vmax,obj.conf.binnumber)'};
     else
-        xo = {linspace(xmin,xmax,obj.binnumber(1))'...
-            linspace(vmin,vmax,obj.binnumber(2))'};
+        xo = {linspace(xmin,xmax,obj.conf.binnumber(1))'...
+            linspace(vmin,vmax,obj.conf.binnumber(2))'};
     end
 end %get_bincenters

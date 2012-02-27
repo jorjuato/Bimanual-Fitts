@@ -1,0 +1,5 @@
+TODO:
+copy conf either on creation or in calling function
+update_conf funtions
+test when is listener being called (is the stuff working??)
+code config for trial and below classes

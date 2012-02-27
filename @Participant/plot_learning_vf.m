@@ -1,7 +1,9 @@
-function arr = plot_learning_vf(obj,graphPath,ext)
-    if nargin<3, ext='png';end
-    if nargin<2, graphPath=joinpath(joinpath(getuserdir(),'KINARM'),'plots');end
-
+function arr = plot_learning_vf(obj,graphPath)
+    if nargin<2, graphPath=''; end    
+    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+        mkdir(graphPath);
+    end
+    
     S= obj.sessions;
     session=S(1);
     blk=S(1).bimanual.data_set;
@@ -30,7 +32,7 @@ function arr = plot_learning_vf(obj,graphPath,ext)
     %return
     %Now plot all the stuff
     rootname = sprintf('Learning-vf');
-    if graphPath
+    if obj.conf.interactive==0
         fig = figure('visible','off');
     else
         fig = figure();
@@ -76,9 +78,9 @@ function arr = plot_learning_vf(obj,graphPath,ext)
             if r==IDR, xlabel('Right Hand'); end
         end
     end
-    if graphPath
+    if exist(graphPath,'dir') & obj.conf.interactive==0
         filename = sprintf('%s-BlockVectorAngles',rootname);
         figname = joinpath(graphPath,filename);
-        saveas(fig,figname,ext);
+        saveas(fig,figname,obj.conf.ext);
         close(fig);
     end

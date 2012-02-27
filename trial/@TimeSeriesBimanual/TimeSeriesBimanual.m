@@ -6,6 +6,7 @@ classdef TimeSeriesBimanual < handle
         Rpeaks
         RIDef
         RID
+        conf
     end % properties
     
     properties (Dependent = true, SetAccess = private)
@@ -170,7 +171,8 @@ classdef TimeSeriesBimanual < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function ts = TimeSeriesBimanual(data,info)
+        function ts = TimeSeriesBimanual(data,info,conf)
+            ts.conf=conf;
             %Skip first 'skiposc' oscillations
             idx = skip_oscillations(data.Left_L2Ang-data.Left_L1Ang,info.skipOsc);
             

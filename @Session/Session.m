@@ -1,9 +1,11 @@
 classdef Session < handle
+   properties(SetObservable = true)
+      conf
+   end
     properties(SetAccess = private)
         bimanual
         uniLeft
         uniRight
-        number
         train=0
     end % properties
     
@@ -22,9 +24,14 @@ classdef Session < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function obj = Session(session_dir)
+        function obj = Session(session_dir,conf)
+            if nargin<2, conf=Config(); end
+            
             blocks = dir2(session_dir);
-            obj.number=str2num(session_dir(end));
+            conf.number=str2num(session_dir(end));
+            obj.conf = conf;
+            confListener = addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
+            
             for b=1:length(blocks)
                 name = blocks(b).name;
                 %Skip train blocks
@@ -33,7 +40,7 @@ classdef Session < handle
                     continue;
                 end
                 %Generate a Block instance
-                obj.(name) = Block(joinpath(session_dir,name));
+                obj.(name) = Block(joinpath(session_dir,name),copy(conf));
             end
         end
         

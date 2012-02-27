@@ -4,9 +4,11 @@
 % with DS structures generated with getMultiResults_fb because it doesn't  
 % depend on any parameter of DS structure, only its dimensions.
 
-function  plot_learning_oscillations(obj,graphPath,ext)
-    if nargin<3, ext='png';end
-    if nargin<2, graphPath=joinpath(joinpath(getuserdir(),'KINARM'),'plots');end
+function  plot_learning_oscillations(obj,graphPath)
+    if nargin<2, graphPath=''; end    
+    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+        mkdir(graphPath);
+    end
     
     S = obj.sessions;
     session=S(1);
@@ -21,7 +23,7 @@ function  plot_learning_oscillations(obj,graphPath,ext)
             if findstr(blkNames{b},'uni')
                 rootname = sprintf('Learning_%s_',blkNames{b});           
                 [f1, ~] = size(obj.sessions(1).(blkNames{b}).data_set);   
-                if graphPath
+                if obj.conf.interactive==0
                     fig = figure('visible','off');
                 else
                     fig = figure();
@@ -69,18 +71,18 @@ function  plot_learning_oscillations(obj,graphPath,ext)
                 ylabel(labels{f},'fontweight','b','Rotation',90);
                 %hold off;
                 %Save plot
-                if graphPath
+                if exist(graphPath,'dir') & obj.conf.interactive==0
                     filename = strcat(rootname,oscNames{f});
                     figname = joinpath(graphPath,filename);
-                    if strcmp(ext,'fig')
+                    if strcmp(obj.conf.ext,'fig')
                         hgsave(fig,figname);
                     else
-                        saveas(fig,figname,ext); close(fig);
+                        saveas(fig,figname,obj.conf.ext); close(fig);
                     end
                 end
             elseif findstr(blkNames{b},'bi')
                 %Create figure for interactive or batch mode
-                if graphPath
+                if obj.conf.interactive==0
                     fig = figure('visible','off');
                 else
                     fig = figure();
@@ -160,13 +162,13 @@ function  plot_learning_oscillations(obj,graphPath,ext)
                     set(subpl,'XTick',sort(round(IDs*10)/10));
                     set(subpl,'ylim',ylim);                    
                 end
-                if graphPath
+                if exist(graphPath,'dir') & obj.conf.interactive==0
                     filename = strcat(rootname,oscNames{f});
                     figname = joinpath(graphPath,filename);
-                    if strcmp(ext,'fig')
+                    if strcmp(obj.conf.ext,'fig')
                         hgsave(fig,figname,'all');
                     else
-                        saveas(fig,figname,ext); close(fig);
+                        saveas(fig,figname,obj.conf.ext); close(fig);
                     end
                 end
             end

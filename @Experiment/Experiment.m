@@ -1,17 +1,13 @@
 classdef Experiment 
-   properties
-      config
-      path
-      data_path
-      size
-      participants=Participant.empty(10,0)
+   properties(SetObservable = true)
+      conf
    end
    
     methods
         
         get_configuration(obj)
         
-        plot(obj,parallelMode)
+        plot(obj)
         
         analyze(obj)
         
@@ -22,27 +18,35 @@ classdef Experiment
         %%%%%%%%%%%%%
         % Constructor
         %%%%%%%%%%%%%
-        function obj = Experiment(path,parallelMode)
-            if nargin==0, path=joinpath(getuserdir(),'KINARM'); end;
-            obj.data_path=joinpath(path,'data');
-            obj.path=path;
-            obj.size=size(dir2(obj.data_path),1);
+        function obj = Experiment(conf)
+            if nargin==0, conf=Config(); end;
+            obj.conf = conf;
+            confListener = addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
             if nargin>1
-                if parallelMode==1
+                if obj.conf.parallelMode==1
                     labsConf = findResource(); 
                     if matlabpool('size') == 0
                         matlabpool(labsConf.ClusterSize); 
                     end
                     parfor i=1:obj.size
-                        p=Participant(i,obj.path);
+                        p=Participant(i,obj.conf);
                         p.save();
                     end             
                 else            
                     for i=1:obj.size
-                        p=Participant(i,obj.path);
+                        p=Participant(i,obj.conf);
                         p.save();
                     end
                 end         
+            end
+        end
+        
+        function update_conf(obj,src,evnt)
+            if strcmp(evnt.EventName,'PostSet')
+                display('updated configuration')
+                %Nothing more needed due to on-disk storage. 
+                %Conf has to be restored after each load from disk
+                %for i=1:obj.conf.participants
             end
         end
     end

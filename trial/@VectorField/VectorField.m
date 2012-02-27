@@ -1,14 +1,9 @@
 classdef VectorField < handle
+   properties
+       conf
+   end
    properties(SetAccess = private)      
       xo
-      neighbourhood=[3,3]
-      binnumber=41
-      fs = 1E3
-      step=1
-      minValsToComputeCondProb=11%11
-      hand=''
-      use_norm=true
-      unimanual=false
    end % properties
    
    properties(Hidden, SetAccess = private)
@@ -53,7 +48,7 @@ classdef VectorField < handle
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        function vectors = get.vectors(obj)
            %Get Kramers-Moyal coefficients
-           [vectors, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.fs,[1,2]);
+           [vectors, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.conf.fs,[1,2]);
            vectors{end+1} = xo;
        end
        
@@ -67,16 +62,17 @@ classdef VectorField < handle
        
        function angles = get.angles(obj)
            absAngles = atan2(obj.vectors{1},obj.vectors{2});
-           angDiff = obj.eval_neighbours(absAngles, obj.neighbourhood, @obj.get_maxAngle);
+           angDiff = obj.eval_neighbours(absAngles, obj.conf.neighbourhood, @obj.get_maxAngle);
            angles = {absAngles, angDiff};
        end % angles Property
        
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        %Constructor
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-       function obj = VectorField(ts,hand)
+       function obj = VectorField(ts,hand,conf)
            if nargin < 2, hand=''; end
-           obj.hand = hand;
+           obj.conf = conf;
+           obj.conf.vf_hand = hand;
            disp('Wait while computing conditional probabilites...')
            obj.get_trial_vf(ts);
        end

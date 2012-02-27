@@ -1,4 +1,7 @@
 classdef Trial < handle
+   properties(SetObservable = true)
+      conf
+   end
     properties(SetAccess = private)
         ts
         osc
@@ -6,7 +9,7 @@ classdef Trial < handle
         oscR
         info
         concatenated=0
-    end % properties
+    end 
     
     properties
         ls
@@ -15,8 +18,32 @@ classdef Trial < handle
         vfR
     end
 
-    methods
-        
+    methods        
+        %%%%%%%%%%%%%
+        % Constructor
+        %%%%%%%%%%%%%
+        function obj = Trial(data,conf)
+            if nargin<2, return; end
+                
+            %Call apropiate get_results function, output stored in DS.name
+            if conf.unimanual==1
+                obj.info = obj.get_trial_info_uni(data);
+                obj.ts   = TimeSeriesUnimanual(data,obj.info,copy(conf));
+                obj.osc  = Oscillations(obj.ts,'',copy(conf));
+                obj.vf   = VectorField(obj.ts,'',copy(conf));
+            else
+                obj.info = obj.get_trial_info_bi(data);
+                obj.ts   = TimeSeriesBimanual(data,obj.info,copy(conf));
+                obj.oscL = Oscillations(obj.ts,'L',copy(conf));
+                obj.oscR = Oscillations(obj.ts,'R',copy(conf));
+                obj.ls   = LockingStrength(obj.ts,copy(conf));
+                obj.vfL  = VectorField(obj.ts,'L',copy(conf));
+                obj.vfR  = VectorField(obj.ts,'R',copy(conf));                
+            end
+            obj.conf=conf;
+            confListener = addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
+        end
+
         [fcns, names, xlabels, ylabels] = get_plots(obj)
         
         plot(obj,graphPath,rootname,ext)
@@ -31,33 +58,8 @@ classdef Trial < handle
         
         set_concatenated(obj)
         
-        %%%%%%%%%%%%%
-        % Constructor
-        %%%%%%%%%%%%%
-        function obj = Trial(data,name)
-            if nargin<2, return; end
-                
-            %Call apropiate get_results function, output stored in DS.name
-            if findstr(name,'uni')
-                if findstr(name,'L')
-                    hand='L';
-                else
-                    hand='R';
-                end
-                obj.info = obj.get_trial_info_uni(data);
-                obj.ts   = TimeSeriesUnimanual(data,obj.info,hand);
-                obj.osc  = Oscillations(obj.ts,'');
-                obj.vf   = VectorField(obj.ts,'');
-            else
-                obj.info = obj.get_trial_info_bi(data);
-                obj.ts   = TimeSeriesBimanual(data,obj.info);
-                obj.oscL = Oscillations(obj.ts,'L');
-                obj.oscR = Oscillations(obj.ts,'R');
-                obj.ls   = LockingStrength(obj.ts);
-                obj.vfL  = VectorField(obj.ts,'L');
-                obj.vfR  = VectorField(obj.ts,'R');                
-            end
-        end
+        update_conf(obj,src,event)
+        
     end
     
 

@@ -4,9 +4,11 @@
 % with DS structures generated with getMultiResults_fb because it doesn't  
 % depend on any parameter of DS structure, only its dimensions.
 
-function  plot_learning_lockingStrength(obj,graphPath,ext)    
-    if nargin<3, ext='png';end
-    if nargin<2, graphPath=joinpath(joinpath(getuserdir(),'KINARM'),'plots');end
+function  plot_learning_lockingStrength(obj,graphPath)
+    if nargin<2, graphPath=''; end    
+    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+        mkdir(graphPath);
+    end
     
     S = obj.sessions;
     session=S(1);
@@ -17,7 +19,7 @@ function  plot_learning_lockingStrength(obj,graphPath,ext)
         rootname = sprintf('Learning_%s',fields{f});       
         sessions = getValidSessions(obj);
         Sno = length(sessions);
-        if graphPath
+        if obj.conf.interactive==0
             fig = figure('visible','off');
         else
             fig = figure();
@@ -75,13 +77,12 @@ function  plot_learning_lockingStrength(obj,graphPath,ext)
             xlabel('ID Right','fontweight','b');
             ylabel(labels{f},'fontweight','b','Rotation',90);            
         end 
-        if graphPath
-            %filename = sprintf('%s-',rootname,round(DS{i,1,1}.info.LID));
+        if exist(graphPath,'dir') & obj.conf.interactive==0
             figname = joinpath(graphPath,rootname);
             if strcmp(ext,'fig')
                 hgsave(fig,figname,'all');
             else
-                saveas(fig,figname,ext); close(fig);
+                saveas(fig,figname,obj.conf.ext); close(fig);
             end
         end              
     end                    

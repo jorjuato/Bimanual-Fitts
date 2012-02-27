@@ -12,6 +12,7 @@ classdef LockingStrength
         p
         q
         peak_delta=2;
+        conf
     end % properties
     
     properties (Dependent = true, SetAccess = private)
@@ -65,7 +66,8 @@ classdef LockingStrength
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function ls = LockingStrength(ts)
+        function ls = LockingStrength(ts,conf)
+            ls.conf=conf;
             %_Instantiate local variables from trial structure
             Lx=ts.Lxnorm;
             Rx=ts.Rxnorm;
@@ -78,7 +80,7 @@ classdef LockingStrength
             
             %Get locking ratio as (p,q) pair, choose ratios
             %bigger than 1 and change arrays names acordingly
-            [ls.p, ls.q, ls.Lf, ls.Rf]=ls.get_locking_ratio(ls.LPxx,ls.RPxx,ls.freqs,ls.peak_delta);
+            [ls.p, ls.q, ls.Lf, ls.Rf]=ls.get_locking_ratio(ls.LPxx,ls.RPxx,ls.freqs,ls.conf.peak_delta);
             if ls.q>ls.p
                 rho=ls.q/ls.p;
                 %tmp=ls.RPxx;
@@ -98,7 +100,7 @@ classdef LockingStrength
             ls.RPxx_t = ls.get_scaled_PSD(ls.RPxx,ls.freqs,rho);
             
             %Normalize higher frequency signal to unit variance for FLS Amp
-            [Lmax, ~] = peakdet(ls.LPxx,ls.peak_delta);
+            [Lmax, ~] = peakdet(ls.LPxx,ls.conf.peak_delta);
             if isempty(Lmax)
                 ls.LPxx_t = ls.LPxx/max(ls.LPxx);
             else

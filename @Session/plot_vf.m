@@ -1,18 +1,9 @@
-function plot_vf(obj,graphPath,rootname,ext)
-    % Plotting Modes:
-    % 1 -> All graphs in same figure
-    % 2 -> Left and right fields in different figures
-    % 3 -> One figure for each couple of L/R per trial
-    % 4 -> One figure for each couple of L/R per trial, with vector angles    
-    if nargin<4, ext='png';end
-    if nargin<3, rootname='nosession';end
-    if nargin<2, graphPath='';end
-    
+function plot_vf(obj)
     DSb = obj.bimanual.data_set;
     DSl = obj.uniLeft.data_set;
     DSr = obj.uniRight.data_set;
     
-    if graphPath
+    if obj.conf.interactive==0
         fig = figure('visible','off');
     else
         fig = figure();
@@ -59,10 +50,9 @@ function plot_vf(obj,graphPath,rootname,ext)
         xlabel(ax,sprintf('Right ID=%1.1f',tr.info.ID),'fontsize',12,'fontweight','b');
         set(ax,'LooseInset',get(ax,'TightInset'));   
     end
-    if graphPath
-        filename = sprintf('%s-BlockVectorFields',rootname);
-        figname = joinpath(graphPath,filename);
-        saveas(fig,figname,ext);
+    if exist(obj.conf.plot_session_dir,'dir') & obj.conf.interactive==0           
+        figname = joinpath(obj.conf.plot_session_dir,'SessionVectorField');
+        saveas(fig,figname,obj.conf.ext);
         close(fig);
     end
 end

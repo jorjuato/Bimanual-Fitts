@@ -1,9 +1,10 @@
-function plot_relative_osc(obj,mode,graphPath,rootname,ext)
-    if nargin<5, ext='fig';end
-    if nargin<4, rootname='nosession';end
-    if nargin<3, graphPath='';end  
-    if nargin<2, mode=1; end
+function plot_relative_osc(obj,graphPath)
+    if nargin<2, graphPath=joinpath(obj.conf.plot_session_path,'Relative'); end 
     
+    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+        mkdir(graphPath);
+    end
+
     bimanual=obj.bimanual.data_set;
     uniRight=obj.uniRight.data_set;
     uniLeft=obj.uniLeft.data_set;
@@ -14,7 +15,7 @@ function plot_relative_osc(obj,mode,graphPath,rootname,ext)
     [f1, f2, ~] = size(bimanual);
 
     for f=1:length(oscData)
-        if graphPath
+        if obj.conf.interactive==0
             fig = figure('visible','off');
         else
             fig = figure();
@@ -64,11 +65,11 @@ function plot_relative_osc(obj,mode,graphPath,rootname,ext)
             set(subpl,'XTick',sort(round(IDs*10)/10));
             hold off;
         end
-
-        if graphPath
-            filename = sprintf('%s-%s',rootname,oscData{f});
-            figname = joinpath(graphPath,filename);
-            saveas(fig,figname,ext); close(fig);
+        if exist(graphPath,'dir') & obj.conf.interactive==0                
+            figname = joinpath(graphPath,oscData{f});
+            saveas(fig,figname,obj.conf.ext);
+            close(fig);
         end
+
     end
 end 

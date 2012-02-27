@@ -4,11 +4,13 @@
 % with DS structures generated with getMultiResults_fb because it doesn't  
 % depend on any parameter of DS structure, only its dimensions.
 
-function  plot_learning_relative(obj,mode,graphPath,ext)     
-    if nargin<4, ext='png';end
-    if nargin<3, graphPath=joinpath(joinpath(getuserdir(),'KINARM'),'plots');end
-    if nargin<2, mode=1; end
+function  plot_learning_relative(obj,graphPath)     
+    if nargin<2, graphPath=''; end    
+    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+        mkdir(graphPath);
+    end
     
+    mode = obj.conf.relative_plots_mode;
     S = obj.sessions;
     session=S(1);
     blk = session.bimanual.data_set;
@@ -23,7 +25,7 @@ function  plot_learning_relative(obj,mode,graphPath,ext)
         bar_grps = zeros(f2,2*Sno,f1,2);
         IDs = zeros(f2,1);
         
-        if graphPath
+        if obj.conf.interactive==0
             fig = figure('visible','off');
         else
             fig = figure();
@@ -86,13 +88,12 @@ function  plot_learning_relative(obj,mode,graphPath,ext)
             set(subpl,'ylim',ylim);
         end
         %Decide whether to save or not
-        if graphPath
-            %filename = sprintf('%s_IDLeft-%d',rootname,round(S(1).bimanual.data_set{i,1,1}.info.LID));
+        if exist(graphPath,'dir') & obj.conf.interactive==0
             figname = joinpath(graphPath,rootname);
-            if strcmp(ext,'fig')
+            if strcmp(obj.conf.ext,'fig')
                 hgsave(fig,figname,'all');
             else
-                saveas(fig,figname,ext); close(fig);
+                saveas(fig,figname,obj.conf.ext); close(fig);
             end
         end                           
     end

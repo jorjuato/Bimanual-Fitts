@@ -1,22 +1,18 @@
-function plot_vf(obj,graphPath,rootname,ext)
-    % Plotting Modes:
-    % 1 -> All graphs in same figure
-    % 2 -> Left and right fields in different figures
-    % 3 -> One figure for each couple of L/R per trial
-    % 4 -> One figure for each couple of L/R per trial, with vector angles    
-    if nargin<4, ext='png';end
-    if nargin<3, rootname='nosession';end
-    if nargin<2, graphPath='';end
+function plot_vf(obj)
+    graphPath=joinpath(obj.conf.plot_block_path,'vectorField');
+    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+        mkdir(graphPath);
+    end
     
     DS = obj.data_set;       
     
-    if graphPath
+    if obj.conf.interactive==0
         fig = figure('visible','off');
     else
         fig = figure();
     end
     
-    if obj.unimanual
+    if obj.conf.unimanual
         [ID ~] = size(DS);
         for i=1:ID
             ax=subplot(1,ID,i);
@@ -54,10 +50,9 @@ function plot_vf(obj,graphPath,rootname,ext)
             end
         end    
     end
-    if graphPath
-        filename = sprintf('%s-BlockVectorFields',rootname);
-        figname = joinpath(graphPath,filename);
-        saveas(fig,figname,ext);
+    if exist(graphPath) & obj.conf.interactive==0
+        figname = joinpath(graphPath,'BlockVectorFields');
+        saveas(fig,figname,obj.conf.ext);
         close(fig);
     end
 end

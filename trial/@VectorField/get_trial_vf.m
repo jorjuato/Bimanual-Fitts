@@ -1,5 +1,5 @@
 function get_trial_vf(obj,ts)
-    if obj.use_norm == false
+    if obj.conf.use_norm == false
         %Compute bin centers
         Xo = obj.get_bincenters(ts,dim); %WON'T WORKKKKK!!!
         %Compute input vector Y = [x,v]
@@ -18,13 +18,13 @@ function get_trial_vf(obj,ts)
         %Compute input vector Y = [x,v]
         if isa(ts,'TimeSeriesUnimanual')
             Y = [ts.xnorm,ts.vnorm];
-        elseif strcmp(obj.hand,'L')
+        elseif strcmp(obj.conf.vf_hand,'L')
             Y = [ts.Lxnorm,ts.Lvnorm];
-        elseif strcmp(obj.hand,'R')
+        elseif strcmp(obj.conf.vf_hand,'R')
             Y = [ts.Rxnorm,ts.Rvnorm];
         else
             return
         end
     end
-    [~, obj.xo, obj.pc]=obj.prob_2D(Y,Xo,obj.step,obj.minValsToComputeCondProb);
+    [~, obj.xo, obj.pc]=obj.prob_2D(Y,Xo,obj.conf.step,obj.conf.minValsToComputeCondProb);
 end

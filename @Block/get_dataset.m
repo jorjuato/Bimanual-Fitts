@@ -1,12 +1,12 @@
 function get_dataset(obj)
-    if findstr(obj.path,'uni')
-        obj.data_set = get_unimanual(obj.path);
+    if obj.conf.unimanual==1
+        obj.data_set = get_unimanual(obj,obj.conf.blockpath);
     else
-        obj.data_set = get_bimanual(obj.path);
+        obj.data_set = get_bimanual(obj,obj.conf.blockpath);
     end
 end
 
-function DS = get_bimanual(blockpath)
+function DS = get_bimanual(obj,blockpath)
     data = c3d_load('DIR',blockpath);
     %Assumes ID left as the first experimental factor
     WList = getWLeft(data)/100;
@@ -43,14 +43,14 @@ function DS = get_bimanual(blockpath)
             idx2 = find(f2List==WR);
             repNow = repArr(idx1,idx2);
             repArr(idx1,idx2) = repNow + 1;
-            ridx = repArr(idx1,idx2);
-            DS{idx1,idx2,ridx} = Trial(data(i),blockpath);
+            ridx = repArr(idx1,idx2);            
+            DS{idx1,idx2,ridx} = Trial(data(i),obj.conf);
         end
     end
 end
 
 
-function DS = get_unimanual(blockpath)
+function DS = get_unimanual(obj,blockpath)
     data = c3d_load('DIR',blockpath);
     WList = getWuni(data);
     rep = getReplicationNumber(data);
@@ -76,7 +76,13 @@ function DS = get_unimanual(blockpath)
             idx1 = find(WList==W);
             repArr(idx1) = repArr(idx1) + 1;
             ridx = repArr(idx1);
-            DS{idx1,ridx} = Trial(data(i),blockpath);
+            conf=copy(obj.conf);
+            if findstr(conf.blockpath,'L')
+                conf.hand='L';
+            else
+                conf.hand='R';
+            end
+            DS{idx1,ridx} = Trial(data(i),conf);
         end
     end
 end

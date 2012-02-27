@@ -1,19 +1,16 @@
-function arr = plot_vf(obj,graphPath,ext)
-    if nargin<3, ext='png';end
-    if nargin<2, graphPath=joinpath(joinpath(joinpath(getuserdir(),'KINARM'),'plots'),obj.name);end
-    %if nargin<2, graphPath='';end
-
-    if ~exist(graphPath,'dir')
+function arr = plot_vf(obj,graphPath)
+    if nargin<2, graphPath=''; end    
+    if ~exist(graphPath,'dir') & obj.conf.interactive==0
         mkdir(graphPath);
     end
-
+    
     S= obj.sessions;
     [IDL, IDR, ~] = size(S(1).bimanual.data_set);
 
     for i=1:IDL
         for j=1:IDR
             %Create figure and name it
-            if graphPath
+            if obj.conf.interactive==0
                 fig = figure('visible','off');
             else
                 fig = figure();
@@ -55,9 +52,9 @@ function arr = plot_vf(obj,graphPath,ext)
             end
             name=sprintf('LearningVectorAnglesIDL=%1.1f IDR=%1.1f',DSl{i,1}.info.ID,DSr{j,1}.info.ID);
             suplabel(name,'t',[.1 .1 .84 .84]);
-            if graphPath                
-                figname = strcat(strcat(joinpath(graphPath,name),'.'),ext);       
-                saveas(fig,figname);
+            if exist(graphPath,'dir') & obj.conf.interactive==0                
+                figname = strcat(joinpath(graphPath,name),'.');       
+                saveas(fig,figname,obj.conf.ext);
                 close(fig);
             end
         end

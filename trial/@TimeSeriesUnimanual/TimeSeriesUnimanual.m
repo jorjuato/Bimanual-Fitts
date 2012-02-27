@@ -1,9 +1,9 @@
 classdef TimeSeriesUnimanual < handle
    properties
-
       peaks      
       IDef
       ID
+      conf
    end
    
    properties (Dependent = true, SetAccess = private)
@@ -91,8 +91,9 @@ classdef TimeSeriesUnimanual < handle
       end
 
       %Constructor
-      function ts = TimeSeriesUnimanual(data,info,hand)
-        if ~isempty(strfind(hand,'L'))       
+      function ts = TimeSeriesUnimanual(data,info,conf)
+        ts.conf=conf;
+        if ~isempty(strfind(ts.conf.hand,'L'))       
             %Skip first 'skiposc' oscillations
             idx = skip_oscillations(data.Left_L2Ang-data.Left_L1Ang,info.skipOsc);
             %Compute left hand trial kinematic data

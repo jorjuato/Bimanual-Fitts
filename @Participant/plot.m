@@ -4,53 +4,29 @@
 % with DS structures generated with getMultiResults_fb because it doesn't  
 % depend on any parameter of DS structure, only its dimensions.
 
-function  plot(obj,graphPath,ext)
-    if nargin<3, ext='png';end
-    if nargin<2, graphPath=joinpath(joinpath(getuserdir(),'KINARM'),'plots');end
+function  plot(obj)
+    oscillations_dir   =joinpath(obj.conf.learning_dir,'oscillations');
+    relative_dir       =joinpath(obj.conf.learning_dir,'relative');
+    lockingStrength_dir=joinpath(obj.conf.learning_dir,'lockingStrength');
+    vf_dir             =joinpath(obj.conf.learning_dir,'vectorFields');
     
-    mode=1;
-    if ischar(obj.name)
-        name=obj.name;
-    else
-        name=num2str(obj.name,'%03d');
+    if ~exist(obj.conf.plot_participant_path,'dir') & obj.conf.interactive==0
+        mkdir(obj.conf.plot_participant_path);
     end
-    root_dir           =joinpath(graphPath,name);
-    learning_dir       =joinpath(root_dir,    'Learning');
-    oscillations_dir   =joinpath(learning_dir,'oscillations');
-    relative_dir       =joinpath(learning_dir,'relative');
-    lockingStrength_dir=joinpath(learning_dir,'lockingStrength');
-    vf_dir             =joinpath(learning_dir,'vectorFields');
-    
-    if ~exist(root_dir,'dir')
-        mkdir(root_dir);
-    end
-    if ~exist(learning_dir,'dir')
-        mkdir(learning_dir);
-    end
-    if ~exist(oscillations_dir,'dir')
-        mkdir(oscillations_dir);
-    end
-    if ~exist(relative_dir,'dir')
-        mkdir(relative_dir);
-    end
-    if ~exist(lockingStrength_dir,'dir')
-        mkdir(lockingStrength_dir);
-    end
-    if ~exist(vf_dir,'dir')
-        mkdir(vf_dir);
+    if ~exist(obj.conf.learning_dir,'dir') & obj.conf.interactive==0
+        mkdir(obj.conf.learning_dir);
     end
     
-    obj.plot_learning_oscillations(oscillations_dir,ext);
-    obj.plot_learning_relative(mode,relative_dir,ext);    
-    obj.plot_learning_lockingStrength(lockingStrength_dir,ext);
+    obj.plot_learning_oscillations(oscillations_dir);
+    obj.plot_learning_relative(relative_dir);    
+    obj.plot_learning_lockingStrength(lockingStrength_dir);
     %obj.plot_learning_vf(vf_dir,ext);
-	obj.plot_vf(vf_dir,ext);
-	obj.plot_va(vf_dir,ext);
+	obj.plot_vf(vf_dir);
+	obj.plot_va(vf_dir);
 	
     for s=1:obj.size
         if obj.sessions(s).train == 0
-            rootname=strcat('session',num2str(s));
-            obj.sessions(s).plot(mode,root_dir,rootname,ext);
+            obj.sessions(s).plot();
         end
     end
 end
