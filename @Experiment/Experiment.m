@@ -1,6 +1,8 @@
 classdef Experiment 
    properties
       config
+      path
+      size
       participants=Participant.empty(10,0)
    end
    
@@ -8,45 +10,43 @@ classdef Experiment
         
         get_configuration(obj)
         
-        plot(obj,graphPath,rootname,ext)
+        plot(obj,parallelMode)
         
         analyze(obj)
         
-        save(obj);
+        save(obj); %Disabled
         
         update_vf(obj);
 
         %%%%%%%%%%%%%
         % Constructor
         %%%%%%%%%%%%%
-        function obj = Experiment(parallelMode)
-            if nargin>0            
-                %obj.get_configuration()
-                
+        function obj = Experiment(path,parallelMode)
+            if nargin==0, path=joinpath(joinpath(getuserdir(),'KINARM'),'data'), end;
+            obj.path=path;
+            obj.size=size(dir2(obj.path),1);
+            if nargin>1
                 if parallelMode==1
                     labsConf = findResource(); 
                     if matlabpool('size') == 0
                         matlabpool(labsConf.ClusterSize); 
                     end
-                    parfor p=1:size(obj.participants,1)
-                        part=Participant(p);
-                        part.save();
-                    end
-                    for p=1:size(obj.participants,1)
-                        obj.participants(p)=Participant().load(p);
-                    end                
+                    parfor i=1:obj.size
+                        p=Participant(i,obj.path);
+                        p.save();
+                    end             
                 else            
-                    for p=1:size(obj.participants,1)
-                        obj.participants(p)=Participant(p);
+                    for i=1:obj.size
+                        p=Participant(i,obj.path);
+                        p.save();
                     end
-                end
-                obj.save();            
+                end         
             end
         end
     end
     
     methods(Static=true)            
-        exp=load();
-        exp=load_participants();
+        exp=load(); %Disabled
+        exp=load_participants(); %Disabled
     end
 end

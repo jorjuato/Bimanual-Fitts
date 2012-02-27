@@ -1,6 +1,0 @@
-function concatenate(obj,obj2)    
-    %VectorField concatenation
-    %Carefull!!! The third trial is more important to determine weight
-    obj.pc = cat(obj.pc + obj2.pc)./2;
-    obj.xo = cellfun(@(x,y) sum([x,y],2),a,b)
-    (obj.xo + obj2.xo)./2;
