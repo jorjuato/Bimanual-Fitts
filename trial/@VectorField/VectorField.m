@@ -4,8 +4,8 @@ classdef VectorField < handle
       neighbourhood=[3,3]
       binnumber=41
       fs = 1E3
-      step=3
-      minValsToComputeCondProb=1%11
+      step=1
+      minValsToComputeCondProb=11%11
       hand=''
       use_norm=true
       unimanual=false

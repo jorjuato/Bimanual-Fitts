@@ -4,6 +4,7 @@ classdef Participant
         size
         sessions = Session.empty(7,0);
         path = pwd;
+        data_path;
     end % properties
 
     methods
@@ -34,16 +35,19 @@ classdef Participant
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function obj = Participant(name)
+        function obj = Participant(name,path)
+            if nargin<2, path=joinpath(getuserdir(),'KINARM'); end
+            
+            obj.path=path;
+            obj.data_path=joinpath(obj.path,'data');
             if nargin == 0
-                obj.path = pwd;
                 obj.size = size(obj.sessions);
             else
                 if ~isa(name,'str')
                     name=strcat('participant',num2str(name,'%03d'));
                 end
                 obj.name=name;
-                subject_dir = getSubjectDir(obj.name);
+                subject_dir = getSubjectDir(obj.name,obj.data_path);
                 s = dir2(subject_dir);
                 for i=1:length(s)
                     obj.sessions(i) = Session(joinpath(subject_dir,s(i).name));
