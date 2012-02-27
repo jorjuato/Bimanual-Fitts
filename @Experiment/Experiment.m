@@ -2,6 +2,7 @@ classdef Experiment
    properties
       config
       path
+      data_path
       size
       participants=Participant.empty(10,0)
    end
@@ -22,9 +23,10 @@ classdef Experiment
         % Constructor
         %%%%%%%%%%%%%
         function obj = Experiment(path,parallelMode)
-            if nargin==0, path=joinpath(joinpath(getuserdir(),'KINARM'),'data'), end;
+            if nargin==0, path=joinpath(getuserdir(),'KINARM'); end;
+            obj.data_path=joinpath(path,'data');
             obj.path=path;
-            obj.size=size(dir2(obj.path),1);
+            obj.size=size(dir2(obj.data_path),1);
             if nargin>1
                 if parallelMode==1
                     labsConf = findResource(); 

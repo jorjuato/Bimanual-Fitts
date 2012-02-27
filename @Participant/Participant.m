@@ -55,6 +55,6 @@ classdef Participant
     
         
     methods(Static=true)            
-        part=load(p);    
+        part=load(p,path);    
     end
 end% classdef
