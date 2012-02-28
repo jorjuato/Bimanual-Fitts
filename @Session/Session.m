@@ -27,9 +27,9 @@ classdef Session < handle
         function obj = Session(session_dir,conf)
             if nargin<2, conf=Config(); end
             
-            blocks = dir2(session_dir);
-            conf.number=str2num(session_dir(end));
+            blocks = dir2(session_dir);            
             obj.conf = conf;
+            obj.conf.number=str2num(session_dir(end));
             confListener = addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
             
             for b=1:length(blocks)
@@ -40,7 +40,7 @@ classdef Session < handle
                     continue;
                 end
                 %Generate a Block instance
-                obj.(name) = Block(joinpath(session_dir,name),copy(conf));
+                obj.(name) = Block(joinpath(session_dir,name),copy(obj.conf));
             end
         end
         

@@ -23,10 +23,11 @@ classdef Trial < handle
         % Constructor
         %%%%%%%%%%%%%
         function obj = Trial(data,conf)
-            if nargin<2, return; end
+            if nargin<2, conf=Config(); end
                 
             %Call apropiate get_results function, output stored in DS.name
-            if conf.unimanual==1
+            obj.conf=conf;
+            if obj.conf.unimanual==1
                 obj.info = obj.get_trial_info_uni(data);
                 obj.ts   = TimeSeriesUnimanual(data,obj.info,copy(conf));
                 obj.osc  = Oscillations(obj.ts,'',copy(conf));
@@ -40,7 +41,6 @@ classdef Trial < handle
                 obj.vfL  = VectorField(obj.ts,'L',copy(conf));
                 obj.vfR  = VectorField(obj.ts,'R',copy(conf));                
             end
-            obj.conf=conf;
             confListener = addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
         end
 

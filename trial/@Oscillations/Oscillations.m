@@ -20,12 +20,13 @@ classdef Oscillations < handle
         plot(obj)
         display(obj)
         concatenate(obj,obj2)
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function osc = Oscillations(ts,hand,conf)
             osc.conf=conf;
+            osc.conf.hand=hand;
             if strcmp(hand,'')
                 data.peaks = ts.peaks;
                 data.peakNo = size(data.peaks,1)-1;
@@ -77,6 +78,10 @@ classdef Oscillations < handle
                 %osc.IPerfEf = (x1-x0)/data.ID;
                 osc.IPerfEf(i) = data.IDef*1000/(x1-x0);
             end
-        end %Constructor        
+        end %Constructor       
+        function update_conf(obj,conf)
+            conf.hand=obj.conf.hand;
+            obj.conf=conf;
+        end
     end
 end

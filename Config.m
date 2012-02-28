@@ -5,23 +5,26 @@ classdef Config < handle
         data_path
         save_path
         plot_path
-        name=''
-        number=1
-        blockpath=''
+        name=''         %Participant directory name
+        number=1        %Session number
+        blockpath=''    %Block path
         unimanual=0
         hand=''
-        parallelMode=1
-        
+        parallelMode=1  % 0=no paralellization 
+                        % 1=parallelize on participants
+                        % 2=parallelize on sessions
         
         %Plotting
         ext='png'
         interactive=0
-        relative_plots_mode=1
+        relative_plots_mode=1   % 1=
+                                % 2=
         replication_ts=4
         
         %Fetch data
         skip_osc=5
         filter_stds=2
+        cutoff=12
         
         %LockingStrength properties
         peak_delta=2
@@ -33,9 +36,9 @@ classdef Config < handle
         step = 1
         minValsToComputeCondProb = 11
         use_norm=1
-        vf_hand=''
         
     end % properties
+    
     properties (Dependent = true, GetAccess = private)
         plot_participant_path
         plot_learning_path

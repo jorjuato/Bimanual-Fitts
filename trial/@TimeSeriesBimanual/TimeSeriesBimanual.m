@@ -196,7 +196,9 @@ classdef TimeSeriesBimanual < handle
             ts.LID = info.LID;
             ts.RID = info.RID;
         end
-        
+        function update_conf(obj,conf)
+            obj.conf=conf;
+        end
         [fcns, names, xlabels, ylabels] = get_plots(obj)
         plot(obj,graphPath,ext)
         concatenate(obj,obj2)

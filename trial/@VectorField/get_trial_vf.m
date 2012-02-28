@@ -5,9 +5,9 @@ function get_trial_vf(obj,ts)
         %Compute input vector Y = [x,v]
         if isa(ts,'TimeSeriesUnimanual')
             Y = [ts.x,ts.v];
-        elseif strcmp(obj.hand,'L')
+        elseif strcmp(obj.conf.hand,'L')
             Y = [ts.Lx,ts.Lv];
-        elseif strcmp(obj.hand,'R')
+        elseif strcmp(obj.conf.hand,'R')
             Y = [ts.Rx,ts.Rv];
         else
             return
@@ -18,9 +18,9 @@ function get_trial_vf(obj,ts)
         %Compute input vector Y = [x,v]
         if isa(ts,'TimeSeriesUnimanual')
             Y = [ts.xnorm,ts.vnorm];
-        elseif strcmp(obj.conf.vf_hand,'L')
+        elseif strcmp(obj.conf.hand,'L')
             Y = [ts.Lxnorm,ts.Lvnorm];
-        elseif strcmp(obj.conf.vf_hand,'R')
+        elseif strcmp(obj.conf.hand,'R')
             Y = [ts.Rxnorm,ts.Rvnorm];
         else
             return

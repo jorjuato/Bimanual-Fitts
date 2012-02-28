@@ -5,13 +5,13 @@ function update_vf(obj)
             matlabpool(labsConf.ClusterSize); 
         end
         parfor i=1:obj.conf.participants
-            p=Participant.load(i,obj.conf);
+            p=Participant.load(i,copy(obj.conf));
             p.update_vf();
             p.save();
         end             
     else            
         for i=1:obj.conf.participants
-            p=Participant.load(i,obj.conf);
+            p=Participant.load(i,copy(obj.conf));
             p.update_vf();
             p.save();
         end

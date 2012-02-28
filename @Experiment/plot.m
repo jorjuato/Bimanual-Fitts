@@ -9,12 +9,12 @@ function plot(obj)
             matlabpool(labsConf.ClusterSize); 
         end
         parfor i=1:obj.size
-            p=Participant.load(i,obj.conf);
+            p=Participant.load(i,copy(obj.conf));
             plot(p);
         end             
     else            
         for i=1:obj.size
-            p=Participant.load(i,obj.conf);
+            p=Participant.load(i,(obj.conf));
             plot(p);
         end
     end   

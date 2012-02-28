@@ -116,5 +116,10 @@ classdef TimeSeriesUnimanual < handle
         ts.ID = info.ID;
         ts.IDef = get_ID_effective(ts.x,ts.peaks,info.A);
       end
+      
+      function update_conf(obj,conf)
+         obj.conf=conf;
+      end
+
    end % methods
 end% classdef

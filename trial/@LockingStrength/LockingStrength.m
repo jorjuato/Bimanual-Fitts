@@ -107,7 +107,11 @@ classdef LockingStrength
                 ls.LPxx_t = ls.LPxx / Lmax(2);
             end            
         end   
+        function update_conf(obj,conf)
+            obj.conf=conf;
+        end
     end
+
     
     methods(Static)
         RPxx_t = get_scaled_PSD(RPxx,f,rho)
