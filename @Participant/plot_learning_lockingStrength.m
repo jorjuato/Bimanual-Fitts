@@ -79,7 +79,7 @@ function  plot_learning_lockingStrength(obj,graphPath)
         end 
         if exist(graphPath,'dir') & obj.conf.interactive==0
             figname = joinpath(graphPath,rootname);
-            if strcmp(ext,'fig')
+            if strcmp(obj.conf.ext,'fig')
                 hgsave(fig,figname,'all');
             else
                 saveas(fig,figname,obj.conf.ext); close(fig);

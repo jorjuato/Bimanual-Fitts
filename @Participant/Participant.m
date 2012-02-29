@@ -17,17 +17,17 @@ classdef Participant < handle
         
         plot(obj);
         
-        plot_vf(obj);
+        plot_vf(obj,graphPath);
         
-        plot_va(obj);
+        plot_va(obj,graphPath);
             
-        plot_learning_oscillations(obj);
+        plot_learning_oscillations(obj,graphPath);
         
-        plot_learning_relative(obj);
+        plot_learning_relative(obj,graphPath);
          
-        plot_learning_lockingStrength(obj);
+        plot_learning_lockingStrength(obj,graphPath);
         
-        plot_learning_vf(obj);
+        plot_learning_vf(obj,graphPath);
         
         update_vf(obj);
         

@@ -39,7 +39,7 @@ classdef Config < handle
         
     end % properties
     
-    properties (Dependent = true, GetAccess = private)
+    properties (Dependent = true, GetAccess = public)
         plot_participant_path
         plot_learning_path
         plot_session_path
@@ -75,7 +75,7 @@ classdef Config < handle
         end
         
         function plot_block_path = get.plot_block_path(obj)
-            plot_block_path = joinpath(obj.plot_session_path,obj.blockname);
+            plot_block_path = joinpath(obj.plot_session_path,obj.blockpath);
         end
         
         

@@ -5,16 +5,16 @@
 % depend on any parameter of DS structure, only its dimensions.
 
 function  plot(obj)
-    oscillations_dir   =joinpath(obj.conf.learning_dir,'oscillations');
-    relative_dir       =joinpath(obj.conf.learning_dir,'relative');
-    lockingStrength_dir=joinpath(obj.conf.learning_dir,'lockingStrength');
-    vf_dir             =joinpath(obj.conf.learning_dir,'vectorFields');
+    oscillations_dir   =joinpath(obj.conf.plot_learning_path,'oscillations');
+    relative_dir       =joinpath(obj.conf.plot_learning_path,'relative');
+    lockingStrength_dir=joinpath(obj.conf.plot_learning_path,'lockingStrength');
+    vf_dir             =joinpath(obj.conf.plot_learning_path,'vectorFields');
     
     if ~exist(obj.conf.plot_participant_path,'dir') & obj.conf.interactive==0
         mkdir(obj.conf.plot_participant_path);
     end
-    if ~exist(obj.conf.learning_dir,'dir') & obj.conf.interactive==0
-        mkdir(obj.conf.learning_dir);
+    if ~exist(obj.conf.plot_learning_path,'dir') & obj.conf.interactive==0
+        mkdir(obj.conf.plot_learning_path);
     end
     
     obj.plot_learning_oscillations(oscillations_dir);

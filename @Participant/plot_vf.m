@@ -1,4 +1,4 @@
-function arr = plot_vf(obj,graphPath)
+function plot_vf(obj,graphPath)
     if nargin<2, graphPath=''; end
     
     if ~exist(graphPath,'dir') & obj.conf.interactive==0
@@ -54,7 +54,7 @@ function arr = plot_vf(obj,graphPath)
             name=sprintf('LearningVectorFieldsIDL=%1.1f IDR=%1.1f',DSl{i,1}.info.ID,DSr{j,1}.info.ID);
             suplabel(name,'t',[.1 .1 .84 .84]);
             if exist(graphPath,'dir') & obj.conf.interactive==0                
-                figname = strcat(joinpath(graphPath,name),'.');       
+                figname = joinpath(graphPath,name);
                 saveas(fig,figname,obj.conf.ext);
                 close(fig);
             end
