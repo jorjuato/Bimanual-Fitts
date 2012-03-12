@@ -63,6 +63,7 @@ classdef Config < handle
                 name=num2str(obj.name,'%03d');
             end
             plot_participant_path = joinpath(obj.plot_path,name);
+            %plot_participant_path=obj.plot_path;
         end
 
         function plot_learning_path = get.plot_learning_path(obj)

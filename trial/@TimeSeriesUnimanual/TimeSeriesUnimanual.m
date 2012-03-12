@@ -105,7 +105,7 @@ classdef TimeSeriesUnimanual < handle
             idx = skip_oscillations(data.Right_L2Ang-data.Right_L1Ang,info.skipOsc);
             info.offset = info.offset - 0.073;
             %Compute right hand trial kinematic data
-            ts.xraw = (pi/4-(data.Right_L2Ang(idx)-data.Right_L1Ang(idx)))*info.scale + info.offset -info.origin;% - 0.095;
+            ts.xraw = (pi/4-(data.Right_L2Ang(idx)-data.Right_L1Ang(idx)))*info.scale + info.offset -info.origin;
             ts.vraw = (-(data.Right_L2Vel(idx)-data.Right_L1Vel(idx)))*info.scale;
             ts.araw = (-(data.Right_L2Acc(idx)-data.Right_L1Acc(idx)))*info.scale;
             

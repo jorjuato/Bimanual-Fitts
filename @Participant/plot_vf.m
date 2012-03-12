@@ -52,7 +52,9 @@ function plot_vf(obj,graphPath)
                                 
             end
             name=sprintf('LearningVectorFieldsIDL=%1.1f IDR=%1.1f',DSl{i,1}.info.ID,DSr{j,1}.info.ID);
-            suplabel(name,'t',[.1 .1 .84 .84]);
+            if obj.conf.interactive==1
+                suplabel(name,'t',[.1 .1 .84 .84]);
+            end
             if exist(graphPath,'dir') & obj.conf.interactive==0                
                 figname = joinpath(graphPath,name);
                 saveas(fig,figname,obj.conf.ext);
