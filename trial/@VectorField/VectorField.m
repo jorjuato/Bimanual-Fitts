@@ -77,7 +77,7 @@ classdef VectorField < handle
            obj.get_trial_vf(ts);
        end
         function update_conf(obj,conf)
-            conf.hand=obj.conf.hand;
+            %conf.hand=obj.conf.hand;
             obj.conf=conf;
         end
    end % methods

@@ -33,6 +33,8 @@ classdef Participant < handle
         
         save(obj);
         
+        update_conf(obj,src,evnt)
+        
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor

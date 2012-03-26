@@ -1,7 +1,7 @@
 function update_conf(obj,src,evnt)
     if nargin<3
         obj.conf=src;
-    elseif strcmp(evnt.EventName,'PostSet')
+    %elseif strcmp(evnt.EventName,'PostSet')
         display('updated Trial configuration')
 
         if obj.conf.unimanual==1

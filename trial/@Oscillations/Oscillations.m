@@ -80,7 +80,7 @@ classdef Oscillations < handle
             end
         end %Constructor       
         function update_conf(obj,conf)
-            conf.hand=obj.conf.hand;
+            %conf.hand=obj.conf.hand;
             obj.conf=conf;
         end
     end
