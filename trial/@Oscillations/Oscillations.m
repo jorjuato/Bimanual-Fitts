@@ -84,4 +84,10 @@ classdef Oscillations < handle
             obj.conf=conf;
         end
     end
+    
+    methods(Static=true)  
+        function anova_var = get_anova_variables()
+            anova_var = { 'peakVel' 'MT' 'accTime' 'decTime' 'accQ' 'IPerf' 'IPerfEf'};
+        end        
+    end
 end

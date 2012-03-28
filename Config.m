@@ -10,6 +10,7 @@ classdef Config < handle
         blockpath=''    %Block path
         unimanual=0
         hand=''
+        inmemory=1
         parallelMode=1  % 0=no paralellization 
                         % 1=parallelize on participants
                         % 2=parallelize on sessions

@@ -112,10 +112,16 @@ classdef LockingStrength
         end
     end
 
-    
-    methods(Static)
+    methods(Static=true)
         RPxx_t = get_scaled_PSD(RPxx,f,rho)
         [p, q, Lf, Rf] = get_locking_ratio(LPxx,RPxx,freqs,peak_delta)
         [Pxx, f] = get_welch_periodogram(x)
+        function anova_var = get_anova_variables()
+            anova_var = { 'Lf' 'Rf' 'rho' 'flsPC' 'flsAmp' 'phDiffMean' 'phDiffStd'};
+        end
     end
 end
+        
+        
+        
+        

@@ -1,8 +1,9 @@
-classdef Experiment 
+classdef Experiment < dynamicprops
    properties(SetObservable = true)
       conf
+      participants=Participant.empty(10,0);
    end
-   
+
     methods
         
         plot(obj)
@@ -29,15 +30,27 @@ classdef Experiment
                 if matlabpool('size') == 0
                     matlabpool(labsConf.ClusterSize); 
                 end
+                if obj.conf.inmemory
+                    participants=Participant.empty(10,0);
+                end
                 parfor i=1:obj.size
                     p=Participant(i,copy(obj.conf));
                     p.save();
+                    if obj.conf.inmemory
+                        participants(i)=p;
+                    end
                 end             
             else            
                 for i=1:obj.size
                     p=Participant(i,copy(obj.conf));
                     p.save();
+                    if obj.conf.inmemory
+                        participants(i)=p;
+                    end
                 end
+            end
+            if obj.conf.inmemory
+                obj.participants=participants;
             end
         end
     end
