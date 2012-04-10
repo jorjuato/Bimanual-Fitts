@@ -24,8 +24,10 @@ classdef Config < handle
         
         %Fetch data
         skip_osc=5
-        filter_stds=2
+        filter_stds=3
         cutoff=12
+        compress_pc=1
+        compress_ts=1
         
         %LockingStrength properties
         peak_delta=2
@@ -34,9 +36,11 @@ classdef Config < handle
         neighbourhood = [3,3]
         binnumber = 41
         fs = 1E3
-        step = 1
-        minValsToComputeCondProb = 11
+        step = 3
+        minValsToComputeCondProb = 5
         use_norm=1
+        maxAngle_localenv=0.15
+        
         
     end % properties
     

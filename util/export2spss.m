@@ -1,4 +1,4 @@
-function save4spss(names, vars, titl)
+function export2spss(names, vars, titl)
 
 %
 % Copyright 2010 Jesse van Muijden, Leiden University, The Netherlands

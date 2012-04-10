@@ -1,8 +1,10 @@
-function exp = load(experiment)
-    %display('Method disbled, Experiment wrapps on-disk information now');
-    %return;
-    
-    root_dir=joinpath(getuserdir(),'KINARM');
-    tmp=load(joinpath(root_dir,'experiment'));
+function exp = load(obj)
+    conf=Config();
+    tmp=load(joinpath(conf.save_path,'experiment.mat'));
     exp=tmp.experiment;
+    
+    for i=1:length(exp.participants)
+        exp.participants(i).conf=conf;
+        exp.participants(i).update_conf(conf);
+    end
 end

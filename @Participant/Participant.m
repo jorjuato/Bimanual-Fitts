@@ -33,6 +33,8 @@ classdef Participant < handle
         
         save(obj);
         
+        new = copy(obj)
+        
         update_conf(obj,src,evnt)
         
         
@@ -40,8 +42,7 @@ classdef Participant < handle
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function obj = Participant(name,conf)
-            if nargin<2, conf=Config(); end
-            
+            if nargin<2, conf=Config(); end            
             obj.conf=conf;
             if nargin == 0
                 obj.size = size(obj.sessions);
@@ -51,7 +52,7 @@ classdef Participant < handle
                 end
                 obj.conf.name=name;
                 subject_dir = getSubjectDir(conf.name,obj.conf.data_path);
-                s = dir2(subject_dir);
+                s = dir2(subject_dir)
                 
                 if obj.conf.parallelMode==2
                     labsConf = findResource(); 
@@ -63,7 +64,7 @@ classdef Participant < handle
                     parfor i=1:length(s)
                         conf=copy(confPar);
                         conf.number = i;
-                        session_path = joinpath(subject_dir,s(i).name);
+                        session_path = joinpath(subject_dir,s(i).name)
                         sessions(i) = Session(session_path,conf);
                     end
                     obj.sessions=sessions;

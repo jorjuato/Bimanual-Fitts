@@ -50,27 +50,51 @@ classdef TimeSeriesBimanual < handle
         % Compressed Raw data retrieval
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function Lxraw = get.Lxraw(obj)
-            Lxraw = dunzip(obj.Lxraw_);
+            if obj.conf.compress_ts==1
+                Lxraw = dunzip(obj.Lxraw_);
+            else
+                Lxraw = obj.Lxraw_;
+            end
         end
         
         function Lvraw = get.Lvraw(obj)
-            Lvraw = dunzip(obj.Lvraw_);
+            if obj.conf.compress_ts==1
+                Lvraw = dunzip(obj.Lvraw_);
+            else
+                Lvraw = obj.Lvraw_;
+            end
         end
                 
         function Laraw = get.Laraw(obj)
-            Laraw = dunzip(obj.Laraw_);
+            if obj.conf.compress_ts==1
+                Laraw = dunzip(obj.Laraw_);
+            else
+                Laraw = obj.Laraw_;
+            end
         end
         
         function Rxraw = get.Rxraw(obj)
-            Rxraw = dunzip(obj.Rxraw_);
+            if obj.conf.compress_ts==1
+                Rxraw = dunzip(obj.Rxraw_);
+            else
+                Rxraw = obj.Rxraw_;
+            end
         end
         
         function Rvraw = get.Rvraw(obj)
-            Rvraw = dunzip(obj.Rvraw_);
+            if obj.conf.compress_ts==1
+                Rvraw = dunzip(obj.Rvraw_);
+            else
+                Rvraw = obj.Rvraw_;
+            end
         end
         
         function Raraw = get.Raraw(obj)
-            Raraw = dunzip(obj.Raraw_);
+            if obj.conf.compress_ts==1
+                Raraw = dunzip(obj.Raraw_);
+            else
+                Raraw = obj.Raraw_;
+            end
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,27 +102,51 @@ classdef TimeSeriesBimanual < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function set.Lxraw(obj,value)
-            obj.Lxraw_ = dzip(value);
+            if obj.conf.compress_ts==1
+                obj.Lxraw_ = dzip(value);
+            else
+                obj.Lxraw_ = value;
+            end
         end   
         
         function set.Lvraw(obj,value)
-            obj.Lvraw_ = dzip(value);
+            if obj.conf.compress_ts==1
+                obj.Lvraw_ = dzip(value);
+            else
+                obj.Lvraw_ = value;
+            end
         end
         
         function set.Laraw(obj,value)
-            obj.Laraw_ = dzip(value);
+            if obj.conf.compress_ts==1
+                obj.Laraw_ = dzip(value);
+            else
+                obj.Laraw_ = value;
+            end
         end
         
         function set.Rxraw(obj,value)
-            obj.Rxraw_ = dzip(value);
+            if obj.conf.compress_ts==1
+                obj.Rxraw_ = dzip(value);
+            else
+                obj.Rxraw_ = value;
+            end
         end
         
         function set.Rvraw(obj,value)
-            obj.Rvraw_ = dzip(value);
+            if obj.conf.compress_ts==1
+                obj.Rvraw_ = dzip(value);
+            else
+                obj.Rvraw_ = value;
+            end
         end
         
         function set.Raraw(obj,value)
-            obj.Raraw_ = dzip(value);
+            if obj.conf.compress_ts==1
+                obj.Raraw_ = dzip(value);
+            else
+                obj.Raraw_ = value;
+            end
         end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

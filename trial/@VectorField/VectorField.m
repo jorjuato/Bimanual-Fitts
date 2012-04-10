@@ -12,6 +12,14 @@ classdef VectorField < handle
    properties (Dependent = true, SetAccess = private)
       vectors
       angles
+      angles2circle
+      maxangle
+      circularity
+      qcircularity
+      q1
+      q2
+      q3
+      q4
    end
    
    properties (Dependent = true, SetAccess = public)
@@ -33,9 +41,9 @@ classdef VectorField < handle
        
        plot(obj,graphPath,rootname,ext)
        
-       plot_vf(obj,graphPath,rootname,ext);
+       plot_vf(obj,graphPath,rootname,ext)
            
-       plot_va(obj,graphPath,rootname,ext);
+       plot_va(obj,graphPath,rootname,ext)
        
        xo = get_bincenters_normalized(obj)
        
@@ -52,12 +60,61 @@ classdef VectorField < handle
            vectors{end+1} = xo;
        end
        
+       function maxangle = get.maxangle(obj)
+           env=obj.conf.maxAngle_localenv;
+           dim=obj.conf.binnumber;
+           fact=round(env*dim);
+           center=(dim-1)/2;
+           ang=obj.angles{2};
+           lmax=max(max(ang{1:fact,center-fact:center+fact}));
+           rmax=max(max(ang{dim-fact:dim,center-fact:center+fact}));
+           maxangle=max(lmax,rmax);
+       end
+       
+       function circularity = get.circularity(obj);
+           circularity=nanmedian(nanmedian(obj.angles2circle));
+       end
+       
+       function qcircularity = get.qcircularity(obj)
+           bin=(obj.conf.binnumber-1)/2;
+           fcn=@(x) nanmedian(nanmedian(x));
+           qcircularity=cellfun(fcn,mat2cell(obj.angles2circle,[bin,bin],[bin,bin]));
+       end
+       
+       function q1 = get.q1(obj)
+           q1=obj.qcircularity(2,1);
+       end
+       
+       function q2 = get.q2(obj)
+           q2=obj.qcircularity(2,2);
+       end
+       
+       function q3 = get.q3(obj)
+           q3=obj.qcircularity(1,2);
+       end
+       
+       function q4 = get.q4(obj)
+           q4=obj.qcircularity(1,1);
+       end
+       
+       function angles2circle = get.angles2circle(obj)
+           angles2circle=obj.get_VF_circularity();
+       end
+              
        function pc = get.pc(obj)
-           pc=dunzip(obj.pc_);
+           if obj.conf.compress_pc==1
+                pc=dunzip(obj.pc_);
+            else
+                pc=obj.pc_;
+            end
        end
        
        function set.pc(obj,value)
-           obj.pc_= dzip(value);
+            if obj.conf.compress_pc==1
+                obj.pc_= dzip(value);
+            else
+                obj.pc_=value;
+            end
        end
        
        function angles = get.angles(obj)
@@ -80,6 +137,8 @@ classdef VectorField < handle
             %conf.hand=obj.conf.hand;
             obj.conf=conf;
         end
+        
+        ang = get_VF_circularity(vf)
    end % methods
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -92,6 +151,11 @@ classdef VectorField < handle
       angleMax = get_maxAngle(a)       
       
       b = eval_neighbours(a,nhood,fun,params)   
-      
+   end
+   
+   methods(Static=true)
+      function anova_var = get_anova_variables()
+         anova_var = { 'circularity' 'q1' 'q2' 'q3' 'q4' 'maxangle'};
+      end 
    end %methods(Static)
 end% classdef

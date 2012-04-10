@@ -1,5 +1,5 @@
 
-script_path='/home/jorge/Dropbox/dev/Bimanual-Fitts'
+script_path='/home/jorge/Dropbox/dev/Bimanual-Fitts';
 addpath(genpath(script_path));
 
 data_dir='/media/data/out';
@@ -19,6 +19,8 @@ parfor i=1:length(conds)
     plot_path=joinpath(joinpath(plot_dir,steps(conds(i,1)).name),freqs(conds(i,2)).name)
     if ~exist(plot_path,'dir')
         mkdir(plot_path);    
+    elseif length(dir2(plot_path))>0
+        continue
     end
     for j=1:10
         pplot_path=joinpath(plot_path,sprintf('participant%03d',j))

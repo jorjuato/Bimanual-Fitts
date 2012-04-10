@@ -35,15 +35,27 @@ classdef TimeSeriesUnimanual < handle
    methods%Properties getters and setter
    
         function xraw = get.xraw(obj)
-            xraw = dunzip(obj.xraw_);
+            if obj.conf.compress_ts==1
+                xraw = dunzip(obj.xraw_);
+            else
+                xraw = obj.xraw_;
+            end
         end
         
         function vraw = get.vraw(obj)
-            vraw = dunzip(obj.vraw_);
+            if obj.conf.compress_ts==1
+                vraw = dunzip(obj.vraw_);
+            else
+                vraw = obj.vraw_;
+            end
         end
         
         function araw = get.araw(obj)
-            araw = dunzip(obj.araw_);
+            if obj.conf.compress_ts==1
+                araw = dunzip(obj.araw_);
+            else
+                araw = obj.araw_;
+            end
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,20 +63,28 @@ classdef TimeSeriesUnimanual < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function set.xraw(obj,value)
-            obj.xraw_ = dzip(value);
+            if obj.conf.compress_ts==1
+                obj.xraw_ = dzip(value);
+            else
+                obj.xraw_ = value;
+            end
         end   
         
         function set.vraw(obj,value)
-            obj.vraw_ = dzip(value);
+            if obj.conf.compress_ts==1
+                obj.vraw_ = dzip(value);
+            else
+                obj.vraw_ = value;
+            end
         end
         
         function set.araw(obj,value)
-            obj.araw_ = dzip(value);
+            if obj.conf.compress_ts==1
+                obj.araw_ = dzip(value);
+            else
+                obj.araw_ = value;
+            end
         end   
-   
-   
-   
-   
    
       function x = get.x(obj)
          x = filterdata(obj.xraw);

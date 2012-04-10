@@ -24,9 +24,9 @@ function  plot(obj)
 	obj.plot_vf(vf_dir);
 	obj.plot_va(vf_dir);
 	
-    for s=1:obj.size
-        if obj.sessions(s).train == 0
-            obj.sessions(s).plot();
-        end
-    end
+    %for s=1:obj.size
+        %if obj.sessions(s).train == 0
+            %obj.sessions(s).plot();
+        %end
+    %end
 end
