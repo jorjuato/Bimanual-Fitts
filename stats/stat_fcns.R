@@ -11,11 +11,9 @@ generate.relative.vars <- function(mdata){
              "IPerfEfL", "IPerfL",  "IPerfEfR", "IPerfR",
              "MTR", "MTL", "peakVelR", "peakVelL")
     for (vname in vnames)
-        eval(parse(text=sprintf("mdata$%srel<-mdata$%s/mdata$%su",vname,vname,vname)))
+        eval(parse(text=sprintf("mdata$%srel<-mdata$%s/mdata$U%s",vname,vname,vname)))
     return(mdata)
 }
-
-
 
 do.aov <- function(mdata,vname,vpath){
     #Repeated Measures 5-WAY ANOVA with mixed within and between design, Type III SSE 

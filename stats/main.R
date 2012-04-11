@@ -27,7 +27,7 @@ do_density=TRUE
 
 
 #Load data from csv file
-colfmt=c("factor","factor","factor","factor","factor",rep("numeric",31),recursive=TRUE)
+colfmt=c("factor","factor","factor","factor","factor",rep("numeric",56),recursive=TRUE)
 mdata<-read.csv(dfile,colClasses=colfmt)
 levels(mdata$grp)=c('C','U')
 levels(mdata$IDR)=c('D','M','E')

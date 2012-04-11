@@ -31,6 +31,8 @@ classdef Participant < handle
         
         update_vf(obj);
         
+        update_ls(obj)
+        
         save(obj);
         
         new = copy(obj)

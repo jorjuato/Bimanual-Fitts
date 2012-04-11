@@ -21,6 +21,8 @@ classdef Session < handle
         
         update_vf(obj);
         
+        update_ls(obj)
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

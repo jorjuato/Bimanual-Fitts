@@ -5,6 +5,7 @@ classdef Config < handle
         data_path
         save_path
         plot_path
+        anal_path
         name=''         %Participant directory name
         number=1        %Session number
         blockpath=''    %Block path
@@ -28,6 +29,8 @@ classdef Config < handle
         cutoff=12
         compress_pc=1
         compress_ts=1
+        split_analysis=1
+        promediate=1
         
         %LockingStrength properties
         peak_delta=2
@@ -93,8 +96,14 @@ classdef Config < handle
             end
             obj.data_path = joinpath(obj.root_path,'data');
             obj.save_path = joinpath(obj.root_path,'save');
-            obj.plot_path = joinpath(obj.root_path,'plot');            
-            obj.participants = size(dir2(obj.data_path),1);        
+            obj.plot_path = joinpath(obj.root_path,'plot');
+            obj.anal_path = joinpath(obj.root_path,'anal');
+            if ~exist(obj.conf.anal_path)
+                mkdir(obj.conf.anal_path);
+            end        
+            obj.participants = size(dir2(obj.data_path),1);
+            if obj.participants==0
+                disp(sprintf('No participant data found in %s\n',obj.data_path))
         end
     
         function new = copy(obj)

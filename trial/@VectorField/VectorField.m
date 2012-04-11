@@ -62,12 +62,15 @@ classdef VectorField < handle
        
        function maxangle = get.maxangle(obj)
            env=obj.conf.maxAngle_localenv;
-           dim=obj.conf.binnumber;
-           fact=round(env*dim);
-           center=(dim-1)/2;
+           dim=obj.conf.binnumber-1;
+           fact=round(env*dim)
+           center=dim/2;
            ang=obj.angles{2};
-           lmax=max(max(ang{1:fact,center-fact:center+fact}));
-           rmax=max(max(ang{dim-fact:dim,center-fact:center+fact}));
+           size(ang)
+           dim-fact:dim
+           center-fact:center+fact
+           lmax=max(max(ang(1:fact,center-fact:center+fact)));
+           rmax=max(max(ang(dim-fact:dim,center-fact:center+fact)));
            maxangle=max(lmax,rmax);
        end
        

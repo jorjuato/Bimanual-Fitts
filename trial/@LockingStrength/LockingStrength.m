@@ -51,16 +51,20 @@ classdef LockingStrength
         end
         
         function phDiffMean = get.phDiffMean(obj)
-            [phDiffMean,~]=circstat(obj.q*obj.Rph-obj.p*obj.Lph);
+            [phDiffMean,~]=circstat(obj.p*obj.Rph-obj.q*obj.Lph);
         end
         
         function phDiffStd = get.phDiffStd(obj)
             %Get Kramers-Moyal coefficients
-            [~, phDiffStd]=circstat(obj.q*obj.Rph-obj.p*obj.Lph);
+            [~, phDiffStd]=circstat(obj.p*obj.Rph-obj.q*obj.Lph);
         end
         
         function rho = get.rho(obj)
-            rho = obj.p/obj.q;
+            if obj.q>obj.p
+                rho=obj.q/obj.p;
+            else
+                rho=obj.p/obj.q;
+            end
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -69,46 +73,37 @@ classdef LockingStrength
         function ls = LockingStrength(ts,conf)
             ls.conf=conf;
             %_Instantiate local variables from trial structure
-            Lx=ts.Lxnorm;
-            Rx=ts.Rxnorm;
             ls.Lph=ts.Lph;
             ls.Rph=ts.Rph;
             
             %Compute periodograms
-            [ls.LPxx,~] = ls.get_welch_periodogram(Lx);
-            [ls.RPxx,ls.freqs] = ls.get_welch_periodogram(Rx);
+            [ls.LPxx,~] = ls.get_welch_periodogram(ts.Lxnorm);
+            [ls.RPxx,ls.freqs] = ls.get_welch_periodogram(ts.Rxnorm);
             
             %Get locking ratio as (p,q) pair, choose ratios
             %bigger than 1 and change arrays names acordingly
             [ls.p, ls.q, ls.Lf, ls.Rf]=ls.get_locking_ratio(ls.LPxx,ls.RPxx,ls.freqs,ls.conf.peak_delta);
-            if ls.q>ls.p
-                rho=ls.q/ls.p;
-                %tmp=ls.RPxx;
-                %ls.RPxx=ls.LPxx;
-                %ls.LPxx=tmp;
-                %tmp=ls.Rph;
-                %ls.Rph=ls.Lph;
-                %ls.Lph=tmp;
-                %tmp=ls.Rf;
-                %ls.Rf=ls.Lf;
-                %ls.Lf=tmp;
-            else
-                rho=ls.p/ls.q;
-            end
             
             %Rescale the low frequency signal to have a dominant freq equal to the fast
-            ls.RPxx_t = ls.get_scaled_PSD(ls.RPxx,ls.freqs,rho);
+            ls.RPxx_t = ls.get_scaled_PSD(ls.RPxx,ls.freqs,ls.rho);
             
             %Normalize higher frequency signal to unit variance for FLS Amp
-            [Lmax, ~] = peakdet(ls.LPxx,ls.conf.peak_delta);
-            if isempty(Lmax)
-                ls.LPxx_t = ls.LPxx/max(ls.LPxx);
-            else
-                ls.LPxx_t = ls.LPxx / Lmax(2);
-            end            
+            ls.LPxx_t = ls.LPxx / ls.freqs(find(ls.LPxx==max(ls.LPxx))); 
+    
         end   
         function update_conf(obj,conf)
             obj.conf=conf;
+        end
+        
+        function update(obj)
+            %Get locking ratio as (p,q) pair, choose ratios
+            [obj.p, obj.q, obj.Lf, obj.Rf]=obj.get_locking_ratio(obj.LPxx,obj.RPxx,obj.freqs,obj.conf.peak_delta);
+            
+            %Rescale the low frequency signal to have a dominant freq equal to the fast
+            obj.RPxx_t = obj.get_scaled_PSD(obj.RPxx,obj.freqs,obj.rho);
+            
+            %Normalize higher frequency signal to unit variance for FLS Amp
+            obj.LPxx_t = obj.LPxx / freqs(find(obj.LPxx==max(obj.LPxx))); 
         end
     end
 

@@ -53,6 +53,7 @@ classdef Block < handle
         %B = subsref(obj,S)
         new = copy(obj)
         tr = concatenate(obj)
-        update_vf(obj);
+        update_vf(obj)
+        update_ls(obj)
     end
 end
