@@ -6,7 +6,7 @@ function update_conf(obj,src,evnt)
         obj.conf=src;
         obj.size=size(obj.data_set);
     %elseif strcmp(evnt.EventName,'PostSet')
-        display('updated Block configuration')
+        %display('updated Block configuration')
         %Nothing more needed due to on-disk storage. 
         %Conf has to be restored after each load from disk
         if length(obj.size)==2

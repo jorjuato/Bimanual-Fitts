@@ -154,27 +154,27 @@ classdef TimeSeriesBimanual < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function Lx = get.Lx(obj)
-            Lx = filterdata(obj.Lxraw);
+            Lx = filterdata(obj.Lxraw,obj.conf.cutoff);
         end
         
         function Lv = get.Lv(obj)
-            Lv = filterdata(obj.Lvraw);
+            Lv = filterdata(obj.Lvraw,obj.conf.cutoff);
         end
         
         function La = get.La(obj)
-            La = filterdata(obj.Laraw);
+            La = filterdata(obj.Laraw,obj.conf.cutoff);
         end
         
         function Rx = get.Rx(obj)
-            Rx = filterdata(obj.Rxraw);
+            Rx = filterdata(obj.Rxraw,obj.conf.cutoff);
         end
         
         function Rv = get.Rv(obj)
-            Rv = filterdata(obj.Rvraw);
+            Rv = filterdata(obj.Rvraw,obj.conf.cutoff);
         end
         
         function Ra = get.Ra(obj)
-            Ra = filterdata(obj.Raraw);
+            Ra = filterdata(obj.Raraw,obj.conf.cutoff);
         end
         
         function Lxnorm = get.Lxnorm(obj)

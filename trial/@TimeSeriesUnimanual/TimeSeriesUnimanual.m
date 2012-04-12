@@ -87,15 +87,15 @@ classdef TimeSeriesUnimanual < handle
         end   
    
       function x = get.x(obj)
-         x = filterdata(obj.xraw);
+         x = filterdata(obj.xraw,obj.conf.cutoff);
       end
       
       function v = get.v(obj)
-         v = filterdata(obj.vraw);
+         v = filterdata(obj.vraw,obj.conf.cutoff);
       end
       
       function a = get.a(obj)
-         a = filterdata(obj.araw);
+         a = filterdata(obj.araw,obj.conf.cutoff);
       end
       
       function xnorm = get.xnorm(obj)

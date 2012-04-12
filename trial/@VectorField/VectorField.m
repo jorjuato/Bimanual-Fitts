@@ -1,6 +1,8 @@
 classdef VectorField < handle
    properties
-       conf
+      conf
+      %vectors_unfiltered
+      %vectors
    end
    properties(SetAccess = private)      
       xo
@@ -10,6 +12,7 @@ classdef VectorField < handle
       pc_
    end
    properties (Dependent = true, SetAccess = private)
+      vectors_unfiltered
       vectors
       angles
       angles2circle
@@ -51,24 +54,30 @@ classdef VectorField < handle
        
        [P,B,PC]=prob_2D(obj,x,b,step,minValsToComputeCondProb)
        
+       [Dfit]=KM_Fit(B,D,i)
+       
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        %Properties getters
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+       
        function vectors = get.vectors(obj)
+            nf_vect=obj.vectors;
+            vectors{1}=KM_Fit(obj.conf.xo,nf_vect,1);
+            vectors{2}=KM_Fit(obj.conf.xo,nf_vect,)
+       end
+       
+       function vectors_unfiltered = get.vectors_unfiltered(obj)
            %Get Kramers-Moyal coefficients
-           [vectors, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.conf.fs,[1,2]);
-           vectors{end+1} = xo;
+           [vectors_unfiltered, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.conf.fs,[1,2]);
+           vectors_unfiltered{end+1} = xo;
        end
        
        function maxangle = get.maxangle(obj)
            env=obj.conf.maxAngle_localenv;
            dim=obj.conf.binnumber-1;
-           fact=round(env*dim)
+           fact=round(env*dim);
            center=dim/2;
            ang=obj.angles{2};
-           size(ang)
-           dim-fact:dim
-           center-fact:center+fact
            lmax=max(max(ang(1:fact,center-fact:center+fact)));
            rmax=max(max(ang(dim-fact:dim,center-fact:center+fact)));
            maxangle=max(lmax,rmax);

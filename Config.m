@@ -58,7 +58,7 @@ classdef Config < handle
     methods
     
         function participants = get.participants(obj)
-            participants = length(dir2,obj.data_path);
+            participants = length(dir2(obj.data_path));
         end
         function set.participants(obj,val)
             
@@ -98,12 +98,13 @@ classdef Config < handle
             obj.save_path = joinpath(obj.root_path,'save');
             obj.plot_path = joinpath(obj.root_path,'plot');
             obj.anal_path = joinpath(obj.root_path,'anal');
-            if ~exist(obj.conf.anal_path)
-                mkdir(obj.conf.anal_path);
+            if ~exist(obj.anal_path)
+                mkdir(obj.anal_path);
             end        
             obj.participants = size(dir2(obj.data_path),1);
             if obj.participants==0
                 disp(sprintf('No participant data found in %s\n',obj.data_path))
+            end
         end
     
         function new = copy(obj)
