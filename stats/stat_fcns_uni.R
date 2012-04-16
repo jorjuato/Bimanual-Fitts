@@ -3,6 +3,11 @@ require(nlme)
 require(lme4)
 require(ez)
 
+# coding scheme for categorical variables matters
+# run with dummy coding -> factory default in R, wrong results
+#options(contrasts=c(unordered="contr.treatment", ordered="contr.poly"))
+# effect coding for unordered factors (sum to zero, correct results)
+options(contrasts=c(unordered="contr.sum",ordered="contr.poly"))
 
 do.aov.uni <- function(mdata,vname,vpath){
     #Repeated Measures 5-WAY ANOVA with mixed within and between design, Type III SSE 

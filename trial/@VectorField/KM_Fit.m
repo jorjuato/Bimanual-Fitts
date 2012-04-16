@@ -1,4 +1,4 @@
-function [Dfit]=KM_Fit(B,D,i)
+function [Dfit]=KM_Fit(obj,B,D,i)
 
 % chose i for D{i}
 

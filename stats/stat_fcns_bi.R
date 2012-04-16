@@ -3,33 +3,35 @@ require(nlme)
 require(lme4)
 require(ez)
 
-generate.relative.vars <- function(bdata,uLdata,uRdata){
-    #DISCARDED: "Rf" "rho" "phDiffStd" "phDiffMean"   "flsPC" "Lf" "flsAmp"
+# coding scheme for categorical variables matters
+# run with dummy coding -> factory default in R, wrong results
+#options(contrasts=c(unordered="contr.treatment", ordered="contr.poly"))
+# effect coding for unordered factors (sum to zero, correct results)
+#options(contrasts=c(unordered="contr.sum",ordered="contr.poly"))
+
+generate.relative.vars <- function(bidata,uLdata,uRdata){
+    #DISCARDED: "Rf" "rho" "phDiffStd" "phDiffMean"   "flsPC" "Lf" "flsAmp" "Lf","Rf",
     #PROBLEMATIC  ,
     vnames=c("accTimeL", "accTimeR", "accQR", "decTimeL", "accQL", "decTimeR",
              "circularityR", "circularityL", "maxangleR", "maxangleL",
              "q1L", "q1R", "q2L", "q2R", "q3L", "q3R", "q4L","q4R",
-             "IPerfEfL", "IPerfL",  "IPerfEfR", "IPerfR",
+             "IPerfEfL", "IPerfL",  "IPerfEfR", "IPerfR", 
              "MTR", "MTL", "peakVelR", "peakVelL")
-    for (vname in vnames) {
+    for (vname in vnames) {    
         hand<-substr(vname, nchar(vname), nchar(vname))
-        if (hand=='R')
-            bdata<-fcn(bdata,uRdata,vname,hand)
-        else 
-            bdata<-fcn(bdata,uLdata,vname,hand)
+        for (i in 1:nrow(bidata)) {            
+            pp <- as.numeric(bidata[i,'pp'])            
+            S <- as.numeric(levels(bidata$S)[bidata[i,'S']])
+            ID<- as.numeric(bidata[i,paste('ID',hand,sep='')])
+            if (hand=='R')
+                form="val<-mean(uRdata$U%s[uRdata$pp==%d & uRdata$S==%d & uRdata$ID==%d])"
+            else
+                form="val<-mean(uLdata$U%s[uLdata$pp==%d & uLdata$S==%d & uLdata$ID==%d])"
+            eval(parse(text=sprintf(form,vname,pp,S,ID)))
+            eval(parse(text=sprintf("bidata$%srel[[i]]<-bidata$%s[[i]]/val",vname,vname)))
+        }
     }
-    return(bdata)
-}
-
-fcn <- function(bdata,udata,vname,hand) {
-    for (i in 1:nrow(bdata)) {
-        pp <- as.numeric(bdata[i,'pp'])
-        S <- as.numeric(bdata[i,'S'])
-        ID<- as.numeric(bdata[i,paste('ID',hand)])
-        eval(parse(text=sprintf("val=mean(udata$%s[udata$pp==pp & udata$S==S & udata$ID==ID])",vname)))
-        eval(parse(text=sprintf("bdata$%srel<-bdata$%s/val",vname,vname)))
-    }
-    return(bdata)
+    return(bidata)
 }
 
 do.aov <- function(mdata,vname,vpath){

@@ -54,16 +54,17 @@ classdef VectorField < handle
        
        [P,B,PC]=prob_2D(obj,x,b,step,minValsToComputeCondProb)
        
-       [Dfit]=KM_Fit(B,D,i)
+       [Dfit]=KM_Fit(obj,B,D,i)
        
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        %Properties getters
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        
        function vectors = get.vectors(obj)
-            nf_vect=obj.vectors;
-            vectors{1}=KM_Fit(obj.conf.xo,nf_vect,1);
-            vectors{2}=KM_Fit(obj.conf.xo,nf_vect,)
+            nf_vect=obj.vectors_unfiltered;
+            vectors{1}=obj.KM_Fit(obj.xo,nf_vect,1);
+            vectors{2}=obj.KM_Fit(obj.xo,nf_vect,2);
+            vectors{end+1}=nf_vect{end};
        end
        
        function vectors_unfiltered = get.vectors_unfiltered(obj)
@@ -83,7 +84,7 @@ classdef VectorField < handle
            maxangle=max(lmax,rmax);
        end
        
-       function circularity = get.circularity(obj);
+       function circularity = get.circularity(obj)
            circularity=nanmedian(nanmedian(obj.angles2circle));
        end
        
@@ -145,6 +146,7 @@ classdef VectorField < handle
            disp('Wait while computing conditional probabilites...')
            obj.get_trial_vf(ts);
        end
+       
         function update_conf(obj,conf)
             %conf.hand=obj.conf.hand;
             obj.conf=conf;
