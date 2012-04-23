@@ -1,7 +1,7 @@
 function plot(obj,graphPath,rootname,ext)
     if nargin<4, ext='png';end
-    if nargin<3, rootname='nosession';end
-    if nargin<2, graphPath='';end
+    if nargin<3, rootname=[];end
+    if nargin<2, graphPath=[];end
     
     obj.plot_vf(graphPath,rootname,ext)
     obj.ts.plot(graphPath,rootname,ext)

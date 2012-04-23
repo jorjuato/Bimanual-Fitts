@@ -1,5 +1,6 @@
 classdef TimeSeriesBimanual < handle
     properties
+        idx
         Lpeaks
         LIDef
         LID
@@ -154,27 +155,27 @@ classdef TimeSeriesBimanual < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function Lx = get.Lx(obj)
-            Lx = filterdata(obj.Lxraw,obj.conf.cutoff);
+            Lx = filterdata(obj.Lxraw(obj.idx),obj.conf.cutoff);
         end
         
         function Lv = get.Lv(obj)
-            Lv = filterdata(obj.Lvraw,obj.conf.cutoff);
+            Lv = filterdata(obj.Lvraw(obj.idx),obj.conf.cutoff);
         end
         
         function La = get.La(obj)
-            La = filterdata(obj.Laraw,obj.conf.cutoff);
+            La = filterdata(obj.Laraw(obj.idx),obj.conf.cutoff);
         end
         
         function Rx = get.Rx(obj)
-            Rx = filterdata(obj.Rxraw,obj.conf.cutoff);
+            Rx = filterdata(obj.Rxraw(obj.idx),obj.conf.cutoff);
         end
         
         function Rv = get.Rv(obj)
-            Rv = filterdata(obj.Rvraw,obj.conf.cutoff);
+            Rv = filterdata(obj.Rvraw(obj.idx),obj.conf.cutoff);
         end
         
         function Ra = get.Ra(obj)
-            Ra = filterdata(obj.Raraw,obj.conf.cutoff);
+            Ra = filterdata(obj.Raraw(obj.idx),obj.conf.cutoff);
         end
         
         function Lxnorm = get.Lxnorm(obj)
@@ -220,19 +221,34 @@ classdef TimeSeriesBimanual < handle
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function ts = TimeSeriesBimanual(data,info,conf)
-            ts.conf=conf;
-            %Skip first 'skiposc' oscillations
-            idx = skip_oscillations(data.Left_L2Ang-data.Left_L1Ang,info.skipOsc);
+            ts.conf=conf;            
             
             %Compute left hand trial kinematic data
-            ts.Lxraw = (data.Left_L2Ang(idx)-data.Left_L1Ang(idx))*info.scale + info.offset-info.origin;
-            ts.Lvraw = (data.Left_L2Vel(idx)-data.Left_L1Vel(idx))*info.scale;
-            ts.Laraw = (data.Left_L2Acc(idx)-data.Left_L1Acc(idx))*info.scale;
+            ts.Lxraw = (data.Left_L2Ang-data.Left_L1Ang)*info.scale + info.offset-info.origin;
+            ts.Lvraw = (data.Left_L2Vel-data.Left_L1Vel)*info.scale;
+            ts.Laraw = (data.Left_L2Acc-data.Left_L1Acc)*info.scale;
             
             %Compute right hand trial kinematic data
-            ts.Rxraw = (pi/4-(data.Right_L2Ang(idx)-data.Right_L1Ang(idx)))*info.scale + info.offset -info.origin - 0.095;
-            ts.Rvraw = (-(data.Right_L2Vel(idx)-data.Right_L1Vel(idx)))*info.scale;
-            ts.Raraw = (-(data.Right_L2Acc(idx)-data.Right_L1Acc(idx)))*info.scale;
+            ts.Rxraw = (pi/4-(data.Right_L2Ang-data.Right_L1Ang))*info.scale + info.offset -info.origin - 0.095;
+            ts.Rvraw = (-(data.Right_L2Vel-data.Right_L1Vel))*info.scale;
+            ts.Raraw = (-(data.Right_L2Acc-data.Right_L1Acc))*info.scale;
+            
+            %Skip first 'skiposc' oscillations
+            if conf.skip_osc == 0
+                idxL = skip_oscillations(ts.Lxraw,info.skipOsc);
+                idxR = skip_oscillations(ts.Rxraw,info.skipOsc);
+            else
+                idxL = skip_oscillations(ts.Lxraw,conf.skip_osc);
+                idxR = skip_oscillations(ts.Rxraw,conf.skip_osc);
+            end
+            
+            %Pick the shortest time series
+            if length(idxL) < length(idxR)
+                ts.idx = idxL;
+            else
+                ts.idx = idxR;
+            end
+            
             
             %Get peaks for later processing
             [maxPeaksL, minPeaksL] = peakdet(ts.Lx, 0.00005);
@@ -244,11 +260,15 @@ classdef TimeSeriesBimanual < handle
             ts.LID = info.LID;
             ts.RID = info.RID;
         end
+        
         function update_conf(obj,conf)
             obj.conf=conf;
         end
+        
         [fcns, names, xlabels, ylabels] = get_plots(obj)
-        plot(obj,graphPath,ext)
+        
+        plot(obj,graphPath,rootname,ext)
+        
         concatenate(obj,obj2)
         
     end % methods

@@ -24,7 +24,7 @@ classdef Config < handle
         replication_ts=4
         
         %Fetch data
-        skip_osc=5
+        skip_osc=0
         filter_stds=3
         cutoff=12
         compress_pc=1

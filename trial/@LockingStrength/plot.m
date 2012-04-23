@@ -1,7 +1,14 @@
-function plot(obj)
-    %Check everything goes as expected
-    %[p, q, ~, ~] = ls.get_locking_ratio(obj.LPxx,obj.RPxx_t,obj.peak_delta);
-    figure; hold on
+function plot(obj,graphPath,rootname,ext)
+    if nargin<4, ext='png';end
+    if nargin<3, rootname=[];end
+    if nargin<2, graphPath=[];end
+
+    if ischar(graphPath)
+        fig = figure('visible','off');
+    elseif ~iscell(graphPath)
+        fig = figure();
+    end
+    hold on
     plot(obj.freqs,obj.LPxx,'r');
     plot(obj.freqs,obj.RPxx_t,'b');
     plot(obj.freqs,obj.RPxx,'g');
@@ -13,4 +20,11 @@ function plot(obj)
     text(4,3.5,strcat('Freq ratio before rescaling=',num2str(obj.rho)));
     hold off;
     disp(obj);
+    if ischar(graphPath)
+        %Generate random sequence and append to the end (based on seconds or whatever)
+        filename = 'LockingStrength';
+        figname = joinpath(joinpath(graphPath,rootname),filename);
+        saveas(fig,figname,ext);
+        close(fig);
+    end
 end

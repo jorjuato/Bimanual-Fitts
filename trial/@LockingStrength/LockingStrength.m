@@ -30,7 +30,7 @@ classdef LockingStrength
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Prototypes of Public methods
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        plot(obj)
+        plot(obj,graphPath,rootname,ext)
         disp(obj)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -88,7 +88,7 @@ classdef LockingStrength
             ls.RPxx_t = ls.get_scaled_PSD(ls.RPxx,ls.freqs,ls.rho);
             
             %Normalize higher frequency signal to unit variance for FLS Amp
-            ls.LPxx_t = ls.LPxx / ls.freqs(find(ls.LPxx==max(ls.LPxx))); 
+            ls.LPxx_t = ls.LPxx / ls.freqs(ls.LPxx==max(ls.LPxx)); 
     
         end   
         function update_conf(obj,conf)
@@ -103,7 +103,7 @@ classdef LockingStrength
             obj.RPxx_t = obj.get_scaled_PSD(obj.RPxx,obj.freqs,obj.rho);
             
             %Normalize higher frequency signal to unit variance for FLS Amp
-            obj.LPxx_t = obj.LPxx / freqs(find(obj.LPxx==max(obj.LPxx))); 
+            obj.LPxx_t = obj.LPxx / obj.freqs(obj.LPxx==max(obj.LPxx)); 
         end
     end
 

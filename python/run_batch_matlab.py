@@ -9,6 +9,8 @@ BATCH_OUT_DIR   = os.getcwd()+"/batch"
 SCRIPTS_DIR="/home/jorge/Dropbox/dev/Bimanual-Fitts"
 if not os.path.exists(BATCH_OUT_DIR):
     os.makedirs(BATCH_OUT_DIR)
+
+
 WRKs=5
 PPs=10
 TEMPLATE="""\

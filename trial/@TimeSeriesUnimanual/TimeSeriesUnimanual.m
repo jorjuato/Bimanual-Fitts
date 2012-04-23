@@ -4,6 +4,7 @@ classdef TimeSeriesUnimanual < handle
       IDef
       ID
       conf
+      idx
    end
    
    properties (Dependent = true, SetAccess = private)
@@ -87,15 +88,15 @@ classdef TimeSeriesUnimanual < handle
         end   
    
       function x = get.x(obj)
-         x = filterdata(obj.xraw,obj.conf.cutoff);
+         x = filterdata(obj.xraw(obj.idx),obj.conf.cutoff);
       end
       
       function v = get.v(obj)
-         v = filterdata(obj.vraw,obj.conf.cutoff);
+         v = filterdata(obj.vraw(obj.idx),obj.conf.cutoff);
       end
       
       function a = get.a(obj)
-         a = filterdata(obj.araw,obj.conf.cutoff);
+         a = filterdata(obj.araw(obj.idx),obj.conf.cutoff);
       end
       
       function xnorm = get.xnorm(obj)
@@ -113,23 +114,27 @@ classdef TimeSeriesUnimanual < handle
       %Constructor
       function ts = TimeSeriesUnimanual(data,info,conf)
         ts.conf=conf;
-        if ~isempty(strfind(ts.conf.hand,'L'))       
-            %Skip first 'skiposc' oscillations
-            idx = skip_oscillations(data.Left_L2Ang-data.Left_L1Ang,info.skipOsc);
+        if ~isempty(strfind(ts.conf.hand,'L'))
             %Compute left hand trial kinematic data
             ts.xraw = (data.Left_L2Ang(idx)-data.Left_L1Ang(idx))*info.scale + info.offset-info.origin;
             ts.vraw = (data.Left_L2Vel(idx)-data.Left_L1Vel(idx))*info.scale;
             ts.araw = (data.Left_L2Acc(idx)-data.Left_L1Acc(idx))*info.scale;
-        else
-            %Skip first 'skiposc' oscillations
-            idx = skip_oscillations(data.Right_L2Ang-data.Right_L1Ang,info.skipOsc);
-            info.offset = info.offset - 0.073;
+            
+        else            
             %Compute right hand trial kinematic data
+            info.offset = info.offset - 0.073;
             ts.xraw = (pi/4-(data.Right_L2Ang(idx)-data.Right_L1Ang(idx)))*info.scale + info.offset -info.origin;
             ts.vraw = (-(data.Right_L2Vel(idx)-data.Right_L1Vel(idx)))*info.scale;
             ts.araw = (-(data.Right_L2Acc(idx)-data.Right_L1Acc(idx)))*info.scale;
-            
         end
+        
+        %Skip first 'skiposc' oscillations
+        if conf.skip_osc == 0
+            ts.idx = skip_oscillations(ts.xraw,info.skipOsc);
+        else
+            ts.idx = skip_oscillations(ts.xraw,conf.skip_osc);
+        end
+     
         %Get peaks for later processing
         [maxPeaks, minPeaks] = peakdet(ts.x, 0.00005);
         ts.peaks = sort([maxPeaks(:,1);minPeaks(:,1)]);

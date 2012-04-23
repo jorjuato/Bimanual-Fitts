@@ -12,7 +12,7 @@ function plot(obj,graphPath,rootname,ext)
     if ischar(graphPath)
         %Generate random sequence and append to the end (based on seconds or whatever)
         filename = 'VectorField';
-        figname = joinpath(joinpath(graphPath,rootname),filename));
+        figname = joinpath(joinpath(graphPath,rootname),filename);
         saveas(fig,figname,ext);
         close(fig);
     end

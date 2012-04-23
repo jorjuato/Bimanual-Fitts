@@ -1,5 +1,5 @@
 function ang=get_VF_circularity(vf, mode)
-    if nargin==1, mode=1; end
+    if nargin==1, mode=2; end
     
     if mode==1
         ang=get_VF_circularity_1(vf);
@@ -10,7 +10,8 @@ function ang=get_VF_circularity(vf, mode)
     elseif mode==4
         ang=get_VF_circularity_4(vf);
     else
-        dispaly(['Mode',num2str(mode),' not implemented!'])
+        display(['Mode',num2str(mode),' not implemented!'])
+    end
     
 end
 
@@ -42,12 +43,14 @@ function ang=get_VF_circularity_1(vf)
     end
 end
 
-function ang=get_VF_circularity_2(vf)
+function modulus=get_VF_circularity_2(vf)
     %This method imposes a circle of R=1 and center=(0,0)
     vx=vf.vectors{1};
     [X,Y]=meshgrid(vf.xo{1},vf.xo{2});
-    [theta,R] = cart2pol(X(~isnan(vx)),Y(~isnan(vx)));
-    ang=1/(1-mean(R));
+    [theta,modulus] = cart2pol(X,Y);
+    modulus(isnan(vx))=NaN;
+    %ang=1/(1-mean(R));
+    %ang=median(R);
 end
 
 function ang=get_VF_circularity_3(vf)
@@ -64,4 +67,6 @@ function ang=get_VF_circularity_3(vf)
     I = abs(fdata - ydata) > 1.5*std(ydata);     
 end
 
+function ang=get_VF_circularity_4(vf)
 
+end
