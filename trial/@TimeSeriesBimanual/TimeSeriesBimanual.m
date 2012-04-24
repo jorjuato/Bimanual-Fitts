@@ -265,6 +265,22 @@ classdef TimeSeriesBimanual < handle
             obj.conf=conf;
         end
         
+        function update_idx(obj)
+        %Updates indexes of skipped oscillations based on conf.skip_osc
+            if obj.conf.skip_osc==0
+                obj.idx=1:length(obj.Lxraw);
+            else
+                idxL = skip_oscillations(obj.Lxraw,obj.conf.skip_osc);
+                idxR = skip_oscillations(obj.Rxraw,obj.conf.skip_osc);
+                %Pick the shortest time series
+                if length(idxL) < length(idxR)
+                    obj.idx = idxL;
+                else
+                    obj.idx = idxR;
+                end
+            end
+        end
+            
         [fcns, names, xlabels, ylabels] = get_plots(obj)
         
         plot(obj,graphPath,rootname,ext)

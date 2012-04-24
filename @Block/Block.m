@@ -55,5 +55,6 @@ classdef Block < handle
         tr = concatenate(obj)
         update_vf(obj)
         update_ls(obj)
+        update_idx(obj)
     end
 end

@@ -13,27 +13,29 @@ classdef Participant < handle
     
         %B = subsref(obj,ref)
         
-        concatenate(obj);
+        concatenate(obj)
         
-        plot(obj);
+        plot(obj)
         
-        plot_vf(obj,graphPath);
+        plot_vf(obj,graphPath)
         
-        plot_va(obj,graphPath);
+        plot_va(obj,graphPath)
             
-        plot_learning_oscillations(obj,graphPath);
+        plot_learning_oscillations(obj,graphPath)
         
-        plot_learning_relative(obj,graphPath);
+        plot_learning_relative(obj,graphPath)
          
-        plot_learning_lockingStrength(obj,graphPath);
+        plot_learning_lockingStrength(obj,graphPath)
         
-        plot_learning_vf(obj,graphPath);
+        plot_learning_vf(obj,graphPath)
         
-        update_vf(obj);
+        update_vf(obj)
         
         update_ls(obj)
         
-        save(obj);
+        update_idx(obj)
+        
+        save(obj)
         
         new = copy(obj)
         

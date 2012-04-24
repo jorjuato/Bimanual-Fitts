@@ -11,17 +11,19 @@ classdef Session < handle
     
     methods
     
-        plot(obj,mode,graphPath,rootname,ext);
+        plot(obj,mode,graphPath,rootname,ext)
         
-        plot_va(obj,mode,graphPath,rootname,ext);
+        plot_va(obj,mode,graphPath,rootname,ext)
         
-        plot_vf(obj,mode,graphPath,rootname,ext);
+        plot_vf(obj,mode,graphPath,rootname,ext)
         
-        plot_relative_osc(obj,mode,graphPath,rootname,ext);
+        plot_relative_osc(obj,mode,graphPath,rootname,ext)
         
-        update_vf(obj);
+        update_vf(obj)
         
         update_ls(obj)
+        
+        update_idx(obj)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor

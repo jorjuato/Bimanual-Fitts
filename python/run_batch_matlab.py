@@ -32,5 +32,8 @@ def write_scripts(pp):
     return "nohup /opt/matlab/bin/matlab -nodesktop -nosplash -r %s > /dev/null" % filename[:-2]
 
 if __name__ == '__main__':
-    pool=Pool(processes=WRKs)
+    pool=Pool(processes=WRKs,maxtasksperchild=1)
     pool.map(os.system, map(write_scripts,range(1,PPs+1)), round(PPs/WRKs) )
+    pool.close()
+    pool.join()
+    sys.exit()

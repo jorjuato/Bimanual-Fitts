@@ -116,16 +116,15 @@ classdef TimeSeriesUnimanual < handle
         ts.conf=conf;
         if ~isempty(strfind(ts.conf.hand,'L'))
             %Compute left hand trial kinematic data
-            ts.xraw = (data.Left_L2Ang(idx)-data.Left_L1Ang(idx))*info.scale + info.offset-info.origin;
-            ts.vraw = (data.Left_L2Vel(idx)-data.Left_L1Vel(idx))*info.scale;
-            ts.araw = (data.Left_L2Acc(idx)-data.Left_L1Acc(idx))*info.scale;
-            
+            ts.xraw = (data.Left_L2Ang-data.Left_L1Ang)*info.scale + info.offset-info.origin;
+            ts.vraw = (data.Left_L2Vel-data.Left_L1Vel)*info.scale;
+            ts.araw = (data.Left_L2Acc-data.Left_L1Acc)*info.scale;
         else            
             %Compute right hand trial kinematic data
             info.offset = info.offset - 0.073;
-            ts.xraw = (pi/4-(data.Right_L2Ang(idx)-data.Right_L1Ang(idx)))*info.scale + info.offset -info.origin;
-            ts.vraw = (-(data.Right_L2Vel(idx)-data.Right_L1Vel(idx)))*info.scale;
-            ts.araw = (-(data.Right_L2Acc(idx)-data.Right_L1Acc(idx)))*info.scale;
+            ts.xraw = (pi/4-(data.Right_L2Ang-data.Right_L1Ang))*info.scale + info.offset -info.origin;
+            ts.vraw = (-(data.Right_L2Vel-data.Right_L1Vel))*info.scale;
+            ts.araw = (-(data.Right_L2Acc-data.Right_L1Acc))*info.scale;
         end
         
         %Skip first 'skiposc' oscillations
@@ -145,6 +144,15 @@ classdef TimeSeriesUnimanual < handle
       function update_conf(obj,conf)
          obj.conf=conf;
       end
-
+      
+      function update_idx(obj)
+      %Updates indexes of skipped oscillations based on conf.skip_osc
+          if obj.conf.skip_osc==0
+            obj.idx=1:length(obj.xraw);
+          else
+            obj.idx = skip_oscillations(obj.xraw,obj.conf.skip_osc);
+          end
+      end
+        
    end % methods
 end% classdef

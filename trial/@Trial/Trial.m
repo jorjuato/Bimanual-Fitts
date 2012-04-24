@@ -60,6 +60,8 @@ classdef Trial < handle
         
         update_conf(obj,src,event)
         
+        update_idx(obj)
+        
     end
     
 
