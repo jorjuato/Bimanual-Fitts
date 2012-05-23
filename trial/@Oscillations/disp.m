@@ -1,14 +1,11 @@
-function display(obj)
+function disp(obj)
     props = properties(obj);
-    disp('Displaying properties of object Oscillations...');
+    fprintf('\nProperties of object Oscillations...\n');
     for i=1:length(props)
-        p=props{i};
-        if length(obj.(p)==1)
-            str = sprintf('%s = %f.\n', p, obj.(p));
-            disp(str);
-        elseif isa(obj.(p),'str')
-            str = sprintf('%s = %s.\n', p, obj.(p));
-            disp(str);
+        p=obj.(props{i});
+        if ~isa(p,'Config')
+            fprintf('%10s = %2.3f +/- %1.3f\n', props{i}, mean(p),std(p));
         end
     end
+    fprintf('\n');
 end

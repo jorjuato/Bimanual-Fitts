@@ -20,6 +20,8 @@ classdef TimeSeriesBimanual < handle
         Lxnorm
         Lvnorm
         Lanorm
+        Ljerk
+        Ljerknorm
         Lph
         Lamp
         Rxraw
@@ -28,9 +30,11 @@ classdef TimeSeriesBimanual < handle
         Rx
         Rv
         Ra
+        Rjerk
         Rxnorm
         Rvnorm
         Ranorm
+        Rjerknorm
         Rph
         Ramp
     end
@@ -166,6 +170,10 @@ classdef TimeSeriesBimanual < handle
             La = filterdata(obj.Laraw(obj.idx),obj.conf.cutoff);
         end
         
+        function Ljerk = get.Ljerk(obj)
+            Ljerk = [0;diff(obj.La)]*obj.conf.fs;
+        end
+        
         function Rx = get.Rx(obj)
             Rx = filterdata(obj.Rxraw(obj.idx),obj.conf.cutoff);
         end
@@ -176,6 +184,10 @@ classdef TimeSeriesBimanual < handle
         
         function Ra = get.Ra(obj)
             Ra = filterdata(obj.Raraw(obj.idx),obj.conf.cutoff);
+        end
+        
+        function Rjerk = get.Rjerk(obj)
+            Rjerk = [0;diff(obj.Ra)]*obj.conf.fs;
         end
         
         function Lxnorm = get.Lxnorm(obj)
@@ -189,6 +201,11 @@ classdef TimeSeriesBimanual < handle
         function Lanorm = get.Lanorm(obj)
             Lanorm = obj.La/max(abs(obj.La));
         end
+        
+        function Ljerknorm = get.Ljerknorm(obj)
+            Ljerknorm = obj.Ljerk/max(abs(obj.Ljerk));
+        end
+        
         function Rxnorm = get.Rxnorm(obj)
             Rxnorm = obj.Rx/max(abs(obj.Rx));
         end
@@ -199,6 +216,10 @@ classdef TimeSeriesBimanual < handle
         
         function Ranorm = get.Ranorm(obj)
             Ranorm = obj.Ra/max(abs(obj.Ra));
+        end
+        
+        function Rjerknorm = get.Rjerknorm(obj)
+            Rjerknorm = obj.Rjerk ./ max(abs(obj.Rjerk));
         end
         
         function Rph = get.Rph(obj)

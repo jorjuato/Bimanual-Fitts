@@ -1,14 +1,19 @@
 #Analysis of Variance for Bimanual Fitts experiment
+require(doMC)
 source("plot_fcns_bi.R")
 source("stat_fcns_bi.R")
 source("plot_fcns_uni.R")
 source("stat_fcns_uni.R")
+registerDoMC()
 
 #Prepare global paths
-uLfile="./UniL_fitts.dat"
-uRfile="./UniR_fitts.dat"
-bfile="./Bi_fitts.dat"
-opath="/home/jorge/KINARM/stats"
+rootpath='/home/jorge/KINARM'
+Rname='4th'
+opath=paste(paste(rootpath,"stats",sep='/'),Rname,sep='/')
+Rdatapath=paste(paste(rootpath,'Rdata',sep='/'),Rname,sep='/')
+uLfile=paste(Rdatapath,"UniL_fitts.dat",sep='/')
+uRfile=paste(Rdatapath,"UniR_fitts.dat",sep='/')
+bfile=paste(Rdatapath,"Bi_fitts.dat",sep='/')
 
 #Select analysis to perform
 do_aov=FALSE
@@ -40,11 +45,14 @@ rangeU<-(5:17)
 densityplots=names(bidata)[rangeB]
 
 #Iterate over all Bimanual variables
-for (vname in names(bidata)[rangeB]) {
+foreach (vname=names(bidata)[rangeB]) %dopar% {
+#for (vname in names(bidata)[rangeB]) {
     #Create path
     vpath=paste(opath,vname,sep="/")
     dir.create(vpath,showWarnings=FALSE)
-        
+    
+    print(paste('analyzing variable',vname))
+    
     if (do_aov) do.aov(bidata,vname,vpath)
     
     if (do_lme) do.lme(bidata,vname,vpath)
@@ -65,52 +73,58 @@ for (vname in names(bidata)[rangeB]) {
     if (do_density) plot_densityplot(bidata,vname,vpath)
 }
 
-#hstr='L'
+hstr='L'
+foreach (vname=names(uLdata)[rangeU]) %dopar% {
 #for (vname in names(uLdata)[rangeU]) {
-#    #Create path
-#    vpath=paste(opath,vname,sep="/")
-#    dir.create(vpath,showWarnings=FALSE)
+    #Create path
+    vpath=paste(opath,vname,sep="/")
+    dir.create(vpath,showWarnings=FALSE)
     
-#    if (do_aov) do.aov.uni(uLdata,vname,vpath)
+    print(paste('analyzing variable',vname))
     
-#    if (do_lme) do.lme.uni(uLdata,vname,vpath)
+    if (do_aov) do.aov.uni(uLdata,vname,vpath)
     
-#    if (do_ANOVA) do.ANOVA.uni(uLdata,vname,vpath)
+    if (do_lme) do.lme.uni(uLdata,vname,vpath)
     
-#    if (do_CompareANOVA) do.compare.ANOVA.uni(uLdata,vname,vpath)
+    if (do_ANOVA) do.ANOVA.uni(uLdata,vname,vpath)
     
-#    if (do_lmer) do.lmer.uni(uLdata,vname,vpath)
+    if (do_CompareANOVA) do.compare.ANOVA.uni(uLdata,vname,vpath)
+    
+    if (do_lmer) do.lmer.uni(uLdata,vname,vpath)
 
-#    if (do_barchart) plot_barcharts.uni(uLdata,vname,vpath)
+    if (do_barchart) plot_barcharts.uni(uLdata,vname,vpath)
     
-#    if (do_interaction) plot_interactions.uni(uLdata,vname,vpath)
+    if (do_interaction) plot_interactions.uni(uLdata,vname,vpath)
     
-#    if (do_boxplots) plot_boxplots.uni(uLdata,vname,vpath)
+    if (do_boxplots) plot_boxplots.uni(uLdata,vname,vpath)
     
-#    if (do_density && vname %in% densityplots) plot_densityplot.uni(uLdata,vname,vpath)
-#}
+    if (do_density && vname %in% densityplots) plot_densityplot.uni(uLdata,vname,vpath)
+}
 
-#hstr='R'
+hstr='R'
+foreach (vname=names(uRdata)[rangeU]) %dopar% {
 #for (vname in names(uRdata)[rangeU]) {
-#    #Create path
-#    vpath=paste(opath,vname,sep="/")
-#    dir.create(vpath,showWarnings=FALSE)
+    #Create path
+    vpath=paste(opath,vname,sep="/")
+    dir.create(vpath,showWarnings=FALSE)
     
-#    if (do_aov) do.aov.uni(uRdata,vname,vpath)
+    print(paste('analyzing variable',vname))
     
-#    if (do_lme) do.lme.uni(uRdata,vname,vpath)
+    if (do_aov) do.aov.uni(uRdata,vname,vpath)
     
-#    if (do_ANOVA) do.ANOVA.uni(uRdata,vname,vpath)
+    if (do_lme) do.lme.uni(uRdata,vname,vpath)
     
-#    if (do_CompareANOVA) do.compare.ANOVA.uni(uRdata,vname,vpath)
+    if (do_ANOVA) do.ANOVA.uni(uRdata,vname,vpath)
     
-#    if (do_lmer) do.lmer.uni(uRdata,vname,vpath)
+    if (do_CompareANOVA) do.compare.ANOVA.uni(uRdata,vname,vpath)
+    
+    if (do_lmer) do.lmer.uni(uRdata,vname,vpath)
 
-#    if (do_barchart) plot_barcharts.uni(uRdata,vname,vpath)
+    if (do_barchart) plot_barcharts.uni(uRdata,vname,vpath)
     
-#    if (do_interaction) plot_interactions.uni(uRdata,vname,vpath)
+    if (do_interaction) plot_interactions.uni(uRdata,vname,vpath)
     
-#    if (do_boxplots) plot_boxplots.uni(uRdata,vname,vpath)
+    if (do_boxplots) plot_boxplots.uni(uRdata,vname,vpath)
     
-#    if (do_density && vname %in% densityplots) plot_densityplot.uni(uRdata,vname,vpath)
-#}
+    if (do_density && vname %in% densityplots) plot_densityplot.uni(uRdata,vname,vpath)
+}

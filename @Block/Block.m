@@ -50,7 +50,7 @@ classdef Block < handle
         
         get_unimanual(obj)
         get_bimanual(obj)
-        %B = subsref(obj,S)
+        B = subsref(obj,sth,S)
         new = copy(obj)
         tr = concatenate(obj)
         update_vf(obj)

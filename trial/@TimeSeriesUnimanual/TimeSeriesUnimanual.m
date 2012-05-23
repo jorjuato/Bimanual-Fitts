@@ -11,12 +11,14 @@ classdef TimeSeriesUnimanual < handle
       x
       v
       a
+      jerk
       xraw
       vraw
       araw
       xnorm
       vnorm
       anorm
+      jerknorm
    end
    
     properties (SetAccess = private, Hidden)
@@ -57,6 +59,10 @@ classdef TimeSeriesUnimanual < handle
             else
                 araw = obj.araw_;
             end
+        end
+        
+        function jerk = get.jerk(obj)
+            jerk = [0;diff(obj.a)]*obj.conf.fs;
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,6 +116,10 @@ classdef TimeSeriesUnimanual < handle
       function anorm = get.anorm(obj)
          anorm = obj.a/max(abs(obj.a));
       end
+      
+      function jerknorm = get.jerknorm(obj)
+            jerknorm = obj.jerk/max(abs(obj.jerk));
+        end
 
       %Constructor
       function ts = TimeSeriesUnimanual(data,info,conf)

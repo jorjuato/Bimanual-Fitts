@@ -11,7 +11,7 @@ classdef Config < handle
         blockpath=''    %Block path
         unimanual=0
         hand=''
-        inmemory=1
+        inmemory=0
         parallelMode=1  % 0=no paralellization 
                         % 1=parallelize on participants
                         % 2=parallelize on sessions
@@ -22,11 +22,13 @@ classdef Config < handle
         relative_plots_mode=1   % 1=
                                 % 2=
         replication_ts=4
+        plot_onload = 1
         
         %Fetch data
-        skip_osc=0
+        fs = 1E3
+        skip_osc=8
         filter_stds=3
-        cutoff=12
+        cutoff=20
         compress_pc=1
         compress_ts=1
         split_analysis=1
@@ -34,15 +36,16 @@ classdef Config < handle
         
         %LockingStrength properties
         peak_delta=2
+        KLD_bins=20;
         
         %VectorField properties
         neighbourhood = [3,3]
         binnumber = 41
-        fs = 1E3
-        step = 3
-        minValsToComputeCondProb = 5
+        step = 1
+        minValsToComputeCondProb = 2
         use_norm=1
         maxAngle_localenv=0.15
+        fitorder=9
         
         
     end % properties

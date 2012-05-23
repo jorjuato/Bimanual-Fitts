@@ -50,7 +50,7 @@ function plot_va(obj,graphPath)
                 end
                                 
             end
-            name=sprintf('LearningVectorAnglesIDL=%1.1f IDR=%1.1f',DSl{i,1}.info.ID,DSr{j,1}.info.ID);
+            name=sprintf('LearningVectorAnglesIDL%1dIDR%1d',round(DSl{i,1}.info.ID),round(DSr{j,1}.info.ID));
             if obj.conf.interactive==1
                 suplabel(name,'t',[.1 .1 .84 .84]);
             end

@@ -1,4 +1,0 @@
-function update(obj)
-
-end
-

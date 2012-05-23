@@ -1,11 +1,6 @@
-
+data_path=joinpath(joinpath(getuserdir(),'KINARM'),'save');
 for pp=1:10
-    if pp<=9
-        load(['/Volumes/MacintoshHD3/research/CurrentProjects/bimanualFitts/save/participant00',num2str(pp),'.mat'])
-    else
-        load(['/Volumes/MacintoshHD3/research/CurrentProjects/bimanualFitts/save/participant0',num2str(pp),'.mat'])
-    end
-    %
+    load(joinpath(data_path,sprintf('participant%03d',pp)));
     ss=0;
     for session=[1,4,7]
         ss=ss+1;

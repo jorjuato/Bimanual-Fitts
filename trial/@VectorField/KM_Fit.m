@@ -2,7 +2,8 @@ function [Dfit]=KM_Fit(obj,B,D,i)
 
 % chose i for D{i}
 
-fitorder = 3;
+fitorder = 4;
+%fitorder = obj.conf.fitorder;
 bound = 0.01;
 
 [X,Y]=meshgrid(B{1},B{2});

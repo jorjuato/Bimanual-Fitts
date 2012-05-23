@@ -1,6 +1,6 @@
-classdef Analysis < dynamicprops    
+classdef AnalysisFitts < dynamicprops
     methods
-        function obj=Analysis(conf,i)
+        function obj=AnalysisFitts(conf,i)
             if nargin==0, conf=Config(); end
             if nargin<2, i=0; end
             
@@ -12,9 +12,23 @@ classdef Analysis < dynamicprops
                 end
             elseif obj.conf.split_analysis==1
                 if i==0 %We're in first call to Analysis in splitted mode
-                    for p=[3,10]      
-                        an=Analysis(obj.conf,p); %Second call
-                        an.save(p);
+                    if obj.conf.parallelMode==1
+                        labsConf = findResource(); 
+                        if matlabpool('size') == 0
+                            matlabpool(labsConf.ClusterSize); 
+                            %matlabpool local 5;
+                        end
+                        pp=[1,2,3,4,7,8,9,10];
+                        parfor i=[1:8]  
+                            p=pp(i);
+                            an=AnalysisFitts(obj.conf,p); %Second call
+                            an.save(p);
+                        end
+                    else
+                        for p=[1:10]      
+                            an=AnalysisFitts(obj.conf,p); %Second call
+                            an.save(p);
+                        end
                     end
                 else%We're in second call to Analysis
                     obj.get_data(i);
@@ -29,8 +43,12 @@ classdef Analysis < dynamicprops
         end
             
         function get_data(obj,p)
-            disp(sprintf('Loading participant %d',p));
-            pp=Participant.load(p,obj.conf);
+            if isa(p,'Participant')
+                pp=p;
+            else
+                disp(sprintf('Loading participant %d',p));
+                pp=Participant.load(p,obj.conf);
+            end            
             vtypes={'osc','vf','ls'};
             fmtstrs={'%sR';'%sL';'U%sR';'U%sL'};
             %Fetch Oscillations/Vectorfield variables
@@ -212,7 +230,7 @@ classdef Analysis < dynamicprops
                 conf=Config();
             end
             conf.split_analysis=-1;
-            an=Analysis(conf);
+            an=AnalysisFitts(conf);
             fnames=dir2(conf.anal_path);
             for n=1:length(fnames)
                 tmp=load(joinpath(conf.anal_path,fnames(n).name));

@@ -1,0 +1,10 @@
+function CPS=phase_correlation(tr)
+    Lx=tr.ts.Lxnorm;
+    Rx=tr.ts.Rxnorm;
+    %hann=hanning(length(Lx));
+    %Lflt=hann.*Lx;
+    %Rflt=hann.*Rx;
+    FFT_L=fft(Lx);
+    FFT_R=fft(Rx);
+    IMF = FFT_L.*conj(FFT_R);
+    CPS = IMF./abs(IMF);

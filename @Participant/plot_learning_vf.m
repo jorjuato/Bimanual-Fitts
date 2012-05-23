@@ -80,7 +80,7 @@ function arr = plot_learning_vf(obj,graphPath)
     end
     if exist(graphPath,'dir') & obj.conf.interactive==0
         filename = sprintf('%s-BlockVectorAngles',rootname);
-        figname = joinpath(graphPath,filename);
-        saveas(fig,figname,obj.conf.ext);
+        figname = [joinpath(graphPath,filename),'.',obj.conf.ext];
+        saveas(fig,figname);
         close(fig);
     end

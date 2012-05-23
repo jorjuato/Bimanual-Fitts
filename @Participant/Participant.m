@@ -11,7 +11,7 @@ classdef Participant < handle
     
     methods
     
-        %B = subsref(obj,ref)
+        B = subsref(obj,sth,ref)
         
         concatenate(obj)
         
@@ -56,20 +56,25 @@ classdef Participant < handle
                 end
                 obj.conf.name=name;
                 subject_dir = getSubjectDir(conf.name,obj.conf.data_path);
-                s = dir2(subject_dir)
+                s = dir2(subject_dir);
                 
-                if obj.conf.parallelMode==2
+                if obj.conf.parallelMode==2 %fucking broken!!
                     labsConf = findResource(); 
                     if matlabpool('size') == 0
-                        matlabpool(labsConf.ClusterSize); 
+                        %matlabpool(labsConf.ClusterSize);
+                        matlabpool local 3; 
                     end
                     confPar=copy(obj.conf);
                     sessions=Session.empty(7,0);
+                    for i=1:length(s)
+                        session_paths{i} = joinpath(subject_dir,s(i).name);
+                    end                        
+                    session_paths{:}
                     parfor i=1:length(s)
                         conf=copy(confPar);
-                        conf.number = i;
-                        session_path = joinpath(subject_dir,s(i).name)
-                        sessions(i) = Session(session_path,conf);
+                        conf.number = i;   
+                        %session_paths{i}
+                        sessions(i) = Session(session_paths{i},conf);
                     end
                     obj.sessions=sessions;
                 else

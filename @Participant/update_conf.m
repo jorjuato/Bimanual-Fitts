@@ -7,7 +7,8 @@ function update_conf(obj,src,evnt)
         %Nothing more needed due to on-disk storage
         %Conf has to be restored after each load from disk
         for i=1:obj.size
-            obj.sessions(i).update_conf(copy(obj.conf));
+            s=obj.sessions(i);
+            s.update_conf(copy(obj.conf));
         end
     %end
 end

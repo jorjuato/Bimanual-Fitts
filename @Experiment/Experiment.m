@@ -15,6 +15,8 @@ classdef Experiment < dynamicprops
         save(obj); %Disabled
         
         update_vf(obj);
+        
+        B = subsref(obj,sth,ref)
 
         %%%%%%%%%%%%%
         % Constructor
@@ -26,7 +28,7 @@ classdef Experiment < dynamicprops
             %And load all by default in this case
             
             out_files=dir2(obj.conf.save_path);
-            if length(out_files)==0
+            if isempty(out_files)
                 obj.get_results();
             elseif obj.conf.inmemory==1
                 if strcmp(out_files(1).name,'participant001.mat') 
@@ -43,7 +45,8 @@ classdef Experiment < dynamicprops
             if obj.conf.parallelMode==1
                 labsConf = findResource(); 
                 if matlabpool('size') == 0
-                    matlabpool(labsConf.ClusterSize); 
+                    %matlabpool(labsConf.ClusterSize); 
+                    matlabpool local 5;
                 end
                 if obj.conf.inmemory
                     participants=Participant.empty(10,0);
@@ -53,6 +56,9 @@ classdef Experiment < dynamicprops
                     p.save();
                     if obj.conf.inmemory
                         participants(i)=copy(p);
+                    end
+                    if obj.conf.plot_onload ==1
+                        plot(p);
                     end
                 end             
             else            

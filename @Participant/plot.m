@@ -21,7 +21,7 @@ function  plot(obj)
     obj.plot_learning_relative(relative_dir);    
     obj.plot_learning_lockingStrength(lockingStrength_dir);
     %obj.plot_learning_vf(vf_dir,ext);
-	obj.plot_vf(vf_dir);
+	%obj.plot_vf(vf_dir);
 	obj.plot_va(vf_dir);
 	
     %for s=1:obj.size

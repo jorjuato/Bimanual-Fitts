@@ -51,7 +51,7 @@ function plot_vf(obj,graphPath)
                 end
                                 
             end
-            name=sprintf('LearningVectorFieldsIDL=%1.1f IDR=%1.1f',DSl{i,1}.info.ID,DSr{j,1}.info.ID);
+            name=sprintf('LearningVectorFieldsIDL%1dIDR%1d',round(DSl{i,1}.info.ID),round(DSr{j,1}.info.ID));
             if obj.conf.interactive==1
                 suplabel(name,'t',[.1 .1 .84 .84]);
             end

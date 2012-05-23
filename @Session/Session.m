@@ -25,6 +25,9 @@ classdef Session < handle
         
         update_idx(obj)
         
+        update_conf(obj,src,evnt)
+        
+        B = subsref(obj,sth,S)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,25 +49,6 @@ classdef Session < handle
                 %Generate a Block instance
                 obj.(name) = Block(joinpath(session_path,name),copy(obj.conf));
             end
-        end
-        
-%         function B = subsref(obj,S)
-%             'holaS'
-%             if length(S) > 1
-%                 if strcmp(S(1).type,'.')
-%                     %tmp = obj.(S(1).subs{1});
-%                     %B = tmp.subsref(tmp,S(2:end));
-%                     B = obj.(S(1).subs{1});
-%                 else
-%                     disp('Wrong access method for class Session')
-%                     B =zeros(0);
-%                 end
-%             elseif strcmp(S.type,'.')
-%                 B = obj.(S(1).subs{1});
-%             else
-%                 B=zeros(0);
-%             end
-%         end
-        
+        end        
     end % methods
 end% classdef

@@ -17,7 +17,7 @@ classdef Oscillations < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Prototypes of Public methods
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        plot(obj)
+        plot(obj,graphPath,rootname,ext)
         display(obj)
         concatenate(obj,obj2)
 
