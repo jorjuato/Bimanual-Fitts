@@ -15,12 +15,13 @@ classdef AnalysisFitts < dynamicprops
                     if obj.conf.parallelMode==1
                         labsConf = findResource(); 
                         if matlabpool('size') == 0
-                            matlabpool(labsConf.ClusterSize); 
-                            %matlabpool local 5;
+                            %matlabpool(labsConf.ClusterSize); 
+                            matlabpool(obj.conf.workers)
+                            %matlabpool local 2;
                         end
-                        pp=[1,2,3,4,7,8,9,10];
-                        parfor i=[1:8]  
-                            p=pp(i);
+                        pp=[1,4,9,10]
+                        parfor k=1:4
+                            p=pp(k);
                             an=AnalysisFitts(obj.conf,p); %Second call
                             an.save(p);
                         end
@@ -228,6 +229,10 @@ classdef AnalysisFitts < dynamicprops
         function an = merge_files(conf)
             if nargin==0
                 conf=Config();
+            elseif ischar(conf)
+                conf_tmp=Config();
+                conf_tmp.anal_path=conf;
+                conf=conf_tmp;
             end
             conf.split_analysis=-1;
             an=AnalysisFitts(conf);

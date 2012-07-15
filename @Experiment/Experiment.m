@@ -14,6 +14,8 @@ classdef Experiment < dynamicprops
         
         save(obj); %Disabled
         
+        new = copy(obj);
+        
         update_vf(obj);
         
         B = subsref(obj,sth,ref)
@@ -46,7 +48,8 @@ classdef Experiment < dynamicprops
                 labsConf = findResource(); 
                 if matlabpool('size') == 0
                     %matlabpool(labsConf.ClusterSize); 
-                    matlabpool local 5;
+                    matlabpool(obj.conf.workers)
+                    %matlabpool local 2;
                 end
                 if obj.conf.inmemory
                     participants=Participant.empty(10,0);

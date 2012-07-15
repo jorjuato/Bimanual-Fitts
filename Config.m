@@ -6,6 +6,7 @@ classdef Config < handle
         save_path
         plot_path
         anal_path
+        branch_path = 'last' % Unique name to identify this specific config
         name=''         %Participant directory name
         number=1        %Session number
         blockpath=''    %Block path
@@ -15,6 +16,7 @@ classdef Config < handle
         parallelMode=1  % 0=no paralellization 
                         % 1=parallelize on participants
                         % 2=parallelize on sessions
+        workers=4
         
         %Plotting
         ext='png'
@@ -26,16 +28,18 @@ classdef Config < handle
         
         %Fetch data
         fs = 1E3
-        skip_osc=8
+        skip_osc=5
         filter_stds=3
-        cutoff=20
+        cutoff=8
         compress_pc=1
         compress_ts=1
         split_analysis=1
         promediate=1
+        peak_size=0.05
         
         %LockingStrength properties
-        peak_delta=2
+        peak_delta=2;
+        peak_env=25;
         KLD_bins=20;
         
         %VectorField properties
@@ -45,7 +49,7 @@ classdef Config < handle
         minValsToComputeCondProb = 2
         use_norm=1
         maxAngle_localenv=0.15
-        fitorder=9
+        fitorder=6 
         
         
     end % properties
@@ -63,8 +67,9 @@ classdef Config < handle
         function participants = get.participants(obj)
             participants = length(dir2(obj.data_path));
         end
+        
         function set.participants(obj,val)
-            
+            %pass
         end
         
         function plot_participant_path = get.plot_participant_path(obj)
@@ -101,9 +106,14 @@ classdef Config < handle
             obj.save_path = joinpath(obj.root_path,'save');
             obj.plot_path = joinpath(obj.root_path,'plot');
             obj.anal_path = joinpath(obj.root_path,'anal');
-            if ~exist(obj.anal_path)
-                mkdir(obj.anal_path);
-            end        
+            if ~isempty(obj.branch_path)
+                obj.save_path = joinpath(obj.save_path,obj.branch_path);
+                obj.plot_path = joinpath(obj.plot_path,obj.branch_path);
+                obj.anal_path = joinpath(obj.anal_path,obj.branch_path);
+            end
+            if ~exist(obj.save_path,'dir'), mkdir(obj.save_path); end     
+            if ~exist(obj.plot_path,'dir'), mkdir(obj.plot_path); end
+            if ~exist(obj.anal_path,'dir'), mkdir(obj.anal_path); end
             obj.participants = size(dir2(obj.data_path),1);
             if obj.participants==0
                 disp(sprintf('No participant data found in %s\n',obj.data_path))

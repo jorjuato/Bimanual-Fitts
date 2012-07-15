@@ -50,10 +50,17 @@ function  plot_time_series(ts,ax)
     if nargin==1, 
         plot(ts.Lx, 'r'); 
         plot(ts.Rx, 'b');
+        scatter(ts.Lpeaks,ts.Lx(ts.Lpeaks),'r+');
+        scatter(ts.Rpeaks,ts.Rx(ts.Rpeaks),'b+');
+        line([0 length(ts.Rx)] , [0 0 ]);
         axis([0 length(ts.Lx) -0.1 0.1]);
+        
     else
         plot(ax,ts.Lx, 'r'); 
         plot(ax,ts.Rx, 'b');
+        scatter(ax,ts.Lpeaks,ts.Lx(ts.Lpeaks),'r+');
+        scatter(ax,ts.Rpeaks,ts.Rx(ts.Rpeaks),'b+');
+        line(ax,[0 length(ts.Rx)],[ 0 0 ]);
         axis(ax,[0 length(ts.Lx) -0.1 0.1]);
     end
     %Plot targets positions
@@ -71,12 +78,14 @@ function  plot_time_seriesR(ts,ax)
         plot(ts.Rvnorm, 'b');
         plot(ts.Ranorm, 'g');
         plot(ts.Rjerknorm, 'k');
+        line([0 length(ts.Rx)],[ 0 0 ]);
         axis([0 length(ts.Rxnorm) -1.1 1.1]);
     else
         plot(ax,ts.Rxnorm, 'r'); 
         plot(ax,ts.Rvnorm, 'b');
         plot(ax,ts.Ranorm, 'g');
         plot(ax,ts.Rjerknorm, 'k');
+        line(ax,[0 length(ts.Rx)] , [ 0 0 ]);
         axis(ax,[0 length(ts.Rxnorm) -1.1 1.1]);
     end
     %Plot targets positions
@@ -94,12 +103,14 @@ function  plot_time_seriesL(ts,ax)
         plot(ts.Lvnorm, 'b');
         plot(ts.Lanorm, 'g');
         plot(ts.Ljerknorm, 'k');
+        line([0 length(ts.Lx)],[ 0 0 ]);
         axis([0 length(ts.Lxnorm) -1.1 1.1]);
     else
         plot(ax,ts.Lxnorm, 'r'); 
         plot(ax,ts.Lvnorm, 'b');
         plot(ax,ts.Lanorm, 'g');
         plot(ax,ts.Ljerknorm, 'k');
+        line(ax,[0 length(ts.Lx)],[ 0 0 ]);
         axis(ax,[0 length(ts.Lxnorm) -1.1 1.1]);
     end
     %Plot targets positions

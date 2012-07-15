@@ -1,0 +1,564 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>Sympoly_demos</title>
+      <meta name="generator" content="MATLAB 7.5">
+      <meta name="date" content="2009-03-16">
+      <meta name="m-file" content="Sympoly_demos"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#2">Various ways to create a sympoly</a></li>
+               <li><a href="#3">Arithmetic between sympolys, add, subtract, multiply, divide.</a></li>
+               <li><a href="#7">Synthetic division</a></li>
+               <li><a href="#8">Arrays of sympolys</a></li>
+               <li><a href="#10">matrix multiplication</a></li>
+               <li><a href="#11">Selective extraction of terms</a></li>
+               <li><a href="#14">Selective deletion of terms</a></li>
+               <li><a href="#16">Even eigenvalues, using det, then roots</a></li>
+               <li><a href="#17">Sum on any dimension</a></li>
+               <li><a href="#18">And prod</a></li>
+               <li><a href="#19">Orthogonal polynomials from a variety of familes</a></li>
+               <li><a href="#23">Roots of the derivative of a sympoly</a></li>
+               <li><a href="#24">Error propagation through a sympoly</a></li>
+               <li><a href="#26">A simple construction for a Newton-Cotes integration rule</a></li>
+               <li><a href="#27">sympoly uses the command window format style to write out the coefficients</a></li>
+            </ul>
+         </div><pre class="codeinput"><span class="comment">% Sympoly demos</span>
+</pre><h2>Various ways to create a sympoly<a name="2"></a></h2><pre class="codeinput"><span class="comment">% A scalar (zero) sympoly</span>
+z = sympoly;
+
+<span class="comment">% Scalar sympolys 'x', 'y', 'u', 'v' created in the current workspace</span>
+sympoly <span class="string">x</span> <span class="string">y</span> <span class="string">u</span> <span class="string">v</span>
+
+<span class="comment">% A sympoly (identity matrix) array. The numeric element format is</span>
+<span class="comment">% specified by the command window format style.</span>
+format <span class="string">short</span> <span class="string">g</span>
+ayuh = sympoly(eye(3));
+
+<span class="comment">% Use deal to replicate a sympoly into several</span>
+[a,b] = deal(sympoly);
+
+<span class="comment">% Deal can also create a sympoly array</span>
+S(1:2) = deal(sympoly(<span class="string">'x'</span>));
+
+<span class="comment">% As can repmat</span>
+R = repmat(sympoly(<span class="string">'x'</span>),2,3);
+
+whos
+</pre><pre class="codeoutput">  Name            Size            Bytes  Class      Attributes
+
+  A               1x1               684  sympoly              
+  B               1x1               448  sympoly              
+  F               1x1              2198  sympoly              
+  I               1x1              2302  sympoly              
+  I1              1x1              2044  sympoly              
+  I2              1x1              2302  sympoly              
+  Ic              1x1               530  sympoly              
+  M               4x4               128  double               
+  N               1x1              2302  sympoly              
+  Nc              1x1               530  sympoly              
+  P_of_x          1x1              1646  sympoly              
+  Q               1x1             15424  sympoly              
+  R               2x3              1740  sympoly              
+  S               1x2               708  sympoly              
+  a               1x1               448  sympoly              
+  ans             1x1               880  sympoly              
+  ayuh            3x3              2496  sympoly              
+  b               1x1               448  sympoly              
+  f0              1x1               452  sympoly              
+  f1              1x1               452  sympoly              
+  f2              1x1               452  sympoly              
+  f3              1x1               452  sympoly              
+  f4              1x1               452  sympoly              
+  fA              1x1               452  sympoly              
+  fAB             1x1               454  sympoly              
+  fAC             1x1               454  sympoly              
+  fAD             1x1               454  sympoly              
+  fB              1x1               452  sympoly              
+  fBC             1x1               454  sympoly              
+  fBD             1x1               454  sympoly              
+  fC              1x1               452  sympoly              
+  fCD             1x1               454  sympoly              
+  fD              1x1               452  sympoly              
+  fcenter         1x1               462  sympoly              
+  fx              1x1               452  sympoly              
+  fxx             1x1               454  sympoly              
+  fxxx            1x1               456  sympoly              
+  fxxy            1x1               456  sympoly              
+  fxy             1x1               454  sympoly              
+  fxyy            1x1               456  sympoly              
+  fy              1x1               452  sympoly              
+  fyy             1x1               454  sympoly              
+  fyyy            1x1               456  sympoly              
+  lambda          1x1               460  sympoly              
+  mux             1x1               454  sympoly              
+  muy             1x1               454  sympoly              
+  p               1x1               734  sympoly              
+  p2              1x1               566  sympoly              
+  p3              1x1               542  sympoly              
+  p4              1x1               566  sympoly              
+  p5              1x1               638  sympoly              
+  polymean        1x1               748  sympoly              
+  polyvar         1x1              1076  sympoly              
+  quotient        1x1               542  sympoly              
+  remainder       1x1               448  sympoly              
+  sx              1x1               452  sympoly              
+  sy              1x1               452  sympoly              
+  u               1x1               450  sympoly              
+  v               1x1               450  sympoly              
+  x               1x1               450  sympoly              
+  xy              7x2               112  double               
+  xyz            11x3               264  double               
+  y               1x1               450  sympoly              
+  z               1x1               448  sympoly              
+
+</pre><h2>Arithmetic between sympolys, add, subtract, multiply, divide.<a name="3"></a></h2><pre class="codeinput"><span class="comment">% add 1 to x</span>
+1 + x
+</pre><pre class="codeoutput">ans =
+    1 + x
+</pre><pre class="codeinput"><span class="comment">% double times a sympoly</span>
+2*y
+</pre><pre class="codeoutput">ans =
+    2*y
+</pre><pre class="codeinput"><span class="comment">% subtraction, and a simple power</span>
+(x - y)^2
+</pre><pre class="codeoutput">ans =
+    y^2 - 2*x*y + x^2
+</pre><pre class="codeinput"><span class="comment">% More complex expressions</span>
+(x - 2*y)^3/x + sqrt(y^3)
+</pre><pre class="codeoutput">ans =
+    -8*x^-1*y^3 + y^1.5 + 12*y^2 - 6*x*y + x^2
+</pre><h2>Synthetic division<a name="7"></a></h2><pre class="codeinput">[quotient,remainder] = syndivide(x^2+2*x-1,x+1)
+</pre><pre class="codeoutput">quotient =
+    1 + x
+remainder =
+    -2
+</pre><h2>Arrays of sympolys<a name="8"></a></h2><pre class="codeinput">[x , y ; 1 , x+y]
+</pre><pre class="codeoutput">ans =
+Sympoly array has size = [2  2]
+ 
+Sympoly array element [1  1]
+    x
+Sympoly array element [2  1]
+    1
+Sympoly array element [1  2]
+    y
+Sympoly array element [2  2]
+    y + x
+</pre><pre class="codeinput"><span class="comment">% Arrays of sympolys</span>
+v = [1 x y x+y]
+</pre><pre class="codeoutput">v =
+Sympoly array has size = [1  4]
+ 
+Sympoly array element [1  1]
+    1
+Sympoly array element [1  2]
+    x
+Sympoly array element [1  3]
+    y
+Sympoly array element [1  4]
+    y + x
+</pre><h2>matrix multiplication<a name="10"></a></h2><pre class="codeinput">A = v*v'
+B = v'*v
+</pre><pre class="codeoutput">A =
+    1 + 2*y^2 + 2*x*y + 2*x^2
+B =
+Sympoly array has size = [4  4]
+ 
+Sympoly array element [1  1]
+    1
+Sympoly array element [2  1]
+    x
+Sympoly array element [3  1]
+    y
+Sympoly array element [4  1]
+    y + x
+Sympoly array element [1  2]
+    x
+Sympoly array element [2  2]
+    x^2
+Sympoly array element [3  2]
+    x*y
+Sympoly array element [4  2]
+    x*y + x^2
+Sympoly array element [1  3]
+    y
+Sympoly array element [2  3]
+    x*y
+Sympoly array element [3  3]
+    y^2
+Sympoly array element [4  3]
+    y^2 + x*y
+Sympoly array element [1  4]
+    y + x
+Sympoly array element [2  4]
+    x*y + x^2
+Sympoly array element [3  4]
+    y^2 + x*y
+Sympoly array element [4  4]
+    y^2 + 2*x*y + x^2
+</pre><h2>Selective extraction of terms<a name="11"></a></h2>
+         <p>The second term</p><pre class="codeinput">terms(A,2)
+</pre><pre class="codeoutput">ans =
+    2*y^2
+</pre><pre class="codeinput">terms(A,x^2,<span class="string">'extract'</span>)
+</pre><pre class="codeoutput">ans =
+    2*x^2
+</pre><p>Delete a term</p><pre class="codeinput">p = (1 + x^2 + x^7)^3
+terms(p,x^2,<span class="string">'delete'</span>)
+</pre><pre class="codeoutput">p =
+    1 + 3*x^2 + 3*x^4 + x^6 + 3*x^7 + 6*x^9 + 3*x^11 + 3*x^14 + 3*x^16 + x^21
+ans =
+    1 + 3*x^4 + x^6 + 3*x^7 + 6*x^9 + 3*x^11 + 3*x^14 + 3*x^16 + x^21
+</pre><h2>Selective deletion of terms<a name="14"></a></h2><pre class="codeinput">B = terms(A,x,<span class="string">'extract'</span>)
+</pre><pre class="codeoutput">B =
+    0
+</pre><p>Operations on arrays</p><pre class="codeinput">sympoly <span class="string">lambda</span>
+(rand(3) - lambda*eye(3))
+</pre><pre class="codeoutput">ans =
+Sympoly array has size = [3  3]
+ 
+Sympoly array element [1  1]
+    0.96489 - lambda
+Sympoly array element [2  1]
+    0.15761
+Sympoly array element [3  1]
+    0.97059
+Sympoly array element [1  2]
+    0.95717
+Sympoly array element [2  2]
+    0.48538 - lambda
+Sympoly array element [3  2]
+    0.80028
+Sympoly array element [1  3]
+    0.14189
+Sympoly array element [2  3]
+    0.42176
+Sympoly array element [3  3]
+    0.91574 - lambda
+</pre><h2>Even eigenvalues, using det, then roots<a name="16"></a></h2><pre class="codeinput">roots(det(hilb(4) - lambda*eye(4)))
+</pre><pre class="codeoutput">ans =
+       1.5002
+      0.16914
+    0.0067383
+   9.6702e-05
+</pre><h2>Sum on any dimension<a name="17"></a></h2><pre class="codeinput">sum(v,2)
+</pre><pre class="codeoutput">ans =
+    1 + 2*y + 2*x
+</pre><h2>And prod<a name="18"></a></h2><pre class="codeinput">prod(A(:))
+</pre><pre class="codeoutput">ans =
+    1 + 2*y^2 + 2*x*y + 2*x^2
+</pre><h2>Orthogonal polynomials from a variety of familes<a name="19"></a></h2><pre class="codeinput"><span class="comment">% 3rd and 4th order Legendre polynomials</span>
+p3 = orthpoly(3,<span class="string">'legendre'</span>)
+p4 = orthpoly(4,<span class="string">'legendre'</span>)
+</pre><pre class="codeoutput">p3 =
+    -1.5*x + 2.5*x^3
+p4 =
+    0.375 - 3.75*x^2 + 4.375*x^4
+</pre><pre class="codeinput"><span class="comment">% Orthogonal polynomials are orthogonal over the proper domain</span>
+defint(p3*p4,<span class="string">'x'</span>,[-1,1])
+</pre><pre class="codeoutput">ans =
+    0
+</pre><pre class="codeinput"><span class="comment">% 2nd and 5th order Jacobi polynomials</span>
+p2 = orthpoly(2,<span class="string">'jacobi'</span>,2,3)
+p5 = orthpoly(5,<span class="string">'jacobi'</span>,2,3)
+</pre><pre class="codeoutput">p2 =
+    -1 - 2*x + 9*x^2
+p5 =
+    -0.65625 + 7.2188*x + 14.4375*x^2 - 62.5625*x^3 - 31.2812*x^4 + 93.8438*x^5
+</pre><pre class="codeinput"><span class="comment">% Orthogonal polynomials are orthogonal over the proper domain.</span>
+<span class="comment">% Numerical issures left this just eps shy from zero.</span>
+defint(p2*p5*(1-x)^2*(1+x)^5,<span class="string">'x'</span>,[-1,1])
+</pre><pre class="codeoutput">ans =
+    -1.4211e-14
+</pre><h2>Roots of the derivative of a sympoly<a name="23"></a></h2><pre class="codeinput">sort(roots(diff(orthpoly(6,<span class="string">'cheby2'</span>))))
+</pre><pre class="codeoutput">ans =
+     -0.79821
+     -0.44293
+            0
+      0.44293
+      0.79821
+</pre><h2>Error propagation through a sympoly<a name="24"></a></h2><pre class="codeinput"><span class="comment">%  Given a unit Normal N(0,1) random variable, compute the</span>
+<span class="comment">%  mean and variance of p(x) = 3*x + 2*x^2 - x^3</span>
+
+sympoly <span class="string">x</span>
+[polymean, polyvar] = polyerrorprop(3*x + 2*x^2 - x^3,<span class="string">'x'</span>,0,1)
+</pre><pre class="codeoutput">polymean =
+    2
+polyvar =
+    14
+</pre><pre class="codeinput"><span class="comment">% Compute the mean and variance of x*y + 3*y^3, where x and y are</span>
+<span class="comment">% respectively N(mux,sx^2), and N(muy,sy^2)</span>
+
+sympoly <span class="string">x</span> <span class="string">y</span> <span class="string">mux</span> <span class="string">muy</span> <span class="string">sx</span> <span class="string">sy</span>
+[polymean,polyvar] = polyerrorprop(x*y+3*y^3,{<span class="string">'x'</span> <span class="string">'y'</span>},[mux,muy],[sx,sy])
+</pre><pre class="codeoutput">polymean =
+    9*muy*sy^2 + 3*muy^3 + mux*muy
+polyvar =
+    135*sy^6 + sx^2*sy^2 + 324*muy^2*sy^4 + muy^2*sx^2 + 81*muy^4*sy^2 + 18*mux*sy^4 + 18*mux*muy^2*sy^2 + mux^2*sy^2
+</pre><h2>A simple construction for a Newton-Cotes integration rule<a name="26"></a></h2>
+         <p>Here I'll generate Simpson's 3/8 rule.</p>
+         <p><a href="http://mathworld.wolfram.com/Simpsons38Rule.html"><tt>Simpson's 3/8 rule</tt></a></p><pre class="codeinput">M = vander(0:3);
+sympoly <span class="string">x</span> <span class="string">f0</span> <span class="string">f1</span> <span class="string">f2</span> <span class="string">f3</span>
+<span class="comment">% an interpolating polynomial on this set of points</span>
+<span class="comment">% { (0,f0), (1,f1), (2,f2), (3,f3) }</span>
+P_of_x = [x^3, x^2, x, 1]*pinv(M)*[f0;f1;f2;f3];
+</pre><h2>sympoly uses the command window format style to write out the coefficients<a name="27"></a></h2>
+         <p>Here, I'll force it to be in rational form</p><pre class="codeinput">format <span class="string">rat</span>
+</pre><p>integrate the polynomial over its support</p><pre class="codeinput">defint(P_of_x,<span class="string">'x'</span>,[0 3])
+</pre><pre class="codeoutput">ans =
+    3/8*f3 + 9/8*f2 + 9/8*f1 + 3/8*f0
+</pre><p>Or here, a 4 point open Newton-Cotes rule</p><pre class="codeinput">M = vander(1:4);
+sympoly <span class="string">x</span> <span class="string">f1</span> <span class="string">f2</span> <span class="string">f3</span> <span class="string">f4</span>
+<span class="comment">% an interpolating polynomial on this set of points</span>
+<span class="comment">% { (1,f1), (2,f2), (3,f3) (4,f4) }</span>
+P_of_x = [x^3, x^2, x, 1]*pinv(M)*[f1;f2;f3;f4]
+</pre><pre class="codeoutput">P_of_x =
+    -1*f4 + 11/6*f4*x - 1*f4*x^2 + 1/6*f4*x^3 + 4*f3 - 7*f3*x + 7/2*f3*x^2 - 1/2*f3*x^3 - 6*f2 + 19/2*f2*x - 4*f2*x^2 + 1/2*f2*x^3 + 4*f1 - 13/3*f1*x + 3/2*f1*x^2 - 1/6*f1*x^3
+</pre><p>integrate the polynomial over the full domain of the rule</p><pre class="codeinput">defint(P_of_x,<span class="string">'x'</span>,[0 5])
+</pre><pre class="codeoutput">ans =
+    55/24*f4 + 5/24*f3 + 5/24*f2 + 55/24*f1
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.5<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+% Sympoly demos
+
+%% Various ways to create a sympoly
+
+% A scalar (zero) sympoly
+z = sympoly;
+
+% Scalar sympolys 'x', 'y', 'u', 'v' created in the current workspace
+sympoly x y u v
+
+% A sympoly (identity matrix) array. The numeric element format is
+% specified by the command window format style.
+format short g
+ayuh = sympoly(eye(3));
+
+% Use deal to replicate a sympoly into several 
+[a,b] = deal(sympoly);
+
+% Deal can also create a sympoly array
+S(1:2) = deal(sympoly('x'));
+
+% As can repmat
+R = repmat(sympoly('x'),2,3);
+
+whos
+
+%% Arithmetic between sympolys, add, subtract, multiply, divide.
+
+% add 1 to x
+1 + x
+
+%%
+
+% double times a sympoly
+2*y
+
+%%
+
+% subtraction, and a simple power
+(x - y)^2
+
+%%
+
+% More complex expressions
+(x - 2*y)^3/x + sqrt(y^3)
+
+%% Synthetic division
+[quotient,remainder] = syndivide(x^2+2*x-1,x+1)
+
+%% Arrays of sympolys
+[x , y ; 1 , x+y]
+
+%%
+
+% Arrays of sympolys
+v = [1 x y x+y]
+
+%% matrix multiplication
+A = v*v'
+B = v'*v
+%% Selective extraction of terms
+% The second term
+terms(A,2)
+
+%%
+terms(A,x^2,'extract')
+
+%%
+% Delete a term
+p = (1 + x^2 + x^7)^3
+terms(p,x^2,'delete')
+
+%% Selective deletion of terms
+B = terms(A,x,'extract')
+
+%%
+% Operations on arrays
+sympoly lambda
+(rand(3) - lambda*eye(3))
+
+%% Even eigenvalues, using det, then roots 
+roots(det(hilb(4) - lambda*eye(4)))
+
+%% Sum on any dimension
+sum(v,2)
+
+%% And prod
+prod(A(:))
+
+%% Orthogonal polynomials from a variety of familes
+
+% 3rd and 4th order Legendre polynomials
+p3 = orthpoly(3,'legendre')
+p4 = orthpoly(4,'legendre')
+
+%% 
+
+% Orthogonal polynomials are orthogonal over the proper domain
+defint(p3*p4,'x',[-1,1])
+
+%%
+
+% 2nd and 5th order Jacobi polynomials
+p2 = orthpoly(2,'jacobi',2,3)
+p5 = orthpoly(5,'jacobi',2,3)
+
+%% 
+
+% Orthogonal polynomials are orthogonal over the proper domain.
+% Numerical issures left this just eps shy from zero.
+defint(p2*p5*(1-x)^2*(1+x)^5,'x',[-1,1])
+
+%% Roots of the derivative of a sympoly
+sort(roots(diff(orthpoly(6,'cheby2'))))
+
+%% Error propagation through a sympoly
+
+%  Given a unit Normal N(0,1) random variable, compute the
+%  mean and variance of p(x) = 3*x + 2*x^2 - x^3
+  
+sympoly x
+[polymean, polyvar] = polyerrorprop(3*x + 2*x^2 - x^3,'x',0,1)
+
+%%
+
+% Compute the mean and variance of x*y + 3*y^3, where x and y are
+% respectively N(mux,sx^2), and N(muy,sy^2)
+
+sympoly x y mux muy sx sy
+[polymean,polyvar] = polyerrorprop(x*y+3*y^3,{'x' 'y'},[mux,muy],[sx,sy])
+
+%% A simple construction for a Newton-Cotes integration rule
+% Here I'll generate Simpson's 3/8 rule.
+%
+% <http://mathworld.wolfram.com/Simpsons38Rule.html |Simpson's 3/8 rule|>
+%
+M = vander(0:3);
+sympoly x f0 f1 f2 f3
+% an interpolating polynomial on this set of points
+% { (0,f0), (1,f1), (2,f2), (3,f3) }
+P_of_x = [x^3, x^2, x, 1]*pinv(M)*[f0;f1;f2;f3];
+
+%% sympoly uses the command window format style to write out the coefficients
+% Here, I'll force it to be in rational form
+format rat
+
+%%
+% integrate the polynomial over its support
+defint(P_of_x,'x',[0 3])
+
+%%
+% Or here, a 4 point open Newton-Cotes rule
+M = vander(1:4);
+sympoly x f1 f2 f3 f4
+% an interpolating polynomial on this set of points
+% { (1,f1), (2,f2), (3,f3) (4,f4) }
+P_of_x = [x^3, x^2, x, 1]*pinv(M)*[f1;f2;f3;f4]
+
+%%
+% integrate the polynomial over the full domain of the rule
+defint(P_of_x,'x',[0 5])
+
+
+
+
+
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>

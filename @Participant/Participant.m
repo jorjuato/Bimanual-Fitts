@@ -62,7 +62,8 @@ classdef Participant < handle
                     labsConf = findResource(); 
                     if matlabpool('size') == 0
                         %matlabpool(labsConf.ClusterSize);
-                        matlabpool local 3; 
+                        matlabpool(obj.conf.workers)
+                        %matlabpool local 2;
                     end
                     confPar=copy(obj.conf);
                     sessions=Session.empty(7,0);

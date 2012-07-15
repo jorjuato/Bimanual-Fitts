@@ -30,8 +30,7 @@ function plot_va(obj,graphPath)
                 if n==1
                     title('Unimanual Left','fontsize',9,'fontweight','b');
                 end
-
-
+                
                 ax=subplot(3,4,(n-1)*4+2); 
                 DSb{i,j,end}.plot_va(ax,'L');
                 if n==1

@@ -32,7 +32,6 @@ function plot_vf(obj,graphPath)
                     title('Unimanual Left','fontsize',9,'fontweight','b');
                 end
 
-
                 ax=subplot(3,4,(n-1)*4+2); 
                 DSb{i,j,end}.plot_vf(ax,'L');
                 if n==1

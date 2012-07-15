@@ -1,4 +1,4 @@
-classdef LockingStrength
+classdef LockingStrength < handle
     properties
         freqs
         Lf
@@ -13,12 +13,15 @@ classdef LockingStrength
         FastPxx_t
         p
         q
+        p_MI
+        q_MI
         conf
     end % properties
     
-    properties (Dependent = true, SetAccess = private)
+    properties (Dependent = true, SetAccess = private)        
         flsPC
         flsAmp
+        phDiff
         phDiffMean
         phDiffStd
         rho
@@ -41,24 +44,33 @@ classdef LockingStrength
         function flsPC = get.flsPC(obj)
             %Compute FLS Pure Coordination
             %with formula from Huys et al. (2004), HMS
-            N=sqrt( (obj.rho^2+1) ./ ((obj.rho+1)*8) );
-            flsPC = N * trapz(obj.freqs,obj.SlowPxx_t.*obj.FastPxx) / trapz(obj.freqs,obj.SlowPxx_t.^2+obj.FastPxx.^2);
+            %N=sqrt( (obj.rho^2+1) / ((obj.rho+1)*8) );
+            N=sqrt(1+obj.rho^2)*(1/obj.rho+1)*sqrt(1/8);
+            %N=sqrt( (obj.rho^2+1) / ((obj.rho+1)*8) );
+            flsPC = 2*N * trapz(obj.freqs,obj.SlowPxx_t.*obj.FastPxx) / trapz(obj.freqs,obj.SlowPxx_t.^2+obj.FastPxx.^2);
         end
         
         function flsAmp = get.flsAmp(obj)
             %Compute FLS Amplitude
             %with formula from Huys et al. (2004), HMS
-            N=sqrt( (obj.rho^2+1) / ((obj.rho+1)*8) );
-            flsAmp = N * trapz(obj.freqs,obj.FastPxx_t.*obj.SlowPxx_t) / trapz(obj.freqs,obj.FastPxx_t.^2+obj.SlowPxx_t.^2);
+            %N=sqrt( (obj.rho^2+1) / ((obj.rho+1)*8) );
+            N=sqrt(1+obj.rho^2)*(1/obj.rho+1)*sqrt(1/8);
+            flsAmp = 2*N * trapz(obj.freqs,obj.FastPxx_t.*obj.SlowPxx_t) / trapz(obj.freqs,obj.FastPxx_t.^2+obj.SlowPxx_t.^2);
+        end
+        
+        function phDiff = get.phDiff(obj)
+            %phDiff = obj.q*obj.Lph-obj.p*obj.Rph;
+            phDiff= obj.q*obj.Lph-obj.p*obj.Rph;
         end
         
         function phDiffMean = get.phDiffMean(obj)
-            [phDiffMean,~]=circstat(obj.p*obj.Lph-obj.q*obj.Rph);
+            %[phDiffMean,~]=circstat(obj.p_MI*obj.Lph-obj.q_MI*obj.Rph);
+            [phDiffMean,~]=circstat(obj.phDiff);
         end
         
         function phDiffStd = get.phDiffStd(obj)
-            %Get Kramers-Moyal coefficients
-            [~, phDiffStd]=circstat(obj.p*obj.Lph-obj.q*obj.Rph);
+            %[~, phDiffStd]=circstat(obj.p_MI*obj.Lph-obj.q_MI*obj.Rph);
+            [~, phDiffStd]=circstat(obj.phDiff);
         end
         
         function rho = get.rho(obj)
@@ -71,7 +83,7 @@ classdef LockingStrength
 
         function MI = get.MI(obj)
             %Get Kulback-Leiber distance between phase difference and uniform distribution
-            [MI,~]=Kulback_Leibler_distance(obj.Lph*obj.q/obj.p-obj.Rph,obj.conf.KLD_bins);
+            [MI,~]=Kulback_Leibler_distance(obj.Lph*obj.q-obj.Rph*obj.p,obj.conf.KLD_bins);
         end        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
@@ -103,6 +115,10 @@ classdef LockingStrength
             %Normalize higher frequency signal to unit variance for FLS Amp
             ls.FastPxx_t = ls.FastPxx / ls.freqs(ls.FastPxx==max(ls.FastPxx)); 
         
+            %Get best p/q ratio for compute phase difference
+            best_pq = find_best_pq(ls);
+            ls.p_MI = best_pq(2);
+            ls.q_MI = best_pq(3);
     
         end   
         function update_conf(obj,conf)
@@ -132,7 +148,7 @@ classdef LockingStrength
     methods(Static=true)
         Pxx_t = get_scaled_PSD(Pxx,f,rho)
         [p, q, Lf, Rf] = get_locking_ratio(LPxx,RPxx,freqs,peak_delta)
-        [Pxx, f] = get_welch_periodogram(x)
+        [Pxx, f] = get_welch_periodogram(x,fs)
         function anova_var = get_anova_variables()
             anova_var = { 'MI' 'Lf' 'Rf' 'rho' 'flsPC' 'flsAmp' 'phDiffMean' 'phDiffStd'};
         end

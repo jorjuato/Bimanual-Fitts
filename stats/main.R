@@ -8,40 +8,61 @@ registerDoMC()
 
 #Prepare global paths
 rootpath='/home/jorge/KINARM'
-Rname='4th'
+Rname='8th'
 opath=paste(paste(rootpath,"stats",sep='/'),Rname,sep='/')
+dir.create(opath,showWarnings=FALSE)
 Rdatapath=paste(paste(rootpath,'Rdata',sep='/'),Rname,sep='/')
 uLfile=paste(Rdatapath,"UniL_fitts.dat",sep='/')
 uRfile=paste(Rdatapath,"UniR_fitts.dat",sep='/')
 bfile=paste(Rdatapath,"Bi_fitts.dat",sep='/')
 
 #Select analysis to perform
+do_summary=TRUE
 do_aov=FALSE
 do_lme=FALSE
 do_lmer=FALSE
 do_ANOVA=TRUE
-do_CompareANOVA=TRUE
+do_CompareANOVA=FALSE
 do_barchart=TRUE
 do_interaction=TRUE
 do_boxplots=TRUE
-do_density=TRUE
+do_density=FALSE
+
+#Get size of data tables by preloading
+factBiNo <-5
+factUniNo<-4
+bi <-read.csv(bfile)
+uni<-read.csv(uLfile)
+colBiNo <-length(bi)
+colUniNo<-length(uni)
+valBiNo <-colBiNo -factBiNo
+valUniNo<-colUniNo-factUniNo
+remove(bi)
+remove(uni)
+
+#Generate column format vectors
+bcolfmt=c(rep("factor",factBiNo ),rep("numeric",valBiNo ),recursive=TRUE)
+ucolfmt=c(rep("factor",factUniNo),rep("numeric",valUniNo),recursive=TRUE)
 
 #Load data from csv file
-bcolfmt=c("factor","factor","factor","factor","factor",rep("numeric",33),recursive=TRUE)
-ucolfmt=c("factor","factor","factor","factor"         ,rep("numeric",13),recursive=TRUE)
 bidata<-read.csv(bfile,colClasses=bcolfmt)
 uLdata<-read.csv(uLfile,colClasses=ucolfmt)
 uRdata<-read.csv(uRfile,colClasses=ucolfmt)
 bidata<-generate.relative.vars(bidata,uLdata,uRdata)
+colBiNo_t<-length(bidata)
+bidata$grpeff<-factor(abs(bidata$rho-1)<0.25)
 levels(bidata$grp)=c('C','U')
+levels(bidata$grpeff)=c('U','C')
 levels(bidata$IDR)=c('D','M','E')
 levels(bidata$IDL)=c('D','E')
 levels(uLdata$grp)=c('C','U')
 levels(uRdata$grp)=c('C','U')
 levels(uLdata$ID)=c('D','E')
 levels(uRdata$ID)=c('D','M','E')
-rangeB<-(6:64)
-rangeU<-(5:17)
+
+#Generate the ranges of variables to be analyzed in tables
+rangeB<-(factBiNo +1):(colBiNo_t-factBiNo)
+rangeU<-(factUniNo+1):(colUniNo-factBiNo)
 densityplots=names(bidata)[rangeB]
 
 #Iterate over all Bimanual variables
@@ -52,6 +73,8 @@ foreach (vname=names(bidata)[rangeB]) %dopar% {
     dir.create(vpath,showWarnings=FALSE)
     
     print(paste('analyzing variable',vname))
+    
+    if (do_summary) do.summary(bidata,vname,vpath)
     
     if (do_aov) do.aov(bidata,vname,vpath)
     
@@ -82,6 +105,8 @@ foreach (vname=names(uLdata)[rangeU]) %dopar% {
     
     print(paste('analyzing variable',vname))
     
+    if (do_summary) do.summary.uni(uLdata,vname,vpath)
+    
     if (do_aov) do.aov.uni(uLdata,vname,vpath)
     
     if (do_lme) do.lme.uni(uLdata,vname,vpath)
@@ -109,6 +134,8 @@ foreach (vname=names(uRdata)[rangeU]) %dopar% {
     dir.create(vpath,showWarnings=FALSE)
     
     print(paste('analyzing variable',vname))
+    
+    if (do_summary) do.summary.uni(uRdata,vname,vpath)
     
     if (do_aov) do.aov.uni(uRdata,vname,vpath)
     

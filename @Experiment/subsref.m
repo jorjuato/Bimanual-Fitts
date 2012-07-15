@@ -11,20 +11,30 @@ function s = subsref(r, subscript)
     while ~isempty(subscript)
         % Peel off next subscript for processing.
         thisSubscript = subscript(1);
-        if isequal(class(s), 'Experiment') % See if the referenced object is a myclass object.        
+        if isa(s, 'Experiment') % See if the referenced object is a myclass object.        
             % process next subscript
             switch thisSubscript.type            
-                case '()' % parentheses
-                    s = s.participants(thisSubscript.subs{:});
+                case '()' % parentheses                    
+                    if isempty(s.participants)
+                        s=Participant.load(thisSubscript.subs{:});
+                    else
+                        s = s.participants(thisSubscript.subs{:});
+                    end
                     %error('Improper subscript reference for myclass object.')
                 case '{}'
                     %s = curlybraces(s);
-                    error('Improper subscript reference for myclass object.')
+                    error('Improper subscript reference for Experiment object.')
                 case '.'
-                    str=indexstr(subscript); 
-                    s= eval(['s' str ';']) ;
+                    if ismethod(s, thisSubscript.subs)
+                        str=indexstr(subscript);
+                        eval(['s' str ';']) ;
+                        subscript=[];
+                    else
+                        str=indexstr(thisSubscript);
+                        s=eval(['s' str ';']) ;
+                    end
                 otherwise
-                    error('Improper subscript reference for myclass object.')            
+                    error('Improper subscript reference for Experiment object.')        
             end
 
         else % If referenced object isn't a myclass object, then callanother subsref.        

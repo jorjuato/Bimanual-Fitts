@@ -1,13 +1,7 @@
 classdef TimeSeriesBimanual < handle
     properties
-        idx
-        Lpeaks
-        LIDef
-        LID
-        Rpeaks
-        RIDef
-        RID
         conf
+        info
     end % properties
     
     properties (Dependent = true, SetAccess = private)
@@ -23,7 +17,11 @@ classdef TimeSeriesBimanual < handle
         Ljerk
         Ljerknorm
         Lph
+        Lomega
         Lamp
+        Lpeaks
+        LID
+        LIDef
         Rxraw
         Rvraw
         Raraw
@@ -36,7 +34,23 @@ classdef TimeSeriesBimanual < handle
         Ranorm
         Rjerknorm
         Rph
+        Romega
         Ramp
+        Rpeaks
+        RID
+        RIDef
+        idx
+        LHarmonicity
+        RHarmonicity
+        LCircularity
+        RCircularity
+        LSpecgram
+        RSpecgram
+        minPeakDistance
+        minPeakDistanceNorm
+        d4D
+        d3D
+        d2D
     end
     
     properties (SetAccess = private, Hidden)
@@ -159,7 +173,8 @@ classdef TimeSeriesBimanual < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function Lx = get.Lx(obj)
-            Lx = filterdata(obj.Lxraw(obj.idx),obj.conf.cutoff);
+            x=obj.Lxraw;
+            Lx = filterdata(x(obj.idx),obj.conf.cutoff);
         end
         
         function Lv = get.Lv(obj)
@@ -206,7 +221,7 @@ classdef TimeSeriesBimanual < handle
             Ljerknorm = obj.Ljerk/max(abs(obj.Ljerk));
         end
         
-        function Rxnorm = get.Rxnorm(obj)
+        function Rxnorm = get.Rxnorm(obj)   
             Rxnorm = obj.Rx/max(abs(obj.Rx));
         end
         
@@ -230,6 +245,16 @@ classdef TimeSeriesBimanual < handle
             Lph = unwrap(angle(hilbert(obj.Lx)));
         end
         
+        function Romega = get.Romega(obj)
+            Romega = filterdata(diff(obj.Rph)*1000,obj.conf.cutoff);
+            Romega(end+1)=Romega(end);
+        end
+        
+        function Lomega = get.Lomega(obj)
+            Lomega = filterdata(diff(obj.Lph)*1000,obj.conf.cutoff);
+            Lomega(end+1)=Lomega(end);
+        end
+        
         function Ramp = get.Ramp(obj)
             Ramp = abs(hilbert(obj.Rx));
         end
@@ -238,11 +263,197 @@ classdef TimeSeriesBimanual < handle
             Lamp = abs(hilbert(obj.Lx));
         end
         
+        function Lpeaks = get.Lpeaks(obj)
+            [maxPeaks, minPeaks] = peakdet(obj.Lx, obj.conf.peak_size);
+            Lpeaks = sort([1;maxPeaks(:,1);minPeaks(:,1);length(obj.Lx)]);
+            %Lpeaks = sort([1;maxPeaks(:,1);minPeaks(:,1)]);
+        end
+        
+        function Rpeaks = get.Rpeaks(obj)            
+            [maxPeaks, minPeaks] = peakdet(obj.Rx, obj.conf.peak_size);
+            Rpeaks = sort([1;maxPeaks(:,1);minPeaks(:,1);length(obj.Rx)]);
+            %Rpeaks = sort([1;maxPeaks(:,1);minPeaks(:,1)]);
+        end
+        
+        function idx = get.idx(obj)
+            %Skip first 'skiposc' oscillations from the slowest one
+            if obj.conf.skip_osc == 0
+                sk=obj.info.skipOsc;                
+            else
+                sk=obj.conf.skip_osc;
+            end
+            [maxRPeaks, minRPeaks] = peakdet(obj.Rxraw, obj.conf.peak_size);
+            Rpeaks = sort([maxRPeaks(:,1);minRPeaks(:,1)]);
+            [maxLPeaks, minLPeaks] = peakdet(obj.Lxraw, obj.conf.peak_size);
+            Lpeaks = sort([maxLPeaks(:,1);minLPeaks(:,1)]);
+            if length(Lpeaks) < length(Rpeaks)
+                idx=Lpeaks(sk,1):Lpeaks(end,1);
+            else
+                idx=Rpeaks(sk,1):Rpeaks(end,1);
+            end
+        end
+        
+      function LIDef = get.LIDef(obj)
+          %Formula from McKenzie 1992
+          %endpts = abs(x(peaks));
+          %Wef = std(endpts)*4.133; 
+          %IDef = log2(2*A/Wef);
+          LIDef = log2(2*obj.info.A/(std(abs(obj.Lx(obj.Lpeaks)))*4.133));
+      end
+      
+      function RIDef = get.RIDef(obj)
+          %Formula from McKenzie 1992
+          %endpts = abs(x(peaks));
+          %Wef = std(endpts)*4.133; 
+          %IDef = log2(2*A/Wef);
+          RIDef = log2(2*obj.info.A/(std(abs(obj.Rx(obj.Rpeaks)))*4.133));
+      end
+      
+      function LID = get.LID(obj)
+          LID = obj.info.LID;
+      end           
+      
+      function RID = get.RID(obj)
+          RID = obj.info.RID;
+      end  
+      
+      function LHarmonicity = get.LHarmonicity(obj)
+          LHarmonicity = harmonicity_index(obj,'L');
+      end 
+      
+      function RHarmonicity = get.RHarmonicity(obj)
+          RHarmonicity = harmonicity_index(obj,'R');
+      end
+      
+      function RCircularity = get.RCircularity(obj)
+          %This method imposes a circle of R=1 and center=(0,0)
+          [~,modulus] = cart2pol(obj.Rxnorm,obj.Rvnorm);
+          RCircularity = nanmean(modulus);
+      end
+      
+      function LCircularity = get.LCircularity(obj)
+          %This method imposes a circle of R=1 and center=(0,0)
+          [~,modulus] = cart2pol(obj.Lxnorm,obj.Lvnorm);
+          LCircularity = nanmean(modulus);
+      end
+      
+      function minPeakDistance = get.minPeakDistance(ts)
+          Rpeaks=ts.Rpeaks;
+          Lpeaks=ts.Lpeaks;
+          Rlen = length(Rpeaks)-1;  %Extreme are always zeros!
+          Llen = length(Lpeaks)-1;  
+          if Llen<Rlen
+              q=round(Rlen/Llen);
+              minPeakDistance=zeros(Llen-1,1);              
+              for i=2:Llen
+                  L=Lpeaks(i);
+                  if q==1
+                      R=Rpeaks(i-1:i+1);
+                  elseif (i*(q-1))<1
+                      R=Rpeaks(1:i*(q+1));                     
+                  elseif (i*(q+1))>Rlen
+                      R=Rpeaks(i*(q-1):Rlen);
+                  else
+                      R=Rpeaks(i*(q-1):i*(q+1));
+                  end
+                  abs(L-R);
+                  [d,j]=min(abs(L-R));
+                  minPeakDistance(i-1)=d*sign(L-R(j));
+              end
+          else
+              q=round(Llen/Rlen);
+              minPeakDistance=zeros(Rlen-1,1);
+              for i=2:Rlen
+                  R=Rpeaks(i);
+                  if q==1
+                      L=Lpeaks(i-1:i+1);
+                  elseif (i*(q-1))<1
+                      L=Lpeaks(1:i*(q+1));
+                  elseif (i*(q+1))>Llen
+                      L=Lpeaks(i*(q-1):Llen);
+                  else
+                      L=Lpeaks(i*(q-1):i*(q+1));
+                  end
+                  [d,j]=min(abs(R-L));
+                  minPeakDistance(i-1)=d*sign(L(j)-R);
+              end
+          end          
+      end
+      
+      function minPeakDistanceNorm = get.minPeakDistanceNorm(ts)
+          Rpeaks=ts.Rpeaks;
+          Lpeaks=ts.Lpeaks;
+          Rlen = length(Rpeaks)-1;  %Extreme are always zeros!
+          Llen = length(Lpeaks)-1;  
+          if Llen<Rlen
+              q=round(Rlen/Llen);
+              minPeakDistanceNorm=zeros(Llen-1,1);              
+              for i=2:Llen
+                  L=Lpeaks(i);
+                  if q==1
+                      R=Rpeaks(i-1:i+1);
+                  elseif (i*(q-1))<1
+                      R=Rpeaks(1:i*(q+1));                     
+                  elseif (i*(q+1))>Rlen
+                      R=Rpeaks(i*(q-1):Rlen);
+                  else
+                      R=Rpeaks(i*(q-1):i*(q+1));
+                  end
+                  omega=ts.Lomega(i);
+                  [d,j]=min(abs(L-R)/omega);
+                  minPeakDistanceNorm(i-1)=d*sign(L-R(j));
+              end
+          else
+              q=round(Llen/Rlen);
+              minPeakDistanceNorm=zeros(Rlen-1,1);
+              for i=2:Rlen
+                  R=Rpeaks(i);
+                  if q==1
+                      L=Lpeaks(i-1:i+1);
+                  elseif (i*(q-1))<1
+                      L=Lpeaks(1:i*(q+1));
+                  elseif (i*(q+1))>Llen
+                      L=Lpeaks(i*(q-1):Llen);
+                  else
+                      L=Lpeaks(i*(q-1):i*(q+1));
+                  end
+                  omega=ts.Romega(i);
+                  [d,j]=min(abs(R-L)/omega);
+                  minPeakDistanceNorm(i-1)=d*sign(L(j)-R);
+              end
+          end          
+      end          
+      
+      function d4D = get.d4D(ts)
+        z=zeros(length(ts.Lxnorm),1);
+        l=[ts.Lxnorm,ts.Lvnorm,z,z];    
+        r=[z,z,ts.Rxnorm,ts.Rvnorm];
+        d4D=sqrt( (l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2 + (l(:,3)-r(:,3)).^2 + (l(:,4)-r(:,4)).^2);
+        d4D=d4D-mean(d4D);
+      end
+      
+      function d3D = get.d3D(ts)
+        l=[ts.Lxnorm,ts.Lvnorm,zeros(length(ts.Lxnorm),1)];    
+        r=[ts.Rxnorm,zeros(length(ts.Rxnorm),1),ts.Rvnorm];
+        d3D=sqrt((l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2 + (l(:,3)-r(:,3)).^2);
+        d3D=d3D-mean(d3D);
+      end
+      
+      function d2D = get.d2D(ts)
+        %z=zeros(length(ts.Lph),1);
+        %l=[tr.ts.Lph*tr.ls.q,z];
+        %r=[z,tr.ts.Rph*tr.ls.p];
+        %d2D=sqrt((l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2);
+        %d2D=d2D-mean(d2D);
+        d2D=zeros(length(ts.Lph),1);
+      end      
+      
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function ts = TimeSeriesBimanual(data,info,conf)
-            ts.conf=conf;            
+            ts.conf=conf;
+            ts.info=info;
             
             %Compute left hand trial kinematic data
             ts.Lxraw = (data.Left_L2Ang-data.Left_L1Ang)*info.scale + info.offset-info.origin;
@@ -253,60 +464,24 @@ classdef TimeSeriesBimanual < handle
             ts.Rxraw = (pi/4-(data.Right_L2Ang-data.Right_L1Ang))*info.scale + info.offset -info.origin - 0.095;
             ts.Rvraw = (-(data.Right_L2Vel-data.Right_L1Vel))*info.scale;
             ts.Raraw = (-(data.Right_L2Acc-data.Right_L1Acc))*info.scale;
-            
-            %Skip first 'skiposc' oscillations
-            if conf.skip_osc == 0
-                idxL = skip_oscillations(ts.Lxraw,info.skipOsc);
-                idxR = skip_oscillations(ts.Rxraw,info.skipOsc);
-            else
-                idxL = skip_oscillations(ts.Lxraw,conf.skip_osc);
-                idxR = skip_oscillations(ts.Rxraw,conf.skip_osc);
-            end
-            
-            %Pick the shortest time series
-            if length(idxL) < length(idxR)
-                ts.idx = idxL;
-            else
-                ts.idx = idxR;
-            end
-            
-            
-            %Get peaks for later processing
-            [maxPeaksL, minPeaksL] = peakdet(ts.Lx, 0.00005);
-            [maxPeaksR, minPeaksR] = peakdet(ts.Rx, 0.00005);
-            ts.Lpeaks = sort([maxPeaksL(:,1);minPeaksL(:,1)]);
-            ts.Rpeaks = sort([maxPeaksR(:,1);minPeaksR(:,1)]);
-            ts.LIDef = get_ID_effective(ts.Lx,ts.Lpeaks,info.LA);
-            ts.RIDef = get_ID_effective(ts.Rx,ts.Rpeaks,info.RA);
-            ts.LID = info.LID;
-            ts.RID = info.RID;
         end
         
         function update_conf(obj,conf)
             obj.conf=conf;
         end
-        
-        function update_idx(obj)
-        %Updates indexes of skipped oscillations based on conf.skip_osc
-            if obj.conf.skip_osc==0
-                obj.idx=1:length(obj.Lxraw);
-            else
-                idxL = skip_oscillations(obj.Lxraw,obj.conf.skip_osc);
-                idxR = skip_oscillations(obj.Rxraw,obj.conf.skip_osc);
-                %Pick the shortest time series
-                if length(idxL) < length(idxR)
-                    obj.idx = idxL;
-                else
-                    obj.idx = idxR;
-                end
-            end
-        end
             
-        [fcns, names, xlabels, ylabels] = get_plots(obj)
-        
         plot(obj,graphPath,rootname,ext)
+        
+        [fcns, names, xlabels, ylabels] = get_plots(obj)
         
         concatenate(obj,obj2)
         
     end % methods
+    
+    methods(Static=true)  
+        function anova_var = get_anova_variables()
+            anova_var = { 'Harmonicity' 'Circularity' ...
+                          'minPeakDistance' 'minPeakDistanceNorm'};
+        end        
+    end
 end% classdef

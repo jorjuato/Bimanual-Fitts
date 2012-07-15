@@ -1,10 +1,7 @@
 classdef TimeSeriesUnimanual < handle
-   properties
-      peaks      
-      IDef
-      ID
+   properties     
       conf
-      idx
+      info
    end
    
    properties (Dependent = true, SetAccess = private)
@@ -19,6 +16,12 @@ classdef TimeSeriesUnimanual < handle
       vnorm
       anorm
       jerknorm
+      peaks
+      idx
+      ID
+      IDef
+      Harmonicity
+      Circularity
    end
    
     properties (SetAccess = private, Hidden)
@@ -119,11 +122,54 @@ classdef TimeSeriesUnimanual < handle
       
       function jerknorm = get.jerknorm(obj)
             jerknorm = obj.jerk/max(abs(obj.jerk));
-        end
-
+      end
+      
+      function peaks = get.peaks(obj)
+          [maxPeaks, minPeaks] = peakdet(obj.x, obj.conf.peak_size);
+          %peaks = sort([1;maxPeaks(:,1);minPeaks(:,1)]);
+          peaks = sort([1;maxPeaks(:,1);minPeaks(:,1);length(obj.x)]);
+      end
+      
+      function idx = get.idx(obj)
+          [maxPeaks, minPeaks] = peakdet(obj.xraw, obj.conf.peak_size);
+          peaks = sort([maxPeaks(:,1);minPeaks(:,1)]);
+          %Skip first 'skiposc' oscillations
+          if obj.conf.skip_osc == 0
+              idx=peaks(obj.info.skipOsc,1):peaks(end,1);
+          else
+              idx=peaks(obj.conf.skip_osc,1):peaks(end,1);
+          end
+          
+      end
+      
+      function IDef = get.IDef(obj)
+          %Formula from McKenzie 1992
+          %endpts = abs(x(peaks));
+          %Wef = std(endpts)*4.133; 
+          %IDef = log2(2*A/Wef);
+          IDef = log2(2*obj.info.A/(std(abs(obj.x(obj.peaks)))*4.133));
+      end
+      
+      function ID = get.ID(obj)
+          ID = obj.info.ID;
+      end
+      
+      function Harmonicity = get.Harmonicity(obj)
+          Harmonicity = harmonicity_index(obj);
+      end
+      
+      function Circularity = get.Circularity(obj)
+          %This method imposes a circle of R=1 and center=(0,0)
+          [~,modulus] = cart2pol(obj.xnorm,obj.vnorm);
+          Circularity = nanmean(modulus);
+      end
+      
       %Constructor
       function ts = TimeSeriesUnimanual(data,info,conf)
+        
         ts.conf=conf;
+        ts.info=info;
+        
         if ~isempty(strfind(ts.conf.hand,'L'))
             %Compute left hand trial kinematic data
             ts.xraw = (data.Left_L2Ang-data.Left_L1Ang)*info.scale + info.offset-info.origin;
@@ -136,33 +182,17 @@ classdef TimeSeriesUnimanual < handle
             ts.vraw = (-(data.Right_L2Vel-data.Right_L1Vel))*info.scale;
             ts.araw = (-(data.Right_L2Acc-data.Right_L1Acc))*info.scale;
         end
-        
-        %Skip first 'skiposc' oscillations
-        if conf.skip_osc == 0
-            ts.idx = skip_oscillations(ts.xraw,info.skipOsc);
-        else
-            ts.idx = skip_oscillations(ts.xraw,conf.skip_osc);
-        end
-     
-        %Get peaks for later processing
-        [maxPeaks, minPeaks] = peakdet(ts.x, 0.00005);
-        ts.peaks = sort([maxPeaks(:,1);minPeaks(:,1)]);
-        ts.ID = info.ID;
-        ts.IDef = get_ID_effective(ts.x,ts.peaks,info.A);
       end
       
       function update_conf(obj,conf)
          obj.conf=conf;
       end
-      
-      function update_idx(obj)
-      %Updates indexes of skipped oscillations based on conf.skip_osc
-          if obj.conf.skip_osc==0
-            obj.idx=1:length(obj.xraw);
-          else
-            obj.idx = skip_oscillations(obj.xraw,obj.conf.skip_osc);
-          end
-      end
         
    end % methods
+   
+    methods(Static=true)  
+        function anova_var = get_anova_variables()
+            anova_var = { 'Harmonicity','Circularity'};
+        end        
+    end   
 end% classdef

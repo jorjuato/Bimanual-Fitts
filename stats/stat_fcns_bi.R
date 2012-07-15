@@ -2,6 +2,7 @@ require(multcomp)
 require(nlme)
 require(lme4)
 require(ez)
+require(doBy)
 
 # coding scheme for categorical variables matters
 # run with dummy coding -> factory default in R, wrong results
@@ -17,7 +18,8 @@ generate.relative.vars <- function(bidata,uLdata,uRdata){
              "q1L", "q1R", "q2L", "q2R", "q3L", "q3R", "q4L","q4R",
              "IPerfEfL", "IPerfL",  "IPerfEfR", "IPerfR", 
              "MTR", "MTL", "peakVelR", "peakVelL")
-    for (vname in vnames) {    
+             
+    foreach (vname=vnames) %dopar% {    
         hand<-substr(vname, nchar(vname), nchar(vname))
         for (i in 1:nrow(bidata)) {            
             pp <- as.numeric(bidata[i,'pp'])            
@@ -31,16 +33,65 @@ generate.relative.vars <- function(bidata,uLdata,uRdata){
             eval(parse(text=sprintf("bidata$%srel[[i]]<-bidata$%s[[i]]/val",vname,vname)))
         }
     }
+    bidata$MTBiAll<-bidata$MTL+bidata$MTR
+    bidata$MTUniAll<-uLdata$UMT+uRdata$UMT
+    bidata$MTAllRel<-bidata$MTBiAll+bidata$MTUniAll
     return(bidata)
+}
+
+do.summary <- function(mdata,vname,vpath){
+    statfcn <- function(x) { c(m = mean(x), s = sd(x)) } 
+    sink(paste(vpath,'summary.out',sep="/"))
+    print("Summary by group")
+    form<-as.formula(paste(vname,"~ grp"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by effective group")
+    form<-as.formula(paste(vname,"~ grpeff"))
+    print(summaryBy(form, mdata,FUN=statfcn))    
+    print("Summary by session\n")
+    form<-as.formula(paste(vname,"~ S"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by IDR+IDR\n")
+    form<-as.formula(paste(vname,"~ IDL + IDR"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by group + Session\n")
+    form<-as.formula(paste(vname,"~ grp + S"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by effective group + Session\n")
+    form<-as.formula(paste(vname,"~ grpeff + S"))
+    print(summaryBy(form, mdata,FUN=statfcn))    
+    print("Summary by Session + IDR + IDL \n")
+    form<-as.formula(paste(vname,"~ S + IDL + IDR"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by group + IDR + IDL\n")
+    form<-as.formula(paste(vname,"~ grp + IDL + IDR"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by effective group + IDR + IDL\n")
+    form<-as.formula(paste(vname,"~ grpeff + IDL + IDR"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by group + Session + IDR + IDL\n")
+    form<-as.formula(paste(vname,"~ grp + S + IDL + IDR"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by effective group + Session + IDR + IDL\n")
+    form<-as.formula(paste(vname,"~ grpeff + S + IDL + IDR"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    sink()
 }
 
 do.aov <- function(mdata,vname,vpath){
     #Repeated Measures 5-WAY ANOVA with mixed within and between design, Type III SSE 
     sink(paste(vpath,'aov.out',sep="/"))
-    aov.mod<-aov(get(vname)~(S*IDR*IDL*grp)+Error(pp/(S*IDR*IDL))+grp,mdata)
+#    print("Repeated Measures 5-WAY ANOVA with mixed within and between design, Type III SSE ")
+#    aov.mod<-aov(get(vname)~(S*IDR*IDL*grp)+Error(pp/(S*IDR*IDL))+grp,mdata)
+#    print(summary(aov.mod))
+#    drop1(aov.mod,test="F") # type III SS and F Tests 
+#    print(anova(aov.mod))
+    
+    print("Repeated Measures 5-WAY ANOVA with within subject design, Type III SSE ")
+    aov.mod<-aov(get(vname)~(S*IDR*IDL*grpeff)+Error(pp/(S*IDR*IDL*grpeff)),mdata)
     print(summary(aov.mod))
-    drop1(aov.mod,~.,test="F") # type III SS and F Tests 
-    #print(anova(aov.mod))
+    drop1(aov.mod,test="F") # type III SS and F Tests 
+    print(anova(aov.mod))
     sink()
 
     #Perform Tukey post-hoc comparisons on aov
@@ -81,6 +132,7 @@ do.lme <- function(mdata,vname,vpath){
 do.ANOVA <- function(mdata,vname,vpath){
     #Perform type III Repeated Measures 5-WAY ANOVA with mixed within and between design     
     sink(paste(vpath,'anova.out',sep="/"))
+    cat("Repeated Measures 5-WAY ANOVA with mixed within and between design, Type III SSE ")
     ez.mod<-ezANOVA(data=mdata,dv=as.name(vname),wid=.(pp), within=.(S,IDR,IDL),between=.(grp),type=3)
     print(paste(vname,"~(S*IDR*IDL*grp)+Error(pp/(S*IDR*IDL))+grp"))
     print(ez.mod)

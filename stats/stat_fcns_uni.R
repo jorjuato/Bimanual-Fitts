@@ -2,12 +2,40 @@ require(multcomp)
 require(nlme)
 require(lme4)
 require(ez)
+require(doBy)
 
 # coding scheme for categorical variables matters
 # run with dummy coding -> factory default in R, wrong results
 #options(contrasts=c(unordered="contr.treatment", ordered="contr.poly"))
 # effect coding for unordered factors (sum to zero, correct results)
 options(contrasts=c(unordered="contr.sum",ordered="contr.poly"))
+
+do.summary.uni <- function(mdata,vname,vpath){
+    statfcn = function(x) { c(m = mean(x), s = sd(x)) }
+    sink(paste(vpath,'summary.out',sep="/"))
+    print("Summary by group")
+    form<-as.formula(paste(vname,"~ grp"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by session\n")
+    form<-as.formula(paste(vname,"~ S"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by ID\n")
+    form<-as.formula(paste(vname,"~ ID"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by group + Session\n")
+    form<-as.formula(paste(vname,"~ grp + S"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by Session + ID\n")
+    form<-as.formula(paste(vname,"~ S + ID"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by group + ID\n")
+    form<-as.formula(paste(vname,"~ grp + ID"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    print("Summary by group + Session + ID\n")
+    form<-as.formula(paste(vname,"~ grp + S + ID"))
+    print(summaryBy(form, mdata,FUN=statfcn))
+    sink()
+}
 
 do.aov.uni <- function(mdata,vname,vpath){
     #Repeated Measures 5-WAY ANOVA with mixed within and between design, Type III SSE 
@@ -30,6 +58,7 @@ do.aov.uni <- function(mdata,vname,vpath){
     print(summary(glht(aov.mod,linfct=mcp(IDR= "Tukey"))))
     sink()
 }
+
 
 do.lme.uni <- function(mdata,vname,vpath){
     #Perform lme    
