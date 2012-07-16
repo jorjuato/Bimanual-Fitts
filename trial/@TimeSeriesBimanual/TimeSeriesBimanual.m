@@ -238,20 +238,24 @@ classdef TimeSeriesBimanual < handle
         end
         
         function Rph = get.Rph(obj)
-            Rph = unwrap(angle(hilbert(obj.Rx)));
+            Rph = filterdata(unwrap(angle(hilbert(obj.Rx))),obj.conf.cutoff);
         end
         
         function Lph = get.Lph(obj)
-            Lph = unwrap(angle(hilbert(obj.Lx)));
+            Lph = filterdata(unwrap(angle(hilbert(obj.Lx))),obj.conf.cutoff);
         end
         
         function Romega = get.Romega(obj)
-            Romega = filterdata(diff(obj.Rph)*1000,obj.conf.cutoff);
+            %Romega = filterdata(diff(obj.Rph)*1000,obj.conf.cutoff);
+            %Romega = diff(filterdata(obj.Rph,obj.conf.cutoff)*1000);
+            Romega = diff(obj.Rph*1000);
             Romega(end+1)=Romega(end);
         end
         
         function Lomega = get.Lomega(obj)
-            Lomega = filterdata(diff(obj.Lph)*1000,obj.conf.cutoff);
+            %Lomega = filterdata(diff(obj.Lph)*1000,obj.conf.cutoff);
+            Lomega = diff(obj.Lph*1000);
+            %Lomega = diff(filterdata(obj.Lph,obj.conf.cutoff)*1000);
             Lomega(end+1)=Lomega(end);
         end
         
