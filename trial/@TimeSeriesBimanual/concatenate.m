@@ -1,4 +1,4 @@
-function concatenate(obj,obj2)    
+function concatenate(obj,obj2)
     %Now, ugly cat, needs cat close to peaks and
     %smoothing around cat-points pka(1)
     obj.Lxraw =  [ obj.Lxraw ; obj2.Lxraw ];

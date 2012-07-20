@@ -1,10 +1,10 @@
-classdef Experiment < dynamicprops
+classdef Experiment < handle %dynamicprops
    properties(SetObservable = true)
-      conf
-      participants=Participant.empty(10,0);
+      conf      
    end
-   properties
-    size =10
+   properties (SetAccess = private)
+    participants=Participant.empty(10,0);
+    size = 10
    end
     methods
         
@@ -44,6 +44,11 @@ classdef Experiment < dynamicprops
         end
         
         function get_results(obj)
+            obj.conf.dump_tofile(1);
+            obj.save_scripts(obj);
+            if ~exist(obj.conf.save_path,'dir')
+                mkdir(obj.conf.save_path); 
+            end   
             if obj.conf.parallelMode==1
                 labsConf = findResource(); 
                 if matlabpool('size') == 0
@@ -77,7 +82,17 @@ classdef Experiment < dynamicprops
                 obj.participants=participants;
             end
         end
+        
+        function save_scripts(obj)
+            files_ls=ls(obj.conf.scripts_path);
+            ftmp=regexp(files_ls,'\s','split');
+            files=ftmp(1:2:end);
+            save_path=obj.conf.save_path(1:end-length(obj.conf.branch_path))
+            outname=joinpath(save_path,['scripts_' obj.conf.branch_path '.zip']);
+            zip(outname,files,obj.conf.scripts_path);
+        end
     end
+    
     
     methods(Static=true)            
         exp=load(obj); %Disabled

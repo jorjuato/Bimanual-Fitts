@@ -18,6 +18,7 @@ classdef TimeSeriesBimanual < handle
         Ljerknorm
         Lph
         Lomega
+        Lalpha
         Lamp
         Lpeaks
         LID
@@ -35,6 +36,7 @@ classdef TimeSeriesBimanual < handle
         Rjerknorm
         Rph
         Romega
+        Ralpha
         Ramp
         Rpeaks
         RID
@@ -44,13 +46,13 @@ classdef TimeSeriesBimanual < handle
         RHarmonicity
         LCircularity
         RCircularity
-        LSpecgram
-        RSpecgram
-        minPeakDistance
-        minPeakDistanceNorm
-        d4D
-        d3D
-        d2D
+        Lf
+        Rf
+        LPxx
+        RPxx
+        freq
+        %LSpecgram
+        %RSpecgram
     end
     
     properties (SetAccess = private, Hidden)
@@ -250,6 +252,9 @@ classdef TimeSeriesBimanual < handle
             %Romega = diff(filterdata(obj.Rph,obj.conf.cutoff)*1000);
             Romega = diff(obj.Rph*1000);
             Romega(end+1)=Romega(end);
+            mo=median(Romega);
+            Romega(1:500)=mo;
+            Romega(end-500:end)=mo;
         end
         
         function Lomega = get.Lomega(obj)
@@ -257,6 +262,19 @@ classdef TimeSeriesBimanual < handle
             Lomega = diff(obj.Lph*1000);
             %Lomega = diff(filterdata(obj.Lph,obj.conf.cutoff)*1000);
             Lomega(end+1)=Lomega(end);
+            mo=median(Lomega);
+            Lomega(1:500)=mo;
+            Lomega(end-500:end)=mo;
+        end
+        
+        function Ralpha = get.Ralpha(obj)
+            Ralpha=diff(obj.Romega*1000);
+            Ralpha(end+1)=Ralpha(end);
+        end
+        
+        function Lalpha = get.Lalpha(obj)
+            Lalpha=diff(obj.Lomega*1000);
+            Lalpha(end+1)=Lalpha(end);
         end
         
         function Ramp = get.Ramp(obj)
@@ -269,13 +287,13 @@ classdef TimeSeriesBimanual < handle
         
         function Lpeaks = get.Lpeaks(obj)
             [maxPeaks, minPeaks] = peakdet(obj.Lx, obj.conf.peak_size);
-            Lpeaks = sort([1;maxPeaks(:,1);minPeaks(:,1);length(obj.Lx)]);
+            Lpeaks = sort([maxPeaks(:,1);minPeaks(:,1);length(obj.Lx)]);
             %Lpeaks = sort([1;maxPeaks(:,1);minPeaks(:,1)]);
         end
         
         function Rpeaks = get.Rpeaks(obj)            
             [maxPeaks, minPeaks] = peakdet(obj.Rx, obj.conf.peak_size);
-            Rpeaks = sort([1;maxPeaks(:,1);minPeaks(:,1);length(obj.Rx)]);
+            Rpeaks = sort([maxPeaks(:,1);minPeaks(:,1);length(obj.Rx)]);
             %Rpeaks = sort([1;maxPeaks(:,1);minPeaks(:,1)]);
         end
         
@@ -339,119 +357,31 @@ classdef TimeSeriesBimanual < handle
           %This method imposes a circle of R=1 and center=(0,0)
           [~,modulus] = cart2pol(obj.Lxnorm,obj.Lvnorm);
           LCircularity = nanmean(modulus);
+      end    
+      
+      function Rf = get.Rf(obj)
+          RPxx=obj.RPxx;
+          Rf=obj.freq(RPxx==max(RPxx));
       end
       
-      function minPeakDistance = get.minPeakDistance(ts)
-          Rpeaks=ts.Rpeaks;
-          Lpeaks=ts.Lpeaks;
-          Rlen = length(Rpeaks)-1;  %Extreme are always zeros!
-          Llen = length(Lpeaks)-1;  
-          if Llen<Rlen
-              q=round(Rlen/Llen);
-              minPeakDistance=zeros(Llen-1,1);              
-              for i=2:Llen
-                  L=Lpeaks(i);
-                  if q==1
-                      R=Rpeaks(i-1:i+1);
-                  elseif (i*(q-1))<1
-                      R=Rpeaks(1:i*(q+1));                     
-                  elseif (i*(q+1))>Rlen
-                      R=Rpeaks(i*(q-1):Rlen);
-                  else
-                      R=Rpeaks(i*(q-1):i*(q+1));
-                  end
-                  abs(L-R);
-                  [d,j]=min(abs(L-R));
-                  minPeakDistance(i-1)=d*sign(L-R(j));
-              end
-          else
-              q=round(Llen/Rlen);
-              minPeakDistance=zeros(Rlen-1,1);
-              for i=2:Rlen
-                  R=Rpeaks(i);
-                  if q==1
-                      L=Lpeaks(i-1:i+1);
-                  elseif (i*(q-1))<1
-                      L=Lpeaks(1:i*(q+1));
-                  elseif (i*(q+1))>Llen
-                      L=Lpeaks(i*(q-1):Llen);
-                  else
-                      L=Lpeaks(i*(q-1):i*(q+1));
-                  end
-                  [d,j]=min(abs(R-L));
-                  minPeakDistance(i-1)=d*sign(L(j)-R);
-              end
-          end          
+      function Lf = get.Lf(obj)
+          LPxx=obj.LPxx;
+          Lf=obj.freq(LPxx==max(LPxx));
       end
       
-      function minPeakDistanceNorm = get.minPeakDistanceNorm(ts)
-          Rpeaks=ts.Rpeaks;
-          Lpeaks=ts.Lpeaks;
-          Rlen = length(Rpeaks)-1;  %Extreme are always zeros!
-          Llen = length(Lpeaks)-1;  
-          if Llen<Rlen
-              q=round(Rlen/Llen);
-              minPeakDistanceNorm=zeros(Llen-1,1);              
-              for i=2:Llen
-                  L=Lpeaks(i);
-                  if q==1
-                      R=Rpeaks(i-1:i+1);
-                  elseif (i*(q-1))<1
-                      R=Rpeaks(1:i*(q+1));                     
-                  elseif (i*(q+1))>Rlen
-                      R=Rpeaks(i*(q-1):Rlen);
-                  else
-                      R=Rpeaks(i*(q-1):i*(q+1));
-                  end
-                  omega=ts.Lomega(i);
-                  [d,j]=min(abs(L-R)/omega);
-                  minPeakDistanceNorm(i-1)=d*sign(L-R(j));
-              end
-          else
-              q=round(Llen/Rlen);
-              minPeakDistanceNorm=zeros(Rlen-1,1);
-              for i=2:Rlen
-                  R=Rpeaks(i);
-                  if q==1
-                      L=Lpeaks(i-1:i+1);
-                  elseif (i*(q-1))<1
-                      L=Lpeaks(1:i*(q+1));
-                  elseif (i*(q+1))>Llen
-                      L=Lpeaks(i*(q-1):Llen);
-                  else
-                      L=Lpeaks(i*(q-1):i*(q+1));
-                  end
-                  omega=ts.Romega(i);
-                  [d,j]=min(abs(R-L)/omega);
-                  minPeakDistanceNorm(i-1)=d*sign(L(j)-R);
-              end
-          end          
-      end          
-      
-      function d4D = get.d4D(ts)
-        z=zeros(length(ts.Lxnorm),1);
-        l=[ts.Lxnorm,ts.Lvnorm,z,z];    
-        r=[z,z,ts.Rxnorm,ts.Rvnorm];
-        d4D=sqrt( (l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2 + (l(:,3)-r(:,3)).^2 + (l(:,4)-r(:,4)).^2);
-        d4D=d4D-mean(d4D);
+      function RPxx = get.RPxx(obj)
+        [RPxx,~] = get_welch_periodogram(obj.Rxnorm);
       end
       
-      function d3D = get.d3D(ts)
-        l=[ts.Lxnorm,ts.Lvnorm,zeros(length(ts.Lxnorm),1)];    
-        r=[ts.Rxnorm,zeros(length(ts.Rxnorm),1),ts.Rvnorm];
-        d3D=sqrt((l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2 + (l(:,3)-r(:,3)).^2);
-        d3D=d3D-mean(d3D);
-      end
+      function LPxx = get.LPxx(obj)
+        [LPxx,~] = get_welch_periodogram(obj.Lxnorm);
+      end        
       
-      function d2D = get.d2D(ts)
-        %z=zeros(length(ts.Lph),1);
-        %l=[tr.ts.Lph*tr.ls.q,z];
-        %r=[z,tr.ts.Rph*tr.ls.p];
-        %d2D=sqrt((l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2);
-        %d2D=d2D-mean(d2D);
-        d2D=zeros(length(ts.Lph),1);
-      end      
+      function freq = get.freq(obj)
+        [~,freq] = get_welch_periodogram(obj.Lxnorm);
+      end        
       
+            
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -484,8 +414,7 @@ classdef TimeSeriesBimanual < handle
     
     methods(Static=true)  
         function anova_var = get_anova_variables()
-            anova_var = { 'Harmonicity' 'Circularity' ...
-                          'minPeakDistance' 'minPeakDistanceNorm'};
+            anova_var = { 'Harmonicity' 'Circularity' 'f' 'IDef'};
         end        
     end
 end% classdef

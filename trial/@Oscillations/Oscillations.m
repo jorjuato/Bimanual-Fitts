@@ -1,18 +1,23 @@
 classdef Oscillations < handle
     properties
+        hand
+        conf
+        ts
+    end
+    
+    properties (Dependent = true, SetAccess = private)
         peakVel
         MT
         accTime
         decTime
         accQ
         IPerf
-        IPerfEf
-        conf
+        IPerfEf        
     end
     
-    %%%%%%%%%%%%%%%%%%
-    % Public methods
-    %%%%%%%%%%%%%%%%%%
+   %%%%%%%%%%%%%%%%%%
+   % Public methods
+   %%%%%%%%%%%%%%%%%%      
     methods
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Prototypes of Public methods
@@ -20,68 +25,167 @@ classdef Oscillations < handle
         plot(obj,graphPath,rootname,ext)
         display(obj)
         concatenate(obj,obj2)
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %Properties getters and setter
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function MT = get.MT(obj)
+            if strcmp(obj.hand,'')
+                peaks = obj.ts.peaks;
+            elseif strcmp(obj.hand,'L')
+                %Left hand kinematics
+                peaks = obj.ts.Lpeaks;
+            elseif strcmp(obj.hand,'R')
+                %Right hand kinematics
+                peaks = obj.ts.Rpeaks;
+            end
+            MT=diff(peaks)./1000;
+        end 
 
+        function peakVel = get.peakVel(obj)
+            if strcmp(obj.hand,'')
+                peaks = obj.ts.peaks;
+                peakNo = size(peaks,1)-1;
+                v= obj.ts.v;
+            elseif strcmp(obj.hand,'L')
+                %Left hand kinematics
+                peaks = obj.ts.Lpeaks;
+                peakNo = size(peaks,1)-1;
+                v= obj.ts.Lv;
+            elseif strcmp(obj.hand,'R')
+                %Right hand kinematics
+                peaks = obj.ts.Rpeaks;
+                peakNo = size(peaks,1)-1;
+                v= obj.ts.Rv;
+            end            
+            peakVel = zeros(peakNo,1);
+            for i=1:peakNo
+                x0 = peaks(i,1);
+                x1 = peaks(i+1,1);
+                peakVel(i)=max(abs(v(x0:x1)));
+            end
+        end 
+        
+        function accTime = get.accTime(obj)
+            if strcmp(obj.hand,'')
+                peaks = obj.ts.peaks;
+                peakNo = size(peaks,1)-1;
+                a=obj.ts.a;
+            elseif strcmp(obj.hand,'L')
+                %Left hand kinematics
+                peaks = obj.ts.Lpeaks;
+                peakNo = size(peaks,1)-1;
+                a=obj.ts.La;
+            elseif strcmp(obj.hand,'R')
+                %Right hand kinematics
+                peaks = obj.ts.Rpeaks;
+                peakNo = size(peaks,1)-1;
+                a=obj.ts.Ra;
+            end
+            accTime = zeros(peakNo,1);
+            for i=1:peakNo
+                x0 = peaks(i,1);
+                x1 = peaks(i+1,1);
+                accTime(i) = length(find(a(x0:x1)>0))/(x1-x0);
+            end
+        end 
+
+        function decTime = get.decTime(obj)
+            if strcmp(obj.hand,'')
+                peaks = obj.ts.peaks;
+                peakNo = size(peaks,1)-1;
+                a=obj.ts.a;
+            elseif strcmp(obj.hand,'L')
+                %Left hand kinematics
+                peaks = obj.ts.Lpeaks;
+                peakNo = size(peaks,1)-1;
+                a=obj.ts.La;
+            elseif strcmp(obj.hand,'R')
+                %Right hand kinematics
+                peaks = obj.ts.Rpeaks;
+                peakNo = size(peaks,1)-1;
+                a=obj.ts.Ra;
+            end
+            decTime = zeros(peakNo,1);
+            for i=1:peakNo
+                x0 = peaks(i,1);
+                x1 = peaks(i+1,1);
+                decTime(i) = length(find(a(x0:x1)<0))/(x1-x0);
+            end
+        end 
+
+        function accQ = get.accQ(obj)
+            if strcmp(obj.hand,'')
+                peaks = obj.ts.peaks;
+                peakNo = size(peaks,1)-1;
+                a=obj.ts.a;
+            elseif strcmp(obj.hand,'L')
+                %Left hand kinematics
+                peaks = obj.ts.Lpeaks;
+                peakNo = size(peaks,1)-1;
+                a=obj.ts.La;
+            elseif strcmp(obj.hand,'R')
+                %Right hand kinematics
+                peaks = obj.ts.Rpeaks;
+                peakNo = size(peaks,1)-1;
+                a=obj.ts.Ra;
+            end
+            accQ = zeros(peakNo,1);
+            for i=1:peakNo
+                x0 = peaks(i,1);
+                x1 = peaks(i+1,1);
+                accQ(i) = length(find(a(x0:x1)<0))/length(find(a(x0:x1)>0));
+            end
+        end 
+        
+
+        function IPerf = get.IPerf(obj)
+            if strcmp(obj.hand,'')
+                peaks = obj.ts.peaks;
+                ID=obj.ts.info.ID;
+            elseif strcmp(obj.hand,'L')
+                %Left hand kinematics
+                peaks = obj.ts.Lpeaks;
+                ID=obj.ts.info.LID;
+            elseif strcmp(obj.hand,'R')
+                %Right hand kinematics
+                peaks = obj.ts.Rpeaks;
+                ID=obj.ts.info.RID;
+            end
+            IPerf=ID*1000./diff(peaks);
+        end 
+        
+        
+        function IPerfEf = get.IPerfEf(obj)
+            if strcmp(obj.hand,'')
+                peaks = obj.ts.peaks;
+                IDef=obj.ts.IDef;
+            elseif strcmp(obj.hand,'L')
+                %Left hand kinematics
+                peaks = obj.ts.Lpeaks;
+                IDef=obj.ts.LIDef;
+            elseif strcmp(obj.hand,'R')
+                %Right hand kinematics
+                peaks = obj.ts.Rpeaks;
+                IDef=obj.ts.RIDef;
+            end
+            IPerfEf=IDef*1000./diff(peaks);
+        end
+        
+  
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function osc = Oscillations(ts,hand,conf)
             osc.conf=conf;
-            osc.conf.hand=hand;
-            if strcmp(hand,'')
-                data.peaks = ts.peaks;
-                data.peakNo = size(data.peaks,1)-1;
-                data.x = ts.x;
-                data.v = ts.v;
-                data.a = ts.a;
-                data.ID = ts.ID;
-                data.IDef = ts.IDef;
-            elseif strcmp(hand,'L')
-                %Left hand kinematics
-                data.peaks = ts.Lpeaks;
-                data.peakNo = size(data.peaks,1)-1;
-                data.x = ts.Lx;
-                data.v = ts.Lv;
-                data.a = ts.La;
-                data.ID = ts.LID;
-                data.IDef = ts.LIDef;
-            elseif strcmp(hand,'R')
-                %Right hand kinematics
-                data.peaks = ts.Rpeaks;
-                data.peakNo = size(data.peaks,1)-1;
-                data.x = ts.Rx;
-                data.v = ts.Rv;
-                data.a = ts.Ra;
-                data.ID = ts.RID;
-                data.IDef = ts.RIDef;
-            end
-            
-            osc.peakVel = zeros(data.peakNo,1);
-            osc.MT = zeros(data.peakNo,1);
-            osc.accTime = zeros(data.peakNo,1);
-            osc.decTime = zeros(data.peakNo,1);
-            osc.accQ = zeros(data.peakNo,1);
-            osc.IPerf = zeros(data.peakNo,1);
-            osc.IPerfEf = zeros(data.peakNo,1);
-            
-            for i=1:data.peakNo
-                x0 = data.peaks(i,1);
-                x1 = data.peaks(i+1,1);
-                osc.peakVel(i) = max(abs(data.v(x0:x1)));
-                osc.MT(i) = (x1-x0)/1000;
-                osc.accTime(i) = length(find(data.a(x0:x1)>0))/(x1-x0);
-                %osc.accelerationTime = length(find(data.a(x0:x1)>0));
-                osc.decTime(i) = length(find(data.a(x0:x1)<0))/(x1-x0);
-                %osc.decelerationTime = length(find(data.a(x0:x1)<0));
-                osc.accQ(i) = length(find(data.a(x0:x1)<0))/length(find(data.a(x0:x1)>0));
-                %osc.indexPerformance = (x1-x0)/data.ID;
-                osc.IPerf(i) = data.ID*1000/(x1-x0);
-                %osc.IPerfEf = (x1-x0)/data.ID;
-                osc.IPerfEf(i) = data.IDef*1000/(x1-x0);
-            end
-        end %Constructor       
+            osc.hand=hand;
+            osc.ts=ts;
+        end %Constructor     
+        
         function update_conf(obj,conf)
             %conf.hand=obj.conf.hand;
             obj.conf=conf;
+            obj.ts.conf=conf;
         end
     end
     
@@ -90,4 +194,4 @@ classdef Oscillations < handle
             anova_var = { 'peakVel' 'MT' 'accTime' 'decTime' 'accQ' 'IPerf' 'IPerfEf'};
         end        
     end
-end
+end        

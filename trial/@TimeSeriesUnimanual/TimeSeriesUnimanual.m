@@ -22,6 +22,9 @@ classdef TimeSeriesUnimanual < handle
       IDef
       Harmonicity
       Circularity
+      f
+      Pxx
+      freq   
    end
    
     properties (SetAccess = private, Hidden)
@@ -127,7 +130,7 @@ classdef TimeSeriesUnimanual < handle
       function peaks = get.peaks(obj)
           [maxPeaks, minPeaks] = peakdet(obj.x, obj.conf.peak_size);
           %peaks = sort([1;maxPeaks(:,1);minPeaks(:,1)]);
-          peaks = sort([1;maxPeaks(:,1);minPeaks(:,1);length(obj.x)]);
+          peaks = sort([maxPeaks(:,1);minPeaks(:,1);length(obj.x)]);
       end
       
       function idx = get.idx(obj)
@@ -164,6 +167,20 @@ classdef TimeSeriesUnimanual < handle
           Circularity = nanmean(modulus);
       end
       
+      function f = get.f(obj)
+          Pxx=obj.Pxx;
+          f=obj.freq(Pxx==max(Pxx));
+      end
+      
+      function Pxx = get.Pxx(obj)
+        [Pxx,~] = get_welch_periodogram(obj.xnorm);
+      end
+           
+      
+      function freq = get.freq(obj)
+        [~,freq] = get_welch_periodogram(obj.xnorm);
+      end         
+      
       %Constructor
       function ts = TimeSeriesUnimanual(data,info,conf)
         
@@ -192,7 +209,7 @@ classdef TimeSeriesUnimanual < handle
    
     methods(Static=true)  
         function anova_var = get_anova_variables()
-            anova_var = { 'Harmonicity','Circularity'};
+            anova_var = { 'Harmonicity','Circularity','IDef','f'};
         end        
     end   
 end% classdef

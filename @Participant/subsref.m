@@ -13,15 +13,19 @@ function s = subsref(r, subscript)
         thisSubscript = subscript(1);
         if isa(s, 'Participant') % See if the referenced object is a myclass object.        
             % process next subscript
-            switch thisSubscript.type            
+            switch thisSubscript.type  
                 case '()' % parentheses
-                    switch thisSubscript.subs{:}
-                        case 2
-                            s = s.sessions(4);
-                        case 3
-                            s= s.sessions(7);
-                        otherwise
-                            s = s.sessions(thisSubscript.subs{:});
+                    if length(s) > 1
+                        s = s(thisSubscript.subs{:});
+                    else
+                        switch thisSubscript.subs{:}
+                            case 2
+                                s = s.sessions(4);
+                            case 3
+                                s= s.sessions(7);
+                            otherwise
+                                s = s.sessions(thisSubscript.subs{:});
+                        end
                     end
                     %error('Improper subscript reference for myclass object.')
                 case '{}'

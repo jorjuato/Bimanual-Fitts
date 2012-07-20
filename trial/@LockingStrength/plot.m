@@ -9,9 +9,10 @@ function plot(obj,graphPath,rootname,ext)
         fig = figure();
     end
     hold on
-    plot(obj.freqs,obj.FastPxx,'r');
-    plot(obj.freqs,obj.SlowPxx,'b');
-    plot(obj.freqs,obj.SlowPxx_t,'g');
+    f=obj.freq;
+    plot(f,obj.FastPxx,'r');
+    plot(f,obj.SlowPxx,'b');
+    plot(f,obj.SlowPxx_t,'g');
     xlim([0,10]);
     text(4,5.5,strcat('Freq locking strength PC=',num2str(obj.flsPC)));
     text(4,5.0,strcat('Freq locking strength Amp=',num2str(obj.flsAmp)));
