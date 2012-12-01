@@ -21,7 +21,7 @@ xc=crossings(x);
 Hi=zeros(0,length(xc)-1);
 for i=1:length(xc)-1
     idx=xc(i):xc(i+1);
-    [maxP, minP] = peakdet(a(idx),0.2);
+    [maxP, minP] = peakdet(a(idx),0.05);
     %Border cases, typical of fully harmonic movement (only one acc peak)
     if isempty(minP) || isempty(maxP) || ...
        minP(1,1)==1  || minP(1,1)==length(idx) || ...
@@ -29,8 +29,8 @@ for i=1:length(xc)-1
             Hi(i)=1;
             continue
     end
-    minP=min(minP(:,2));
-    maxP=max(maxP(:,2));
+    minP=abs(min(minP(:,2)));
+    maxP=abs(max(maxP(:,2)));
     if mean(x(idx))<0
         Hi(i)=minP/maxP;
     else

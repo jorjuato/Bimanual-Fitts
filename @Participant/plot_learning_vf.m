@@ -1,5 +1,5 @@
 function arr = plot_learning_vf(obj,graphPath)
-    if nargin<2, graphPath=''; end    
+    if nargin<2, graphPath=getuserdir(); end    
     if ~exist(graphPath,'dir') & obj.conf.interactive==0
         mkdir(graphPath);
     end

@@ -12,7 +12,6 @@ function  plot_alpha_omega(ts,filename)
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %some globals
-
     Romega=ts.Romega;
     Lomega=ts.Lomega;
     Ralpha=ts.Ralpha;
@@ -24,8 +23,8 @@ function  plot_alpha_omega(ts,filename)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Start plotting
     scrsz = get(0,'ScreenSize');
-    figure('Position',[1 1 scrsz(3)/4 scrsz(4)/2]);
-    set(gcf,'name',filename);
+    figure('Position',[1 1 scrsz(3)/2 scrsz(4)-100]);
+    %set(gcf,'name',filename);
 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34,50 +33,49 @@ function  plot_alpha_omega(ts,filename)
     hold on;        
     plot(ax,ts.Lx, 'r');
     plot(ax,ts.Rx, 'b');
-    %plot(ax,ts.Lv/5, 'k--');
-    %plot(ax,ts.Rv/5, 'g--');
+    plot(ax,ts.Lv/5, 'k--');
+    plot(ax,ts.Rv/5, 'g--');
     scatter(ax,ts.Lpeaks,ts.Lx(ts.Lpeaks),'r+');
     scatter(ax,ts.Rpeaks,ts.Rx(ts.Rpeaks),'b+');    
     axis(ax,[0 length(ts.Lx) -0.1 0.1]);
     ylabh=ylabel('Position','rot',0);
     s = struct(handle(ylabh));
     s.Position=s.Position - [3 0 0 ];
-    %title(filename);
+    title(filename);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Plot omega vs phase
-    ax=subplot(3,2,3);    
-    scatter(mod(Lph(i),2*pi),Lomega(i), 'r.');
+    subplot(3,2,3);    
+    scatter(Lph(i),Lomega(i), 'r.');
     ylabh=ylabel('Omega vs Phase)','rot',0);
     s = struct(handle(ylabh));
     s.Position=s.Position - [3 0 0 ];
-    xlim([0 2*pi]);
-    %axis(ax,[0 max 0 omax]);
+    %xlim([0 2*pi]);
     
-    ax=subplot(3,2,4);    
-    scatter(mod(Rph(i),2*pi),Romega(i), 'b.');
-    xlim([0 2*pi]);
+    subplot(3,2,4);    
+    scatter(Rph(i),Romega(i), 'b.');
+    %xlim([0 2*pi]);
     
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Plot alpha vs phase
-    ax=subplot(3,2,5);    
-    scatter(mod(Lph(i),2*pi),Lalpha(i), 'r.');
+    subplot(3,2,5);    
+    scatter(Lph(i),Lalpha(i), 'r.');
     ylabh=ylabel('Alpha vs Phase)','rot',0);
     s = struct(handle(ylabh));
     s.Position=s.Position - [3 0 0 ];
-    xlim([0 2*pi]);
-    %axis(ax,[0 max 0 omax]);   
-    
-    ax=subplot(3,2,6);
-    scatter(mod(Rph(i),2*pi),Ralpha(i), 'b.');
-    xlim([0 2*pi]);
+    %xlim([0 2*pi]);
+
+    subplot(3,2,6);
+    scatter(Rph(i),Ralpha(i), 'b.');
+    %xlim([0 2*pi]);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Save file to disk if filename provided
-    if ~isempty(filename)
-        options.Format = 'png';
-        hgexport(gcf,[filename '.png'],options);
-        %close
-    end
+    %if ~isempty(filename)
+    %    options.Format = 'png';
+    %    hgexport(gcf,[filename '.png'],options);
+    %     saveas(gcf,filename,'png');
+    %     close
+    %end
 end

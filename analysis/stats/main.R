@@ -8,7 +8,7 @@ registerDoMC()
 
 #Prepare global paths
 rootpath='/home/jorge/KINARM'
-Rname='8th'
+Rname='resampled'
 opath=paste(paste(rootpath,"stats",sep='/'),Rname,sep='/')
 dir.create(opath,showWarnings=FALSE)
 Rdatapath=paste(paste(rootpath,'Rdata',sep='/'),Rname,sep='/')
@@ -23,10 +23,12 @@ do_lme=FALSE
 do_lmer=FALSE
 do_ANOVA=TRUE
 do_CompareANOVA=FALSE
-do_barchart=TRUE
-do_interaction=TRUE
-do_boxplots=TRUE
+do_barchart=FALSE
+do_interaction=FALSE
+do_boxplots=FALSE
 do_density=FALSE
+do_unimanual=FALSE
+do_relative=FALSE
 
 #Get size of data tables by preloading
 factBiNo <-5
@@ -48,11 +50,15 @@ ucolfmt=c(rep("factor",factUniNo),rep("numeric",valUniNo),recursive=TRUE)
 bidata<-read.csv(bfile,colClasses=bcolfmt)
 uLdata<-read.csv(uLfile,colClasses=ucolfmt)
 uRdata<-read.csv(uRfile,colClasses=ucolfmt)
-bidata<-generate.relative.vars(bidata,uLdata,uRdata)
+
+#Generate relative variables, if requested 
+if (do_relative) bidata<-generate.relative.vars(bidata,uLdata,uRdata)
+
+
 colBiNo_t<-length(bidata)
-bidata$grpeff<-factor(abs(bidata$rho-1)<0.25)
+#bidata$grpeff<-factor(abs(bidata$rho-1)<0.1)
 levels(bidata$grp)=c('C','U')
-levels(bidata$grpeff)=c('U','C')
+#levels(bidata$grpeff)=c('U','C')
 levels(bidata$IDR)=c('D','M','E')
 levels(bidata$IDL)=c('D','E')
 levels(uLdata$grp)=c('C','U')
@@ -61,13 +67,13 @@ levels(uLdata$ID)=c('D','E')
 levels(uRdata$ID)=c('D','M','E')
 
 #Generate the ranges of variables to be analyzed in tables
-rangeB<-(factBiNo +1):(colBiNo_t-factBiNo)
-rangeU<-(factUniNo+1):(colUniNo-factBiNo)
+rangeB<-(factBiNo +1):(colBiNo_t-factBiNo-1)
+rangeU<-(factUniNo+1):(colUniNo-factUniNo-1)
 densityplots=names(bidata)[rangeB]
 
 #Iterate over all Bimanual variables
-foreach (vname=names(bidata)[rangeB]) %dopar% {
-#for (vname in names(bidata)[rangeB]) {
+#foreach (vname=names(bidata)[rangeB]) %dopar% {
+for (vname in names(bidata)[rangeB]) {
     #Create path
     vpath=paste(opath,vname,sep="/")
     dir.create(vpath,showWarnings=FALSE)
@@ -96,9 +102,11 @@ foreach (vname=names(bidata)[rangeB]) %dopar% {
     if (do_density) plot_densityplot(bidata,vname,vpath)
 }
 
+if (do_unimanual == FALSE) return
+
 hstr='L'
-foreach (vname=names(uLdata)[rangeU]) %dopar% {
-#for (vname in names(uLdata)[rangeU]) {
+#foreach (vname=names(uLdata)[rangeU]) %dopar% {
+for (vname in names(uLdata)[rangeU]) {
     #Create path
     vpath=paste(opath,vname,sep="/")
     dir.create(vpath,showWarnings=FALSE)

@@ -3,7 +3,7 @@ function disp(obj)
     fprintf('\nProperties of object LockingStrength...\n');
     for i=1:length(props)
         p=props{i};
-        if length(obj.(p))==1 && ~strcmp(p,'conf')
+        if length(obj.(p))==1 && ~strcmp(p,'conf') && ~strcmp(p,'ts')
             str = sprintf('%10s = %2.3f.', p, obj.(p));
             disp(str);
         elseif isa(obj.(p),'str')

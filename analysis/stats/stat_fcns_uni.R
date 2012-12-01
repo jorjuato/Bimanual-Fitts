@@ -85,7 +85,8 @@ do.lme.uni <- function(mdata,vname,vpath){
 do.ANOVA.uni <- function(mdata,vname,vpath){
     #Perform type III Repeated Measures 5-WAY ANOVA with mixed within and between design     
     sink(paste(vpath,'anova_uni.out',sep="/"))
-    ez.mod<-ezANOVA(data=mdata,dv=as.name(vname),wid=.(pp), within=.(S,ID),between=.(grp),type=3)
+    #ez.mod<-ezANOVA(data=mdata,dv=',vname,',wid=.(pp), within=.(S,ID),between=.(grp),type=3)
+    eval(parse(text=paste('ez.mod = ezANOVA(data=mdata,dv=',vname,',wid=.(pp), within=.(S,ID),between=.(grp),type=3)')))
     print(paste(vname,"~(S*ID*grp)+Error(pp/(S*ID))+grp"))
     print(ez.mod)
     sink()

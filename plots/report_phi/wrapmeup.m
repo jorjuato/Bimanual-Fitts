@@ -1,9 +1,10 @@
 function ph  = wrapmeup(ph)
-    if max(ph) > 2*pi || min(ph)<-2*pi
-        ph=rem(ph,2*pi);
+    k=pi;
+    if max(ph) > k || min(ph)<-k
+        ph=rem(ph,k);
     end
     idx1=ph>pi;
-    ph(idx1)=ph(idx1)-2*pi;
+    ph(idx1)=ph(idx1)-k;
     idx2=ph<-pi;
-    ph(idx2)=ph(idx2)+2*pi;
+    ph(idx2)=ph(idx2)+k;
 end

@@ -9,7 +9,7 @@ classdef Config < handle
         plot_path
         anal_path
         scripts_path = '/home/jorge/Dropbox/dev/Bimanual-Fitts'
-        branch_path = 'rebuilt' % Unique name to identify this specific config
+        branch_path  = 'resampled250_1_15_' % Unique name to identify this specific config
         name=''         %Participant directory name
         number=1        %Session number
         blockpath=''    %Block path
@@ -38,7 +38,7 @@ classdef Config < handle
         compress_ts=1
         split_analysis=1
         promediate=1
-        peak_size=0.05
+        peak_size=0.005
         
         %LockingStrength properties
         peak_delta=2;
@@ -47,13 +47,13 @@ classdef Config < handle
         
         %VectorField properties
         neighbourhood = [3,3]
-        binnumber = 11
+        binnumber = 31
         step = 1
-        minValsToComputeCondProb = 2
+        minValsToComputeCondProb = 15
         use_norm=1
         maxAngle_localenv=0.15
         fitorder=3 
-        
+        samplerate=250
         
     end % properties
     

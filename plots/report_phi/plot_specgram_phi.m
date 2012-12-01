@@ -119,13 +119,13 @@ function [Lf,Rf,Tr,Tl,phWin] = plot_specgram_phi(tr,osc,overlap,do_plot,filename
         %Plot histograms of phi
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         subplot(8,2,[13,15]);
-        hist(wrapmeup(tr.ls.phDiff),25);
+        rose(tr.ls.phDiff);
         xl=xlabel('Hist Phi','rot',0,'FontWeight','bold');
-        xlim([-pi pi]);
+        %xlim([-pi pi]);
         %set(yl,'Position',get(xl,'Position') - [3 0 0]);
         subplot(8,2,[14,16]);
-        hist(wrapmeup(phWin),25);
-        xlim([-pi pi]);
+        rose(phWin);
+        %xlim([-pi pi]);
         xl=xlabel('Hist Phi correct','rot',0,'FontWeight','bold');
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

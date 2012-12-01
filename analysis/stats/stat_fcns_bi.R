@@ -10,6 +10,7 @@ require(doBy)
 # effect coding for unordered factors (sum to zero, correct results)
 #options(contrasts=c(unordered="contr.sum",ordered="contr.poly"))
 
+
 generate.relative.vars <- function(bidata,uLdata,uRdata){
     #DISCARDED: "Rf" "rho" "phDiffStd" "phDiffMean"   "flsPC" "Lf" "flsAmp" "Lf","Rf",
     #PROBLEMATIC  ,
@@ -33,9 +34,9 @@ generate.relative.vars <- function(bidata,uLdata,uRdata){
             eval(parse(text=sprintf("bidata$%srel[[i]]<-bidata$%s[[i]]/val",vname,vname)))
         }
     }
-    bidata$MTBiAll<-bidata$MTL+bidata$MTR
-    bidata$MTUniAll<-uLdata$UMT+uRdata$UMT
-    bidata$MTAllRel<-bidata$MTBiAll+bidata$MTUniAll
+    #bidata$MTBiAll<-bidata$MTL+bidata$MTR
+    #bidata$MTUniAll<-uLdata$UMT+uRdata$UMT
+    #bidata$MTAllRel<-bidata$MTBiAll+bidata$MTUniAll
     return(bidata)
 }
 
@@ -45,9 +46,9 @@ do.summary <- function(mdata,vname,vpath){
     print("Summary by group")
     form<-as.formula(paste(vname,"~ grp"))
     print(summaryBy(form, mdata,FUN=statfcn))
-    print("Summary by effective group")
-    form<-as.formula(paste(vname,"~ grpeff"))
-    print(summaryBy(form, mdata,FUN=statfcn))    
+    #print("Summary by effective group")
+    #form<-as.formula(paste(vname,"~ grpeff"))
+    #print(summaryBy(form, mdata,FUN=statfcn))    
     print("Summary by session\n")
     form<-as.formula(paste(vname,"~ S"))
     print(summaryBy(form, mdata,FUN=statfcn))
@@ -57,24 +58,24 @@ do.summary <- function(mdata,vname,vpath){
     print("Summary by group + Session\n")
     form<-as.formula(paste(vname,"~ grp + S"))
     print(summaryBy(form, mdata,FUN=statfcn))
-    print("Summary by effective group + Session\n")
-    form<-as.formula(paste(vname,"~ grpeff + S"))
-    print(summaryBy(form, mdata,FUN=statfcn))    
+    #print("Summary by effective group + Session\n")
+    #form<-as.formula(paste(vname,"~ grpeff + S"))
+    #print(summaryBy(form, mdata,FUN=statfcn))    
     print("Summary by Session + IDR + IDL \n")
     form<-as.formula(paste(vname,"~ S + IDL + IDR"))
     print(summaryBy(form, mdata,FUN=statfcn))
     print("Summary by group + IDR + IDL\n")
     form<-as.formula(paste(vname,"~ grp + IDL + IDR"))
     print(summaryBy(form, mdata,FUN=statfcn))
-    print("Summary by effective group + IDR + IDL\n")
-    form<-as.formula(paste(vname,"~ grpeff + IDL + IDR"))
-    print(summaryBy(form, mdata,FUN=statfcn))
+    #print("Summary by effective group + IDR + IDL\n")
+    #form<-as.formula(paste(vname,"~ grpeff + IDL + IDR"))
+    #print(summaryBy(form, mdata,FUN=statfcn))
     print("Summary by group + Session + IDR + IDL\n")
     form<-as.formula(paste(vname,"~ grp + S + IDL + IDR"))
     print(summaryBy(form, mdata,FUN=statfcn))
-    print("Summary by effective group + Session + IDR + IDL\n")
-    form<-as.formula(paste(vname,"~ grpeff + S + IDL + IDR"))
-    print(summaryBy(form, mdata,FUN=statfcn))
+    #print("Summary by effective group + Session + IDR + IDL\n")
+    #form<-as.formula(paste(vname,"~ grpeff + S + IDL + IDR"))
+    #print(summaryBy(form, mdata,FUN=statfcn))
     sink()
 }
 
@@ -88,7 +89,7 @@ do.aov <- function(mdata,vname,vpath){
 #    print(anova(aov.mod))
     
     print("Repeated Measures 5-WAY ANOVA with within subject design, Type III SSE ")
-    aov.mod<-aov(get(vname)~(S*IDR*IDL*grpeff)+Error(pp/(S*IDR*IDL*grpeff)),mdata)
+    aov.mod<-aov(get(vname)~(S*IDR*IDL*grp)+Error(pp/(S*IDR*IDL*grp)),mdata)
     print(summary(aov.mod))
     drop1(aov.mod,test="F") # type III SS and F Tests 
     print(anova(aov.mod))
@@ -133,7 +134,8 @@ do.ANOVA <- function(mdata,vname,vpath){
     #Perform type III Repeated Measures 5-WAY ANOVA with mixed within and between design     
     sink(paste(vpath,'anova.out',sep="/"))
     cat("Repeated Measures 5-WAY ANOVA with mixed within and between design, Type III SSE ")
-    ez.mod<-ezANOVA(data=mdata,dv=as.name(vname),wid=.(pp), within=.(S,IDR,IDL),between=.(grp),type=3)
+    eval(parse(text=paste('ez.mod = ezANOVA(data=mdata,dv=',vname,',wid=.(pp), within=.(S,IDR,IDL),between=.(grp),type=3)')))
+    #ez.mod<-ezANOVA(data=mdata,dv=',vname,',wid=.(pp), within=.(S,IDR,IDL),between=.(grp),type=3)
     print(paste(vname,"~(S*IDR*IDL*grp)+Error(pp/(S*IDR*IDL))+grp"))
     print(ez.mod)
     sink()

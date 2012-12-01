@@ -45,7 +45,7 @@ classdef Experiment < handle %dynamicprops
         
         function get_results(obj)
             obj.conf.dump_tofile(1);
-            obj.save_scripts(obj);
+            obj.save_scripts();
             if ~exist(obj.conf.save_path,'dir')
                 mkdir(obj.conf.save_path); 
             end   

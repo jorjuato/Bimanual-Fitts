@@ -132,25 +132,25 @@ classdef AnalysisFitts < dynamicprops
                 %Fetch Anova property
                 AV=obj.(props{p});
                 %Get variable name and data from Anova property
-                if isa(AV,'AnovaBimanual') & flagBi==0
+                if isa(AV,'AnovaBimanual') && flagBi==0
                     flagBi=1;
                     varnamesBi=AV.factors;
                     dataBi = [AV.grLevels, AV.ppLevels , AV.ssLevels , AV.rhLevels , AV.lhLevels];
                 elseif isa(AV,'AnovaUnimanual')
-                    if strfind(props{p}(end),'R') & flagUniR==0
+                    if strfind(props{p}(end),'R') && flagUniR==0
                         flagUniR=1;
                         varnamesUniR=AV.factors;
                         dataUniR = [AV.grLevels, AV.ppLevels , AV.ssLevels , AV.idLevels];
-                    elseif strfind(props{p}(end),'L') & flagUniL==0
+                    elseif strfind(props{p}(end),'L') && flagUniL==0
                         flagUniL=1;
                         varnamesUniL=AV.factors;
                         dataUniL = [AV.grLevels, AV.ppLevels , AV.ssLevels , AV.idLevels];
                     end
-                elseif flagUniR==1 & flagUniR==1 & flagBi==1
+                elseif flagUniR==1 && flagUniR==1 && flagBi==1
                     break
                 end
             end
-            %Add numeeric dependent variables to matrix
+            %Add numeric dependent variables to matrix
             for p=1:length(props)
                 %Fetch Anova property
                 vname=props{p};

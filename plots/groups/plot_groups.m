@@ -8,7 +8,7 @@ function plot_groups(dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn
     plot_groups_Frequency(dataBi,dataUn,varnamesBi,varnamesUn);
     plot_groups_Locking(dataBi,varnamesBi);
     plot_groups_Harmonicity(dataBi,dataUn,varnamesBi,varnamesUn);
-    plot_groups_peakDelay(dataBi,varnamesBi);
+    %plot_groups_peakDelay(dataBi,varnamesBi);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

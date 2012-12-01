@@ -7,6 +7,9 @@ function plot_participants(dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vart
     
     %Do bimanual plots
     for v=1:length(varnamesBi)
+        if strcmp(varnamesBi{v},'d2D')
+            continue
+        end
        plot_var_bi(squeeze(dataBi(v,:,:,:,:,:,:)),...
                       varnamesBi{v},vartypesBi{v});
     end

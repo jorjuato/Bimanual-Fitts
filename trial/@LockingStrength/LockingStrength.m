@@ -95,27 +95,38 @@ classdef LockingStrength < handle
         end
         
       function d4D = get.d4D(obj)
-        z=zeros(length(obj.ts.Lxnorm),1);
-        l=[obj.ts.Lxnorm,obj.ts.Lvnorm,z,z];    
-        r=[z,z,obj.ts.Rxnorm,obj.ts.Rvnorm];
-        d4D=sqrt( (l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2 + (l(:,3)-r(:,3)).^2 + (l(:,4)-r(:,4)).^2);
-        d4D=d4D-mean(d4D);
+          Rx=obj.ts.Rxnorm;
+          Lx=obj.ts.Lxnorm;
+          Lv=obj.ts.Lvnorm;
+          Rv=obj.ts.Rvnorm;
+          z=zeros(size(Lx));
+          l=[Lx,Lv,z,z];
+          r=[z,z,Rx,Rv];
+          d4D=sqrt( (l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2 + (l(:,3)-r(:,3)).^2 + (l(:,4)-r(:,4)).^2);
+          %d4D=d4D-mean(d4D);
       end
       
       function d3D = get.d3D(obj)
-        l=[obj.ts.Lxnorm,obj.ts.Lvnorm,zeros(length(obj.ts.Lxnorm),1)];    
-        r=[obj.ts.Rxnorm,zeros(length(obj.ts.Rxnorm),1),obj.ts.Rvnorm];
-        d3D=sqrt((l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2 + (l(:,3)-r(:,3)).^2);
-        d3D=d3D-mean(d3D);
+          Rx=obj.ts.Rxnorm;
+          Lx=obj.ts.Lxnorm;
+          Lv=obj.ts.Lvnorm;
+          Rv=obj.ts.Rvnorm;
+          z=zeros(size(Lx));          
+          l=[Lx,Lv,z];
+          r=[Rx,z,Rv];
+          d3D=sqrt((l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2 + (l(:,3)-r(:,3)).^2);
+          %d3D=d3D-mean(d3D);
       end
       
       function d2D = get.d2D(obj)
-        %z=zeros(length(ts.Lph),1);
-        %l=[tr.ts.Lph*tr.ls.q,z];
-        %r=[z,tr.ts.Rph*tr.ls.p];
-        %d2D=sqrt((l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2);
+        Lx=obj.ts.Lxnorm;
+        Rx=obj.ts.Rxnorm;
+        z=zeros(size(Lx));
+        l=[Lx,z];
+        r=[z,Rx];
+        d2D=sqrt((l(:,1)-r(:,1)).^2 + (l(:,2)-r(:,2)).^2);
         %d2D=d2D-mean(d2D);
-        d2D=zeros(length(obj.ts.Lph),1);
+        %d2D=zeros(length(obj.ts.Lph),1);
       end
       
       function d1D = get.d1D(obj)
@@ -151,13 +162,60 @@ classdef LockingStrength < handle
       end
 
       function p = get.p(obj)
-        [p,~]=rat(obj.Lf/obj.Rf);
+          [p,~]=obj.get_p_q();
       end
 
       function q = get.q(obj)
-        [~,q]=rat(obj.Lf/obj.Rf);
+          [~,q]=obj.get_p_q();
       end
-      
+      function [p,q]=get_p_q(obj)
+          Lf=obj.Lf;
+          Rf=obj.Rf;
+          if abs(1-Lf/Rf)<0.05
+            q=1;p=1;
+          elseif Lf>Rf
+              if abs(1.5-Lf/Rf)<0.075
+                  p=3; q=2;
+              elseif abs(2-Lf/Rf)<0.1
+                  p=2; q=1;
+              elseif abs(2.5-Lf/Rf)<0.125
+                  p=5; q=2;
+              elseif abs(3-Lf/Rf)<0.15
+                  p=3; q=1;
+              elseif abs(3.5-Lf/Rf)<0.175
+                  p=7; q=2;
+              elseif abs(4-Lf/Rf)<0.2
+                  p=7; q=2;
+              elseif abs(4.5-Lf/Rf)<0.225
+                  p=9; q=2;
+              elseif abs(5-Lf/Rf)<0.25
+                  p=5; q=1;
+              else
+                [p,q]=rat(Lf/Rf);
+              end
+          else
+               if abs(1.5-Rf/Lf)<0.075
+                  q=3; p=2;
+              elseif abs(2-Rf/Lf)<0.1
+                  q=2; p=1;
+              elseif abs(2.5-Rf/Lf)<0.125
+                  q=5; p=2;
+              elseif abs(3-Rf/Lf)<0.15
+                  q=3; p=1;
+              elseif abs(3.5-Rf/Lf)<0.175
+                  q=7; p=2;
+              elseif abs(4-Rf/Lf)<0.2
+                  q=7; p=2;
+              elseif abs(4.5-Rf/Lf)<0.225
+                  q=9; p=2;
+              elseif abs(5-Rf/Lf)<0.25
+                  q=5; p=1;
+              else
+                [q,p]=rat(Rf/Lf);
+              end
+              
+          end
+      end
       function SlowPxx = get.SlowPxx(obj)
           if obj.Lf > obj.Rf
               SlowPxx=obj.RPxx;
@@ -201,7 +259,7 @@ classdef LockingStrength < handle
           Llen = length(Lpeaks)-1;  
           if Llen<Rlen
               q=round(Rlen/Llen);
-              minPeakDelay=zeros(Llen-1,1);              
+              minPeakDelay=zeros(Llen,1);              
               for i=1:Llen
                   L=Lpeaks(i);
                   if q==1
@@ -219,11 +277,11 @@ classdef LockingStrength < handle
                   end
                   abs(L-R);
                   [d,j]=min(abs(L-R));
-                  minPeakDelay(i)=d*sign(L-R(j));
+                  minPeakDelay(i)=d*sign(L-R(j))/1000;
               end
           else
               q=round(Llen/Rlen);
-              minPeakDelay=zeros(Rlen-1,1);
+              minPeakDelay=zeros(Rlen,1);
               for i=1:Rlen
                   R=Rpeaks(i);
                   if q==1
@@ -242,51 +300,19 @@ classdef LockingStrength < handle
                   [d,j]=min(abs(R-L));
                   minPeakDelay(i)=d*sign(L(j)-R);
               end
-          end          
+          end
+          minPeakDelay=minPeakDelay/1000;
       end
       
       function minPeakDelayNorm = get.minPeakDelayNorm(obj)
           Rpeaks=obj.ts.Rpeaks;
           Lpeaks=obj.ts.Lpeaks;
-          Rlen = length(Rpeaks)-1;  %Extreme are always zeros!
-          Llen = length(Lpeaks)-1;  
-          if Llen<Rlen
-              q=round(Rlen/Llen);
-              minPeakDelayNorm=zeros(Llen-1,1);              
-              for i=2:Llen
-                  L=Lpeaks(i);
-                  if q==1
-                      R=Rpeaks(i-1:i+1);
-                  elseif (i*(q-1))<1
-                      R=Rpeaks(1:i*(q+1));                     
-                  elseif (i*(q+1))>Rlen
-                      R=Rpeaks(i*(q-1):Rlen);
-                  else
-                      R=Rpeaks(i*(q-1):i*(q+1));
-                  end
-                  omega=obj.ts.Lomega(i);
-                  [d,j]=min(abs(L-R)/omega);
-                  minPeakDelayNorm(i-1)=d*sign(L-R(j));
-              end
+          if length(Lpeaks)<length(Rpeaks)
+              MT=diff(Lpeaks)/1000;
           else
-              q=round(Llen/Rlen);
-              minPeakDelayNorm=zeros(Rlen-1,1);
-              for i=2:Rlen
-                  R=Rpeaks(i);
-                  if q==1
-                      L=Lpeaks(i-1:i+1);
-                  elseif (i*(q-1))<1
-                      L=Lpeaks(1:i*(q+1));
-                  elseif (i*(q+1))>Llen
-                      L=Lpeaks(i*(q-1):Llen);
-                  else
-                      L=Lpeaks(i*(q-1):i*(q+1));
-                  end
-                  omega=obj.ts.Romega(i);
-                  [d,j]=min(abs(R-L)/omega);
-                  minPeakDelayNorm(i-1)=d*sign(L(j)-R);
-              end
-          end          
+              MT=diff(Rpeaks)/1000;
+          end
+          minPeakDelayNorm=obj.minPeakDelay./MT;     
       end      
       
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

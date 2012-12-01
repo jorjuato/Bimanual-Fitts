@@ -15,13 +15,8 @@ function plot_all_peakDelays3D(xp,plot_type)
                 for r=1:3
                     d=[];
                     for rep=1:3
-                        tr=pp(s).bimanual{l,r,rep};
-                        pks=tr.oscR.minPeakDistance/1000;
-                        if length(tr.oscR.MT) == length(pks)
-                            d=[d;pks./tr.oscR.MT];
-                        else
-                            d=[d;pks./tr.oscL.MT];
-                        end
+                        tr=pp(s).bimanual{l,r,rep};                        
+                        d=[d;tr.ls.minPeakDelayNorm];
                     end
                     n=hist(d,x);
                     bar_series{l,r}=[bar_series{l,r}; n];

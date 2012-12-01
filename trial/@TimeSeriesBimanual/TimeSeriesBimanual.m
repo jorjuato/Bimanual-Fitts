@@ -44,6 +44,10 @@ classdef TimeSeriesBimanual < handle
         idx
         LHarmonicity
         RHarmonicity
+        LHarmonicityDown
+        LHarmonicityUp
+        RHarmonicityDown
+        RHarmonicityUp
         LCircularity
         RCircularity
         Lf
@@ -240,31 +244,33 @@ classdef TimeSeriesBimanual < handle
         end
         
         function Rph = get.Rph(obj)
-            Rph = filterdata(unwrap(angle(hilbert(obj.Rx))),obj.conf.cutoff);
+            %Rph = filterdata(unwrap(angle(hilbert(obj.Rx))),obj.conf.cutoff);
+            Rph = (atan2(obj.Rvnorm,obj.Rxnorm));
         end
         
         function Lph = get.Lph(obj)
-            Lph = filterdata(unwrap(angle(hilbert(obj.Lx))),obj.conf.cutoff);
+            %Lph = filterdata(unwrap(angle(hilbert(obj.Lx))),obj.conf.cutoff);
+            Lph = (atan2(obj.Lvnorm,obj.Lxnorm));
         end
         
         function Romega = get.Romega(obj)
             %Romega = filterdata(diff(obj.Rph)*1000,obj.conf.cutoff);
             %Romega = diff(filterdata(obj.Rph,obj.conf.cutoff)*1000);
-            Romega = diff(obj.Rph*1000);
+            Romega = diff(unwrap(obj.Rph)*1000);
             Romega(end+1)=Romega(end);
-            mo=median(Romega);
-            Romega(1:500)=mo;
-            Romega(end-500:end)=mo;
+            %mo=median(Romega);
+            %Romega(1:500)=mo;
+            %Romega(end-500:end)=mo;
         end
         
         function Lomega = get.Lomega(obj)
             %Lomega = filterdata(diff(obj.Lph)*1000,obj.conf.cutoff);
-            Lomega = diff(obj.Lph*1000);
+            Lomega = diff(unwrap(obj.Lph)*1000);
             %Lomega = diff(filterdata(obj.Lph,obj.conf.cutoff)*1000);
             Lomega(end+1)=Lomega(end);
-            mo=median(Lomega);
-            Lomega(1:500)=mo;
-            Lomega(end-500:end)=mo;
+            %mo=median(Lomega);
+            %Lomega(1:500)=mo;
+            %Lomega(end-500:end)=mo;
         end
         
         function Ralpha = get.Ralpha(obj)
@@ -340,12 +346,76 @@ classdef TimeSeriesBimanual < handle
       end  
       
       function LHarmonicity = get.LHarmonicity(obj)
-          LHarmonicity = harmonicity_index(obj,'L');
+          x=obj.Lxnorm;
+          %a=filterdata(obj.Lanorm,8);
+          a=obj.Lanorm;
+          xc=crossings(x);
+          LHarmonicity=zeros(length(xc)-1,1);
+          for i=1:length(xc)-1
+              [LHarmonicity(i),~]=get_Harmonicity(x,a,xc(i):xc(i+1));
+          end
       end 
       
       function RHarmonicity = get.RHarmonicity(obj)
-          RHarmonicity = harmonicity_index(obj,'R');
+          x=obj.Rxnorm;
+          a=filterdata(obj.Ranorm,8);
+          xc=crossings(x);
+          RHarmonicity=zeros(length(xc)-1,1);
+          for i=1:length(xc)-1
+              [RHarmonicity(i),~]=get_Harmonicity(x,a,xc(i):xc(i+1));
+          end
       end
+      
+      function LHarmonicityDown = get.LHarmonicityDown(obj)
+          x=obj.Lxnorm;
+          %a=filterdata(obj.Lanorm,8);
+          a=obj.Lanorm;
+          xc=crossings(x);
+          LHarmonicityDown=[0];
+          for i=1:length(xc)-1
+              if x(xc(i)+100)<0
+                  [LHarmonicityDown(end+1),~]=get_Harmonicity(x,a,xc(i):xc(i+1));
+              end
+          end
+      end
+      
+      function LHarmonicityUp = get.LHarmonicityUp(obj)
+          x=obj.Lxnorm;
+          a=obj.Lanorm;
+          %a=filterdata(obj.Lanorm,8);
+          xc=crossings(x);
+          LHarmonicityUp=[0];
+          for i=1:length(xc)-1
+              if x(xc(i)+100)>0
+                  [LHarmonicityUp(end+1),~]=get_Harmonicity(x,a,xc(i):xc(i+1));
+              end
+          end
+      end
+      
+      function RHarmonicityDown = get.RHarmonicityDown(obj)
+          x=obj.Rxnorm;
+          a=filterdata(obj.Ranorm,8);
+          xc=crossings(x);
+          RHarmonicityDown=[0];
+          for i=1:length(xc)-1
+              if x(xc(i)+100)<0
+                  [RHarmonicityDown(end+1),~]=get_Harmonicity(x,a,xc(i):xc(i+1));
+              end
+          end
+      end 
+      
+      function RHarmonicityUp = get.RHarmonicityUp(obj)
+          x=obj.Rxnorm;
+          a=filterdata(obj.Ranorm,8);
+          xc=crossings(x);
+          RHarmonicityUp=[0];
+          for i=1:length(xc)-1
+              if x(xc(i)+100)>0
+                  [RHarmonicityUp(end+1),~]=get_Harmonicity(x,a,xc(i):xc(i+1));
+              end
+          end
+      end
+      
       
       function RCircularity = get.RCircularity(obj)
           %This method imposes a circle of R=1 and center=(0,0)

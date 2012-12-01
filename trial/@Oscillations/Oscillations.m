@@ -12,7 +12,7 @@ classdef Oscillations < handle
         decTime
         accQ
         IPerf
-        IPerfEf        
+        IPerfEf    
     end
     
    %%%%%%%%%%%%%%%%%%

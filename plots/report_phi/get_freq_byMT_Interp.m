@@ -9,5 +9,4 @@ function [Lf_I,Rf_I,phi]=get_freq_byMT_Interp(tr)
     Lf_I=interp1(Lpeaks,Lf,1:len,'spline')';
     Rf_I=interp1(Rpeaks,Rf,1:len,'spline')';
     phi=tr.ts.Lph.*Rf_I-tr.ts.Rph.*Lf_I;
-    
 end

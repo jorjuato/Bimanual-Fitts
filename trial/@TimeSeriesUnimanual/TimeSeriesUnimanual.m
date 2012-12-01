@@ -21,10 +21,12 @@ classdef TimeSeriesUnimanual < handle
       ID
       IDef
       Harmonicity
+      HarmonicityDown
+      HarmonicityUp
       Circularity
       f
       Pxx
-      freq   
+      freq
    end
    
     properties (SetAccess = private, Hidden)
@@ -148,7 +150,7 @@ classdef TimeSeriesUnimanual < handle
       function IDef = get.IDef(obj)
           %Formula from McKenzie 1992
           %endpts = abs(x(peaks));
-          %Wef = std(endpts)*4.133; 
+          %Wef = std(endpts)*4.133;
           %IDef = log2(2*A/Wef);
           IDef = log2(2*obj.info.A/(std(abs(obj.x(obj.peaks)))*4.133));
       end
@@ -158,7 +160,39 @@ classdef TimeSeriesUnimanual < handle
       end
       
       function Harmonicity = get.Harmonicity(obj)
-          Harmonicity = harmonicity_index(obj);
+          %Harmonicity = harmonicity_index(obj);
+          x=obj.xnorm;
+          %a=filterdata(obj.Lanorm,8);
+          a=obj.anorm;
+          xc=crossings(x);
+          Harmonicity=zeros(length(xc)-1,1);
+          for i=1:length(xc)-1
+              [Harmonicity(i),~]=get_Harmonicity(x,a,xc(i):xc(i+1));
+          end
+      end
+
+      function HarmonicityDown = get.HarmonicityDown(obj)
+          x=obj.xnorm;
+          a=obj.anorm;
+          xc=crossings(x);
+          HarmonicityDown=[0];
+          for i=1:length(xc)-1
+              if x(i+5)<0
+                  HarmonicityDown(i)=get_Harmonicity(x,a,xc(i):xc(i+1));
+              end
+          end
+      end
+      
+      function HarmonicityUp = get.HarmonicityUp(obj)
+          x=obj.xnorm;
+          a=obj.anorm;
+          xc=crossings(x);
+          HarmonicityUp=[0];
+          for i=1:length(xc)-1
+              if x(i+5)>0
+                  HarmonicityUp(i)=get_Harmonicity(x,a,xc(i):xc(i+1));
+              end
+          end
       end
       
       function Circularity = get.Circularity(obj)

@@ -7,8 +7,8 @@ function [dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn] = get_dat
     %Set some globals for data fetching
     global vtypes
     global C
-    %vtypes={'ts','osc','vf','ls'};
-    vtypes={'ts','osc','ls'};
+    vtypes={'ts','osc','vf','ls'};
+    %vtypes={'ts','osc','ls'};
     C=[2,3,6,8,9];
     max_raw_data=1000;
     

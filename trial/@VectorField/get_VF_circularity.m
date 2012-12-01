@@ -58,7 +58,7 @@ function ang=get_VF_circularity_3(vf)
     %see for reference 
     %http://www.mathworks.com/matlabcentral/newsreader/view_thread/290120
     vx=vf.vectors{1};
-    [X,Y]=meshgrid(vf.xo{1},vf.xo{2});
+    [X,Y]=meshgrid(vf.bins{1},vf.bins{2});
     xdata=X(~isnan(vx));
     ydata=Y(~isnan(vx));
     f = fittype('(2*x0-2*x)*x_c + (2*y0-2*y)*y_c = -((x^2-x0^2)+(y^2-yo^2))'); 

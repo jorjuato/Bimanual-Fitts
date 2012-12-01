@@ -6,6 +6,7 @@ classdef VectorField < handle
    end
    properties(SetAccess = private)      
       xo
+      bins
    end % properties
    
    properties(Hidden, SetAccess = private)
@@ -48,10 +49,6 @@ classdef VectorField < handle
            
        plot_va(obj,graphPath,rootname,ext)
        
-       xo = get_bincenters_normalized(obj)
-       
-       xo = get_bincenters(obj,DS,dim)
-       
        [P,B,PC]=prob_2D(obj,x,b,step,minValsToComputeCondProb)
        
        [Dfit]=KM_Fit(obj,B,D,i)
@@ -59,7 +56,17 @@ classdef VectorField < handle
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        %Properties getters
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+       function bins = get.bins(obj)
+            if length(obj.conf.binnumber) == 1
+                bins = {linspace(-1.0005,1.0005,obj.conf.binnumber)'...
+                    linspace(-1.0005,1.0005,obj.conf.binnumber)'};
+            else
+                bins = {linspace(-1.0005,1.0005,obj.conf.binnumber(1))'...
+                    linspace(-1.0005,1.0005,obj.conf.binnumber(2))'};
+            end
+       end
        
+
        function vectors = get.vectors(obj)
             nf_vect=obj.vectors_unfiltered;
             vectors{1}=obj.KM_Fit(obj.xo,nf_vect,1);
@@ -69,7 +76,7 @@ classdef VectorField < handle
        
        function vectors_unfiltered = get.vectors_unfiltered(obj)
            %Get Kramers-Moyal coefficients
-           [vectors_unfiltered, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.conf.fs,[1,2]);
+           [vectors_unfiltered, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.conf.samplerate,obj.conf.KMorder);
            vectors_unfiltered{end+1} = xo;
        end
        

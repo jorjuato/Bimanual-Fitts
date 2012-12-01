@@ -15,12 +15,13 @@ function plot_participant_peakDelays3D(pp,filename)
                 d=[];
                 for rep=1:3
                     tr=pp(s).bimanual{l,r,rep};
-                    pks=tr.oscR.minPeakDistance/1000;
-                    if length(tr.oscR.MT) == length(pks)
-                        d=[d;pks./tr.oscR.MT];
-                    else
-                        d=[d;pks./tr.oscL.MT];
-                    end
+                    d=[d;tr.ls.minPeakDelayNorm];
+%                     pks=tr.ls.minPeakDelay/1000;
+%                     if length(tr.oscR.MT) == length(pks)
+%                         d=[d;pks./tr.oscR.MT];
+%                     else
+%                         d=[d;pks./tr.oscL.MT];
+%                     end
                 end
                 n=hist(d,x);
                 bar_series{l,r}=[bar_series{l,r}; n];
