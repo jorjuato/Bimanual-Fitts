@@ -22,6 +22,10 @@ if nargin==2
 end
 
 n = size(x,1);
-y = std(x) / sqrt(n);
+if n<2
+    y=0;
+else
+    y = std(x) / sqrt(n);
+end
 
 

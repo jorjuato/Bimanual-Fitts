@@ -3,16 +3,22 @@ classdef Oscillations < handle
         hand
         conf
         ts
+        IDOwn
+        IDOther
+        IDOwnEf
+        IDOtherEf
     end
     
     properties (Dependent = true, SetAccess = private)
         peakVel
         MT
+        MTOwn
+        MTOther
         accTime
         decTime
         accQ
         IPerf
-        IPerfEf    
+        IPerfEf
     end
     
    %%%%%%%%%%%%%%%%%%
@@ -41,7 +47,35 @@ classdef Oscillations < handle
             end
             MT=diff(peaks)./1000;
         end 
+        
+        function MTOwn = get.MTOwn(obj)
+            if strcmp(obj.hand,'')
+                MTOwn=[];
+                return
+            elseif strcmp(obj.hand,'L')
+                %Left hand kinematics
+                peaks = obj.ts.Lpeaks;
+            elseif strcmp(obj.hand,'R')
+                %Right hand kinematics
+                peaks = obj.ts.Rpeaks;
+            end
+            MTOwn=diff(peaks)./1000;
+        end 
 
+        function MTOther = get.MTOther(obj)
+            if strcmp(obj.hand,'')
+                MTOther=[];
+                return
+            elseif strcmp(obj.hand,'L')
+                %Right hand kinematics
+                peaks = obj.ts.Rpeaks;
+            elseif strcmp(obj.hand,'R')
+                %Left hand kinematics
+                peaks = obj.ts.Lpeaks;
+            end
+            MTOther=diff(peaks)./1000;
+        end 
+        
         function peakVel = get.peakVel(obj)
             if strcmp(obj.hand,'')
                 peaks = obj.ts.peaks;
@@ -180,6 +214,24 @@ classdef Oscillations < handle
             osc.conf=conf;
             osc.hand=hand;
             osc.ts=ts;
+            if strcmp(osc.hand,'')
+                osc.IDOwn=ts.ID;
+                osc.IDOwnEf=ts.IDef;
+                osc.IDOther=0;
+                osc.IDOtherEf=0;
+            elseif strcmp(osc.hand,'L')
+                %Left hand kinematics
+                osc.IDOwn=ts.LID;
+                osc.IDOwnEf=ts.LIDef;
+                osc.IDOther=ts.RID;
+                osc.IDOtherEf=ts.RIDef;
+            elseif strcmp(osc.hand,'R')
+                %Right hand kinematics
+                osc.IDOwn=ts.RID;
+                osc.IDOwnEf=ts.RIDef;
+                osc.IDOther=ts.LID;
+                osc.IDOtherEf=ts.LIDef;
+            end
         end %Constructor     
         
         function update_conf(obj,conf)
@@ -191,7 +243,7 @@ classdef Oscillations < handle
     
     methods(Static=true)  
         function anova_var = get_anova_variables()
-            anova_var = { 'peakVel' 'MT' 'accTime' 'decTime' 'accQ' 'IPerf' 'IPerfEf'};
+            anova_var = { 'peakVel' 'MT' 'MTOwn' 'MTOther' 'IDOwn' 'IDOther' 'IDOwnEf' 'IDOtherEf' 'accTime' 'decTime' 'accQ' 'IPerf' 'IPerfEf'};
         end        
     end
 end        

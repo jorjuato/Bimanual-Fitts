@@ -9,14 +9,14 @@ classdef Config < handle
         plot_path
         anal_path
         scripts_path = '/home/jorge/Dropbox/dev/Bimanual-Fitts'
-        branch_path  = 'resampled250_1_15_' % Unique name to identify this specific config
+        branch_path  = 'resampled250_1_15' % Unique name to identify this specific config
         name=''         %Participant directory name
         number=1        %Session number
         blockpath=''    %Block path
         unimanual=0
         hand=''
         inmemory=0
-        parallelMode=1  % 0=no paralellization 
+        parallelMode=0  % 0=no paralellization 
                         % 1=parallelize on participants
                         % 2=parallelize on sessions
         workers=5
@@ -33,9 +33,11 @@ classdef Config < handle
         fs = 1E3
         skip_osc=5
         filter_stds=3
-        cutoff=10
-        compress_pc=1
-        compress_ts=1
+        cutoff=12
+        use_pc=0
+        store_ls=1
+        compress_pc=0
+        compress_ts=0
         split_analysis=1
         promediate=1
         peak_size=0.005
@@ -48,11 +50,12 @@ classdef Config < handle
         %VectorField properties
         neighbourhood = [3,3]
         binnumber = 31
+        bins = 31
         step = 1
         minValsToComputeCondProb = 15
         use_norm=1
         maxAngle_localenv=0.15
-        fitorder=3 
+        fitorder=3
         samplerate=250
         
     end % properties

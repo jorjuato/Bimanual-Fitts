@@ -16,10 +16,23 @@ function get_trial_vf(obj,ts)
     else
         return
     end
-    
-    [~, obj.xo, obj.pc]=obj.prob_2D(Y,obj.conf.bins,obj.conf.step,obj.conf.minValsToComputeCondProb);
-    %[obj.vectors_unfiltered, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.conf.fs,[1,2]);
-    %obj.vectors_unfiltered{end+1} = xo;
-    %obj.vectors{1}=KM_Fit(obj.xo,obj.vectors_unfiltered,1);      
-    %obj.vectors{2}=KM_Fit(obj.xo,obj.vectors_unfiltered,2); 
+    if obj.conf.use_pc==1
+        %Get Conditional Probability Matrices
+        [~, obj.xo, obj.pc]=obj.prob_2D(Y,obj.conf.bins,obj.conf.step,obj.conf.minValsToComputeCondProb);
+    else
+        %Get Conditional Probability Matrices
+        [~, obj.xo, pc]=obj.prob_2D(Y,obj.conf.bins,obj.conf.step,obj.conf.minValsToComputeCondProb);
+        %Get Unfiltered vectors
+        [obj.vectors_unfiltered_, xo, ~]=obj.KMcoef_2D(obj.xo,pc,1/obj.conf.fs,[1,2]);
+        obj.vectors_unfiltered_{end+1} = xo;
+        %Fit vector field to polinomial functions
+        if obj.conf.fitorder>0       
+            obj.vectors_{1}=obj.KM_Fit(obj.xo,obj.vectors_unfiltered_,1);      
+            obj.vectors_{2}=obj.KM_Fit(obj.xo,obj.vectors_unfiltered_,2);
+        end
+        %Get  vector angles
+        absAngles = atan2(obj.vectors{1},obj.vectors{2});
+        angDiff = obj.eval_neighbours(absAngles, obj.conf.neighbourhood, @obj.get_maxAngle);
+        obj.angles_ = {absAngles, angDiff};
+    end
 end

@@ -5,10 +5,12 @@ import os, sys, subprocess
 from multiprocessing import Pool
 
 #GLOBALS
-BATCH_OUT_DIR   = os.getcwd()+"/batch"
-SCRIPTS_DIR="/home/jorge/Dropbox/dev/Bimanual-Fitts"
-if not os.path.exists(BATCH_OUT_DIR):
-    os.makedirs(BATCH_OUT_DIR)
+
+MAIN_DIR   = "/home/jorge/Dropbox/dev/Bimanual-Fitts"
+PYTHON_DIR = os.path.join(MAIN_DIR,"python")
+BATCH_DIR  = os.path.join(PYTHON_DIR,"batch")
+if not os.path.exists(BATCH_DIR):
+    os.makedirs(BATCH_DIR)
 
 
 WRKs=5
@@ -27,13 +29,13 @@ TEMPLATE_PLOT = range(7)
 def write_scripts(pp):    
     #Open file to write script
     filename="pp%03d.m" % pp
-    filepath=os.path.join(BATCH_OUT_DIR,filename)
+    filepath=os.path.join(BATCH_DIR,filename)
     f=open(filepath,'w')
     
     #Write text to file and close
-    f.write(get_script(TEMPLATE_PLOT_ANALYSIS,pp))
+    f.write(get_script(TEMPLATE_LOAD_SAVE,pp))
     f.close()
-    return "nohup /opt/matlab/bin/matlab -nodesktop -nosplash -r %s" % filename[:-2]
+    return "nohup /opt/matlab/bin/matlab -nodesktop -nosplash -r %s > ~/%s.out" % (filename[:-2],filename[:-2])
 
 def get_script(tpl,pp):
     if tpl==TEMPLATE_FULL:
@@ -87,10 +89,12 @@ def get_script(tpl,pp):
     return msg
     
 if __name__ == '__main__':
+    
     if sys.version_info[2] <= 6:
         pool=Pool(processes=WRKs)
     else:
         pool=Pool(processes=WRKs,maxtasksperchild=1)
+        
     pool.map(os.system, map(write_scripts,PPs), round(PPno/WRKs) )
     pool.close()
     pool.join()

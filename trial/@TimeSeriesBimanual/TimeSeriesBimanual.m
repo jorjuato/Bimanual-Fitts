@@ -484,7 +484,7 @@ classdef TimeSeriesBimanual < handle
     
     methods(Static=true)  
         function anova_var = get_anova_variables()
-            anova_var = { 'Harmonicity' 'Circularity' 'f' 'IDef'};
+            anova_var = { 'Harmonicity' 'HarmonicityDown' 'HarmonicityUp' 'Circularity' 'f' 'IDef'};
         end        
     end
 end% classdef

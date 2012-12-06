@@ -17,9 +17,9 @@ function max_pq=find_best_pq(ls,method)
                 %freq_ls-based method
                 if p<q,continue;end
                 rho=p/q;
-                SlowPxx_t = LockingStrength.get_scaled_PSD(ls.SlowPxx,ls.freqs,rho);
+                SlowPxx_t = LockingStrength.get_scaled_PSD(ls.SlowPxx,ls.freq,rho);
                 N=sqrt( (rho^2+1) ./ ((rho+1)*8) );
-                fls = N * trapz(ls.freqs,SlowPxx_t.*ls.FastPxx) / trapz(ls.freqs,SlowPxx_t.^2+ls.FastPxx.^2);
+                fls = N * trapz(ls.freq,SlowPxx_t.*ls.FastPxx) / trapz(ls.freq,SlowPxx_t.^2+ls.FastPxx.^2);
                 if fls>max_pq(1)
                     max_pq=[fls,p,q];
                 end            

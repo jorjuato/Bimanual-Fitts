@@ -1,14 +1,11 @@
 function [Dfit]=KM_Fit(obj,B,D,i)
 
 % chose i for D{i}
-
-%fitorder = 4;
-fitorder = obj.conf.fitorder;
 bound = 0.01;
 
 [X,Y]=meshgrid(B{1},B{2});
 
-coef{i}=polyfit2d(X,Y,D{i},fitorder);
+coef{i}=polyfit2d(X,Y,D{i},obj.conf.fitorder);
 Dfit=polyval2d(coef{i},X,Y);
 coef{i}(abs(coef{i})<bound)=0;
 j=find(isnan(D{i}));

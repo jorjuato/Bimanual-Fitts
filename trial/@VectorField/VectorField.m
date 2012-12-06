@@ -11,6 +11,9 @@ classdef VectorField < handle
    
    properties(Hidden, SetAccess = private)
       pc_
+      vectors_unfiltered_
+      vectors_
+      angles_
    end
    properties (Dependent = true, SetAccess = private)
       vectors_unfiltered
@@ -18,7 +21,7 @@ classdef VectorField < handle
       angles
       angles2circle
       maxangle
-      circularity
+      vfCircularity
       qcircularity
       q1
       q2
@@ -66,18 +69,37 @@ classdef VectorField < handle
             end
        end
        
-
+       function angles = get.angles(obj)
+           if obj.conf.use_pc==0
+               angles=obj.angles_;
+           else
+               absAngles = atan2(obj.vectors{1},obj.vectors{2});
+               angDiff = obj.eval_neighbours(absAngles, obj.conf.neighbourhood, @obj.get_maxAngle);
+               angles = {absAngles, angDiff};
+           end
+       end % angles Property
+       
        function vectors = get.vectors(obj)
-            nf_vect=obj.vectors_unfiltered;
-            vectors{1}=obj.KM_Fit(obj.xo,nf_vect,1);
-            vectors{2}=obj.KM_Fit(obj.xo,nf_vect,2);
-            vectors{end+1}=nf_vect{end};
+           if obj.conf.fitorder==0
+               vectors=obj.vectors_unfiltered;
+           elseif obj.conf.use_pc==0               
+                vectors=obj.vectors_;                   
+           else
+               nf_vect=obj.vectors_unfiltered;
+               vectors{1}=obj.KM_Fit(obj.xo,nf_vect,1);
+               vectors{2}=obj.KM_Fit(obj.xo,nf_vect,2);
+               vectors{end+1}=nf_vect{end};
+           end
        end
        
        function vectors_unfiltered = get.vectors_unfiltered(obj)
            %Get Kramers-Moyal coefficients
-           [vectors_unfiltered, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.conf.samplerate,obj.conf.KMorder);
-           vectors_unfiltered{end+1} = xo;
+           if obj.conf.use_pc==0
+               vectors_unfiltered=obj.vectors_unfiltered_;               
+           else
+               [vectors_unfiltered, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.conf.samplerate,obj.conf.KMorder);
+               vectors_unfiltered{end+1} = xo;
+           end
        end
        
        function maxangle = get.maxangle(obj)
@@ -91,7 +113,7 @@ classdef VectorField < handle
            maxangle=max(lmax,rmax);
        end
        
-       function circularity = get.circularity(obj)
+       function circularity = get.vfCircularity(obj)
            circularity=nanmedian(nanmedian(obj.angles2circle));
        end
        
@@ -137,11 +159,6 @@ classdef VectorField < handle
             end
        end
        
-       function angles = get.angles(obj)
-           absAngles = atan2(obj.vectors{1},obj.vectors{2});
-           angDiff = obj.eval_neighbours(absAngles, obj.conf.neighbourhood, @obj.get_maxAngle);
-           angles = {absAngles, angDiff};
-       end % angles Property
        
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        %Constructor
@@ -157,6 +174,11 @@ classdef VectorField < handle
         function update_conf(obj,conf)
             %conf.hand=obj.conf.hand;
             obj.conf=conf;
+        end
+        
+        function update(obj,ts)
+            disp('Wait while computing conditional probabilites...')
+            obj.get_trial_vf(ts);
         end
         
         ang = get_VF_circularity(vf)
@@ -176,7 +198,7 @@ classdef VectorField < handle
    
    methods(Static=true)
       function anova_var = get_anova_variables()
-         anova_var = { 'circularity' 'q1' 'q2' 'q3' 'q4' 'maxangle'};
+         anova_var = { 'vfCircularity' 'q1' 'q2' 'q3' 'q4' 'maxangle'};
       end 
    end %methods(Static)
 end% classdef
