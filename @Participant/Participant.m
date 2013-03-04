@@ -17,7 +17,7 @@ classdef Participant < handle
         
         plot(obj)
         
-        plot_vf(obj,graphPath)
+        %plot_vf(obj,graphPath)
         
         plot_va(obj,graphPath)
             
@@ -27,7 +27,7 @@ classdef Participant < handle
          
         plot_learning_lockingStrength(obj,graphPath)
         
-        plot_learning_vf(obj,graphPath)
+        %plot_learning_vf(obj,graphPath)
         
         update_vf(obj)
         

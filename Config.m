@@ -9,7 +9,7 @@ classdef Config < handle
         plot_path
         anal_path
         scripts_path = '/home/jorge/Dropbox/dev/Bimanual-Fitts'
-        branch_path  = 'resampled250_1_15' % Unique name to identify this specific config
+        branch_path  = 'last_250_1_15' % Unique name to identify this specific config
         name=''         %Participant directory name
         number=1        %Session number
         blockpath=''    %Block path
@@ -129,7 +129,7 @@ classdef Config < handle
         end
     
         function new = copy(obj)
-            filename=strcat('temp',random_string(5));
+            filename=strcat('temp',random_string(8));
             save(filename, 'obj');
             Foo = load(filename);
             new = Foo.obj;

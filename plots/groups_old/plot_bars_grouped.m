@@ -46,6 +46,7 @@ function plot_bars_grouped(bar_grps,data_series,plot_type,varnames)
                 x{i} = getBarCentroids(get(get(h(i),'children'),'xdata'));
                 %errorbar(x,bar_grps(:,i,1),bar_grps(:,i,2),'k', 'linestyle','none', 'linewidth', 0.5);
             end
+            errorbar(x,bar_grps(:,:,1),bar_grps(:,:,2),'k', 'linestyle','none', 'linewidth', 0.5);
             
             %Plot guiding lines and remove useless ticks
             if v==1

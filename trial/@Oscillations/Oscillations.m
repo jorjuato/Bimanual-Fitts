@@ -105,22 +105,25 @@ classdef Oscillations < handle
                 peaks = obj.ts.peaks;
                 peakNo = size(peaks,1)-1;
                 a=obj.ts.a;
+                v=obj.ts.v;
             elseif strcmp(obj.hand,'L')
                 %Left hand kinematics
                 peaks = obj.ts.Lpeaks;
                 peakNo = size(peaks,1)-1;
                 a=obj.ts.La;
+                v=obj.ts.Lv;
             elseif strcmp(obj.hand,'R')
                 %Right hand kinematics
                 peaks = obj.ts.Rpeaks;
                 peakNo = size(peaks,1)-1;
                 a=obj.ts.Ra;
+                v=obj.ts.Rv;
             end
             accTime = zeros(peakNo,1);
             for i=1:peakNo
                 x0 = peaks(i,1);
                 x1 = peaks(i+1,1);
-                accTime(i) = length(find(a(x0:x1)>0))/(x1-x0);
+                accTime(i) = length(find(a(x0:x1).*v(x0:x1)>0))/1000;
             end
         end 
 
@@ -129,47 +132,32 @@ classdef Oscillations < handle
                 peaks = obj.ts.peaks;
                 peakNo = size(peaks,1)-1;
                 a=obj.ts.a;
+                v=obj.ts.v;
             elseif strcmp(obj.hand,'L')
                 %Left hand kinematics
                 peaks = obj.ts.Lpeaks;
                 peakNo = size(peaks,1)-1;
                 a=obj.ts.La;
+                v=obj.ts.Lv;
             elseif strcmp(obj.hand,'R')
                 %Right hand kinematics
                 peaks = obj.ts.Rpeaks;
                 peakNo = size(peaks,1)-1;
                 a=obj.ts.Ra;
+                v=obj.ts.Rv;
             end
             decTime = zeros(peakNo,1);
             for i=1:peakNo
                 x0 = peaks(i,1);
                 x1 = peaks(i+1,1);
-                decTime(i) = length(find(a(x0:x1)<0))/(x1-x0);
+                decTime(i) = length(find(a(x0:x1).*v(x0:x1)<0))/1000;
             end
         end 
-
+        
         function accQ = get.accQ(obj)
-            if strcmp(obj.hand,'')
-                peaks = obj.ts.peaks;
-                peakNo = size(peaks,1)-1;
-                a=obj.ts.a;
-            elseif strcmp(obj.hand,'L')
-                %Left hand kinematics
-                peaks = obj.ts.Lpeaks;
-                peakNo = size(peaks,1)-1;
-                a=obj.ts.La;
-            elseif strcmp(obj.hand,'R')
-                %Right hand kinematics
-                peaks = obj.ts.Rpeaks;
-                peakNo = size(peaks,1)-1;
-                a=obj.ts.Ra;
-            end
-            accQ = zeros(peakNo,1);
-            for i=1:peakNo
-                x0 = peaks(i,1);
-                x1 = peaks(i+1,1);
-                accQ(i) = length(find(a(x0:x1)<0))/length(find(a(x0:x1)>0));
-            end
+            at=obj.accTime;
+            dt=obj.decTime;
+            accQ=at./(dt+at);
         end 
         
 

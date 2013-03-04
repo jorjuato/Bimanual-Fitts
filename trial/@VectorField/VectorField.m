@@ -13,15 +13,18 @@ classdef VectorField < handle
       pc_
       vectors_unfiltered_
       vectors_
+      angles_unfiltered_
       angles_
    end
+   
    properties (Dependent = true, SetAccess = private)
       vectors_unfiltered
       vectors
+      angles_unfiltered
       angles
-      angles2circle
       maxangle
       vfCircularity
+      vfTrajCircularity
       qcircularity
       q1
       q2
@@ -77,7 +80,17 @@ classdef VectorField < handle
                angDiff = obj.eval_neighbours(absAngles, obj.conf.neighbourhood, @obj.get_maxAngle);
                angles = {absAngles, angDiff};
            end
-       end % angles Property
+       end
+       
+       function angles_unfiltered = get.angles_unfiltered(obj)
+           if obj.conf.use_pc==0
+               angles_unfiltered=obj.angles_unfiltered_;
+           else
+               absAngles = atan2(obj.vectors_unfiltered{1},obj.vectors_unfiltered{2});
+               angDiff = obj.eval_neighbours(absAngles, obj.conf.neighbourhood, @obj.get_maxAngle);
+               angles_unfiltered = {absAngles, angDiff};
+           end
+       end
        
        function vectors = get.vectors(obj)
            if obj.conf.fitorder==0
@@ -114,13 +127,17 @@ classdef VectorField < handle
        end
        
        function circularity = get.vfCircularity(obj)
-           circularity=nanmedian(nanmedian(obj.angles2circle));
+           circularity=nanmedian(nanmedian(obj.get_VF_circularity(1)));
+       end
+       
+       function circularity = get.vfTrajCircularity(obj)
+           circularity=nanmedian(nanmedian(obj.get_VF_circularity(2)));
        end
        
        function qcircularity = get.qcircularity(obj)
            bin=(obj.conf.binnumber-1)/2;
-           fcn=@(x) nanmedian(nanmedian(x));
-           qcircularity=cellfun(fcn,mat2cell(obj.angles2circle,[bin,bin],[bin,bin]));
+           fcn=@(x) nanmedian(nanmedian(x));           
+           qcircularity=cellfun(fcn,mat2cell(obj.get_VF_circularity(2),[bin+1,bin],[bin,bin+1]));
        end
        
        function q1 = get.q1(obj)
@@ -137,10 +154,6 @@ classdef VectorField < handle
        
        function q4 = get.q4(obj)
            q4=obj.qcircularity(1,1);
-       end
-       
-       function angles2circle = get.angles2circle(obj)
-           angles2circle=obj.get_VF_circularity();
        end
               
        function pc = get.pc(obj)
@@ -181,7 +194,7 @@ classdef VectorField < handle
             obj.get_trial_vf(ts);
         end
         
-        ang = get_VF_circularity(vf)
+        ang = get_VF_circularity(vf,mode)
    end % methods
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -191,14 +204,14 @@ classdef VectorField < handle
       
       [D,xo,names]=KMcoef_2D(xo,pc,dt,ord)
       
-      angleMax = get_maxAngle(a)       
+      angleMax = get_maxAngle(a)
       
       b = eval_neighbours(a,nhood,fun,params)   
    end
    
    methods(Static=true)
       function anova_var = get_anova_variables()
-         anova_var = { 'vfCircularity' 'q1' 'q2' 'q3' 'q4' 'maxangle'};
+         anova_var = { 'vfTrajCircularity' 'vfCircularity' 'q1' 'q2' 'q3' 'q4' 'maxangle'};
       end 
    end %methods(Static)
 end% classdef

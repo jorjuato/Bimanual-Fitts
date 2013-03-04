@@ -4,8 +4,11 @@ function plot_bars_bi(bar_grps,data_series,plot_type,varname)
     %Each of the groups is a different coloured data-series
     set_figtype(plot_type,varname);
 
-    if do_legend==1,legend_groups=zeros(1,grp);end
-        %Iterate over both hands, one plot per hand
+    if do_legend==1
+        legend_groups=zeros(1,grp);
+    end
+    
+    %Iterate over both hands, one plot per hand
     for hand=1:hno
         create_subplots(plot_type,hno,hand,varname);
         for g=1:grp
@@ -24,10 +27,10 @@ function plot_bars_bi(bar_grps,data_series,plot_type,varname)
                 end
                 %Replot with adjusted X positions with more space between
                 %IDR factor levels
-                h = bar(xtmp,squeeze(bar_grps(hand,g,:,:,1)),'grouped');
+                h = bar(xtmp,squeeze(bar_grps(hand,g,:,:,1)));
             else
                 hold on
-                h = bar(fliplr(x{2}),squeeze(bar_grps(hand,g,:,:,1)),'grouped');
+                h = bar(fliplr(x{2}),squeeze(bar_grps(hand,g,:,:,1)));
             end
 
             %Set bars appereance: color and width
@@ -40,11 +43,17 @@ function plot_bars_bi(bar_grps,data_series,plot_type,varname)
                 %x{i}=getBarCentroids(s2.XData);
                 set(h(i),'FaceColor',data_series(idx).color(i,:));
                 x{i} = getBarCentroids(get(get(h(i),'children'),'xdata'));
-                %errorbar(x,bar_grps(hand,g,:,i,1),bar_grps(hand,g,:,i,2),'k', 'linestyle','none', 'linewidth', 0.5);
+                %errorbar(x{i},bar_grps(hand,g,:,i,1),bar_grps(hand,g,:,i,2),'k', 'linestyle','none', 'linewidth', 0.5);
             end
-            do_cosmetics();
             %Store handle for later generate legend
             if do_legend==1,legend_groups(g)=h(2);end
+            
+%             for i=1:length(h)
+%                 h(i)=errorbar(x{i},bar_grps(hand,g,:,i,1),bar_grps(hand,g,:,i,2),'k', 'linestyle','none', 'linewidth', 0.5);
+%             end
+            
+            do_cosmetics();
+            
         end
         if do_legend==1
             legend(legend_groups,get_legend(data_series),'Location','Best');
@@ -84,7 +93,7 @@ function create_subplots(plot_type,vno,v,name)
         subplot(vno,1,v);
     elseif ~isempty(strfind(plot_type,'figure'))
         figure('Position',[1 scrsz(4)/2 scrsz(3)/1 scrsz(4)/3])
-        set(gcf,'name',name);       
+        set(gcf,'name',name);
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%       

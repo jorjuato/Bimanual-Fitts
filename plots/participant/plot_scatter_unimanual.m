@@ -68,7 +68,9 @@ function [mindata, maxdata]=get_limits(data)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function set_limits(mindata,maxdata)
-    if mindata>0
+    if isempty(mindata) || isempty(maxdata)
+        return    
+    elseif mindata>0
         ylim([0,maxdata+maxdata/10]);
     else
         ylim([mindata,maxdata+maxdata/10]);
@@ -76,6 +78,9 @@ function set_limits(mindata,maxdata)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function plot_ids(ids,h,maxdata)
+    if isempty(maxdata)
+        return;
+    end
     labels={'Difficult','Medium','Easy'};
     
     for id=1:ids

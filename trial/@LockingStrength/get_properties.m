@@ -214,67 +214,92 @@ end
 
 
 
+% function minPeakDelay = get_minPeakDelay(ts)
+% Rpeaks=ts.Rpeaks;
+% Lpeaks=ts.Lpeaks;
+% Rlen = length(Rpeaks)-1;  %Extreme are always zeros!
+% Llen = length(Lpeaks)-1;
+% if Llen<Rlen
+%     q=round(Rlen/Llen);
+%     minPeakDelay=zeros(Llen,1);
+%     for i=1:Llen
+%         L=Lpeaks(i);
+%         if q==1
+%             if i==1
+%                 R=Rpeaks(1:i+1);
+%             else
+%                 R=Rpeaks(i-1:i+1);
+%             end
+%         elseif (i*(q-1))<1
+%             R=Rpeaks(1:i*(q+1));
+%         elseif (i*(q+1))>Rlen
+%             R=Rpeaks(i*(q-1):Rlen);
+%         else
+%             R=Rpeaks(i*(q-1):i*(q+1));
+%         end
+%         abs(L-R);
+%         [d,j]=min(abs(L-R));
+%         minPeakDelay(i)=d*sign(L-R(j))/1000;
+%     end
+% else
+%     q=round(Llen/Rlen);
+%     minPeakDelay=zeros(Rlen,1);
+%     for i=1:Rlen
+%         R=Rpeaks(i);
+%         if q==1
+%             if i==1
+%                 L=Lpeaks(1:i+1);
+%             else
+%                 L=Lpeaks(i-1:i+1);
+%             end
+%         elseif (i*(q-1))<1
+%             L=Lpeaks(1:i*(q+1));
+%         elseif (i*(q+1))>Llen
+%             L=Lpeaks(i*(q-1):Llen);
+%         else
+%             L=Lpeaks(i*(q-1):i*(q+1));
+%         end
+%         [d,j]=min(abs(R-L));
+%         minPeakDelay(i)=d*sign(L(j)-R);
+%     end
+% end
+% minPeakDelay=minPeakDelay/1000;
+% end
+
 function minPeakDelay = get_minPeakDelay(ts)
-Rpeaks=ts.Rpeaks;
-Lpeaks=ts.Lpeaks;
-Rlen = length(Rpeaks)-1;  %Extreme are always zeros!
-Llen = length(Lpeaks)-1;
-if Llen<Rlen
-    q=round(Rlen/Llen);
-    minPeakDelay=zeros(Llen,1);
-    for i=1:Llen
-        L=Lpeaks(i);
-        if q==1
-            if i==1
-                R=Rpeaks(1:i+1);
-            else
-                R=Rpeaks(i-1:i+1);
-            end
-        elseif (i*(q-1))<1
-            R=Rpeaks(1:i*(q+1));
-        elseif (i*(q+1))>Rlen
-            R=Rpeaks(i*(q-1):Rlen);
-        else
-            R=Rpeaks(i*(q-1):i*(q+1));
+    Rpeaks=ts.Rpeaks;
+    Lpeaks=ts.Lpeaks;
+    Rlen = length(Rpeaks)-1;  %Extreme are always zeros!
+    Llen = length(Lpeaks)-1;
+    if Llen<Rlen
+        Rpeaks=[Rpeaks;ts.Rvpeaks];
+        minPeakDelay=zeros(Llen,1);
+        for i=1:Llen
+            L=Lpeaks(i);
+            [d,j]=min(abs(L-Rpeaks));
+            minPeakDelay(i)=d*sign(L-Rpeaks(j))/1000;
         end
-        abs(L-R);
-        [d,j]=min(abs(L-R));
-        minPeakDelay(i)=d*sign(L-R(j))/1000;
-    end
-else
-    q=round(Llen/Rlen);
-    minPeakDelay=zeros(Rlen,1);
-    for i=1:Rlen
-        R=Rpeaks(i);
-        if q==1
-            if i==1
-                L=Lpeaks(1:i+1);
-            else
-                L=Lpeaks(i-1:i+1);
-            end
-        elseif (i*(q-1))<1
-            L=Lpeaks(1:i*(q+1));
-        elseif (i*(q+1))>Llen
-            L=Lpeaks(i*(q-1):Llen);
-        else
-            L=Lpeaks(i*(q-1):i*(q+1));
+    else
+        Lpeaks=[Lpeaks;ts.Lvpeaks];
+        minPeakDelay=zeros(Rlen,1);
+        for i=1:Rlen
+            R=Rpeaks(i);
+            [d,j]=min(abs(R-Lpeaks));
+            minPeakDelay(i)=d*sign(Lpeaks(j)-R);
         end
-        [d,j]=min(abs(R-L));
-        minPeakDelay(i)=d*sign(L(j)-R);
     end
-end
-minPeakDelay=minPeakDelay/1000;
+    minPeakDelay=minPeakDelay/1000;
 end
 
 function minPeakDelayNorm = get_minPeakDelayNorm(ls,ts)
-Rpeaks=ts.Rpeaks;
-Lpeaks=ts.Lpeaks;
-if length(Lpeaks)<length(Rpeaks)
-    MT=diff(Lpeaks)/1000;
-else
-    MT=diff(Rpeaks)/1000;
-end
-minPeakDelayNorm=ls.minPeakDelay_./MT;
+    Rpeaks=ts.Rpeaks;
+    Lpeaks=ts.Lpeaks;
+    if length(Lpeaks)<length(Rpeaks)
+        MT=diff(Rpeaks)/1000;
+    else
+        MT=diff(Lpeaks)/1000;
+    end
+    minPeakDelayNorm=ls.minPeakDelay_/nanmedian(MT/2);
 end
 
 

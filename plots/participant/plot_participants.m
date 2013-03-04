@@ -4,6 +4,7 @@ function plot_participants(dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vart
     %Define some globals
     global ppbygrp; ppbygrp=[2,3,6,8,9, 1,4,5,7,10];
     global plot_type; plot_type='subplot';   
+    excludeVars={'MTOwn','MTOther','IDOwn','IDOther','IDOwnEf','IDOtherEf'};
     
     %Do bimanual plots
     for v=1:length(varnamesBi)
@@ -15,18 +16,22 @@ function plot_participants(dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vart
     end
     
     %Do relative plots
-    for v=1:length(varnamesUn)
-        v2=strcmp(varnamesUn{v}, varnamesBi);
-        plot_var_rel(squeeze(dataBi(v2,:,:,:,:,:,:)),...
-                        squeeze(dataUn(v ,:,:,:,:,:)),...
-                        varnamesUn{v},vartypesUn{v});
-    end
+%     for v=1:length(varnamesUn)
+%         if ~isempty(strmatch(varnamesUn{v},excludeVars,'exact'));
+%             continue
+%         end
+%         varnamesUn{v}
+%         v2=strcmp(varnamesUn{v}, varnamesBi);
+%         plot_var_rel(squeeze(dataBi(v2,:,:,:,:,:,:)),...
+%                         squeeze(dataUn(v ,:,:,:,:,:)),...
+%                         varnamesUn{v},vartypesUn{v});
+%     end
     
     %Do unimanual plots
-    for v=1:length(varnamesUn)
-        plot_var_uni(squeeze(dataUn(v,:,:,:,:,:)),...
-                        varnamesUn{v},vartypesUn{v});
-    end
+%     for v=1:length(varnamesUn)
+%         plot_var_uni(squeeze(dataUn(v,:,:,:,:,:)),...
+%                         varnamesUn{v},vartypesUn{v});
+%     end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,157 +1,215 @@
-function plot_groups(dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn)
+function plot_groups(biData,unData,biNames,unNames,factors,savepath_)
+    if nargin<6, savepath_='';end
     if nargin<4, error('Not enough input arguments'); end
+    if nargin==4, factors={'idr','idl','grp'}; end
+    
+    %Define or fetch some globals
+    global do_legend
+    global plot_type
+    global savepath
+    savepath=savepath_;
+    do_legend=1;
+    plot_type='subplot'; %'tight' 'figure' 'subplot'    
+    
+    vars={'MT','accTime','decTime','accQ','IPerfEf',...
+          'maxangle','d3D','d4D','Circularity',...
+          'vfCircularity','vfTrajCircularity','Harmonicity',...
+          'rho','flsPC','phDiffStd','MI','minPeakDelay','minPeakDelayNorm'};
+      
+    titles={'MovementTime','Acceleration Time','Deceleration Time','Acc Quotient','IPerfEf',...
+            'maxangle','d3D','d4D','Circularity',...
+            'vfCircularity','vfTrajCircularity','Harmonicity',...
+            'rho','flsPC','phDiffStd','MI','minPeakDelay','minPeakDelayNorm'};
+        
+    %idx=[14,15];
+    %vars=vars(idx);
+    %titles=titles(idx);
+    %Rearrange data matrices by group if needed
+    if size(biData,3)==10
+        biData=group_participant_data(biData);
+        unData=group_participant_data(unData);
+    end
+    
+    if ~isempty(savepath) && ~exist(savepath,'dir') 
+        mkdir(savepath);
+    end
     
     %PLOT IT ALL
-    plot_groups_MT(dataBi,dataUn,varnamesBi,varnamesUn);
-    plot_groups_avgMT(dataBi,dataUn,varnamesBi,varnamesUn);
-    plot_groups_Phase(dataBi,varnamesBi);
-    plot_groups_Frequency(dataBi,dataUn,varnamesBi,varnamesUn);
-    plot_groups_Locking(dataBi,varnamesBi);
-    plot_groups_Harmonicity(dataBi,dataUn,varnamesBi,varnamesUn);
-    %plot_groups_peakDelay(dataBi,varnamesBi);
-end
+    for v=1:length(vars)    
+        %Get index for variable in data arrays
+        v1=strcmp(vars{v}, biNames);
+        v2=strcmp(vars{v}, unNames);
+        
+        %Prepare matrices
+        if any(v2)
+            bi=squeeze(biData(v1,:,:,:,:,:,:));
+            un=squeeze(unData(v2,:,:,:,:,:)); 
+        else
+            bi=squeeze(biData(v1,1,:,:,:,:,:));
+        end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function  plot_groups_MT(bi,un,biNames,unNames)
-    if nargin<2, error('Not enough input arguments'); end
-    
-    %Define or fetch some globals
-    global do_legend
-    do_legend=1;
-    plot_type='subplot';
-    rootname='MovementTime';
-    data_series= get_data_series({2,1,3});
-    
-    %Fetch all data for bars
-    v1=strcmp('MT', biNames);
-    v2=strcmp('MT', unNames);
-    MTbi  = squeeze(bi(v1,:,:,:,:,:,:));      
-    MTun  = squeeze(un(v2 ,:,:,:,:,:));
-    bar_grps = get_bar_groups(MTbi,MTun,data_series);    
-    
-    %Select the type of plot
-    plot_bars_bi(bar_grps,data_series,plot_type,rootname);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function  plot_groups_avgMT(bi,un,biNames,unNames)
-    if nargin<2, error('Not enough input arguments'); end
-    %WONT WORK!!!!!
-    %Define or fetch some globals
-    global do_legend
-    do_legend=1;
-    plot_type='figure';
-    rootname='OverallMT';
-    data_series= get_data_series({2,1,3});
-    
-    %Fetch all data for bars
-    v1=strcmp('MT', biNames);
-    v2=strcmp('MT', unNames);
-    MTb = squeeze(bi(v1,:,:,:,:,:,:));      
-    MTu = squeeze(un(v2 ,:,:,:,:,:));
-    bar_grps = get_bar_groups(MTb,MTu,data_series);    
-    
-    %Plot the thing!
-    plot_bars_bi(bar_grps,data_series,plot_type,rootname);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function  plot_groups_Harmonicity(bi,un,biNames,unNames)
-    if nargin<2, error('Not enough input arguments'); end
-    
-    %Define or fetch some globals
-    global do_legend
-    do_legend=1;
-    plot_type='figure';
-    rootname='Harmonicity';
-    data_series=get_data_series({2,1,3});
-    
-    %Fetch all data for bars
-    v1=strcmp('Harmonicity', biNames);
-    v2=strcmp('Harmonicity', unNames);
-    Hb = squeeze(bi(v1,:,:,:,:,:,:));
-    Hu = squeeze(un(v2 ,:,:,:,:,:));
-    bar_grps = get_bar_groups(Hb,Hu,data_series);
-    plot_bars_bi(bar_grps,data_series,plot_type,rootname);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function  plot_groups_Frequency(bi,un,biNames,unNames)
-    if nargin<2, error('Not enough input arguments'); end
-    %WONT WORK!!!!
-    %Define or fetch some globals
-    global do_legend
-    do_legend=1;
-    plot_type='figure';
-    rootname='Frequency';
-    data_series=get_data_series({2,1,3});
-    
-    %Fetch all data for bars
-    v1=strcmp('f', biNames);
-    v2=strcmp('f', unNames);
-    Fb=squeeze(bi(v1,:,:,:,:,:,:));
-    Fu=squeeze(un(v2,:,:,:,:,:));
-    
-    bar_grps = get_bar_groups(Fb,Fu,data_series);    
-    plot_bars_bi(bar_grps,data_series,plot_type,rootname);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function  plot_groups_Phase(bi,biNames)
-    if nargin<2, error('Not enough input arguments'); end
+        %Absolute plots
+        plot_bars(DataSeries(bi,factors),titles{v});
 
-    %Define or fetch some globals
-    global do_legend
-    do_legend=1;
-    plot_type='figure';
-    data_series= get_data_series({1,2});
-    %Fetch all data for bars
-    vnames={'phDiffMean','phDiffStd','MI','minPeakDelayNorm','minPeakDelay'};
-    vars={};
-    for v=1:length(vnames)
-        v1=strcmp(vnames{v}, biNames);
-        vars{v} = squeeze(bi(v1,:,:,:,:,:,:));
+        %Relative plots
+        if any(v2)
+            plot_bars(DataSeries(bi,un,factors),['Relative',titles{v}]);
+        end
     end
-    bar_grps = get_bar_groups(vars,data_series);
-    
-    %Plot the thing
-    plot_bars_grouped(bar_grps,data_series,plot_type,vnames);    
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function  plot_groups_Locking(bi,biNames)
-    if nargin<2, error('Not enough input arguments'); end
 
-    %Define or fetch some globals
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function plot_bars(ds,vname)
     global do_legend
-    do_legend=1;
-    plot_type='figure';
-    data_series=get_data_series({1,2});
-    
-    %Fetch all data for bars
-    vnames={'flsPC','flsAmp','rho'};
-    vars={};
-    for v=1:length(vnames)
-        v1=strcmp(vnames{v}, biNames);
-        vars{v} = squeeze(bi(v1,:,:,:,:,:,:));
+    global savepath
+    ax={};
+    ext='png';
+    %Each of the groups in 3rd factor is a different coloured data-series    
+    if do_legend==1
+        legend_groups=zeros(1,ds.franges(3));
     end
-    bar_grps = get_bar_groups(vars,data_series);
     
-    plot_bars_grouped(bar_grps,data_series,plot_type,vnames);
-end
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function ds= get_data_series(order)
-    if length(order)==3
-        ds=struct( 'name' ,{'Coupled','Uncoupled','Unimanual'},...
-                   'color',{[[0.6,0.2,0.2] ; [0.8,0.2,0.2];[1,0.2,0.2]],...
-                            [[0.2,0.2,1]   ; [0.2,0.2,0.8];[0.2,0.2,0.6]],...
-                            [[0.2,0.6,0.2] ; [0.2,0.8,0.2];[0.2,1,0.2]]},...
-                   'order',order,...
-                   'width',{1,0.7,0.5});
+    if ds.two_hands
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %One-handed variables
+        %Iterate over both hands, one plot per hand
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        for hand=1:length(ds.hnames)
+            set_figtype(strcat(vname,ds.hnames{hand}));
+            for f1=1:ds.franges(1)
+                create_subplots(ds.franges(1),f1,strcat(vname,ds.hnames{hand}));
+                ax{f1}=gca;
+                hold on
+                for f2=1:ds.franges(2)            
+                    for f3=1:ds.franges(3)
+                        gap=ds.get_gap(f2,f3);
+                        for s=1:ds.ss
+                            %Plot bar and error bar
+                            h=bar(s+gap,squeeze(ds.data(hand,f1,f2,f3,s,1)),'FaceColor', ds.colors{f3}(s,:), 'BarWidth', 1);
+                            errorbar(s+gap,ds.data(hand,f1,f2,f3,s,1),ds.data(hand,f1,f2,f3,s,2),'k', 'linestyle','none', 'linewidth', 0.5);
+                        end
+                        %Store handle to generate legend
+                        if do_legend==1 && f2==1
+                            legend_groups(f3)=h; 
+                        end
+                    end
+                end
+                do_cosmetics(ds,f1);
+            end
+            if do_legend==1
+                legend(legend_groups,get_legend(ds),'Location','Best'); 
+            end
+            hold off
+            if ~isempty(savepath) && exist(savepath,'dir')
+                title([vname,ds.hnames{hand}]);
+                figname = joinpath(savepath,[vname,ds.hnames{hand}]);
+                if strcmp(ext,'fig')
+                    hgsave(gcf,figname,'all');
+                else
+                    saveas(gcf,figname,ext); close(gcf);
+                end
+            end   
+        end
     else
-        ds=struct( 'name' ,{'Coupled','Uncoupled'},...
-                   'color',{[[0.6,0.2,0.2] ; [0.8,0.2,0.2];[1,0.2,0.2]],...
-                            [[0.2,0.2,1]   ; [0.2,0.2,0.8];[0.2,0.2,0.6]]},...
-                   'order',order,...
-                   'width',{0.8,0.5});       
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % Dual-handed variables
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        set_figtype(vname);
+        for f1=1:ds.franges(1)
+            create_subplots(ds.franges(1),f1,vname);
+            ax{f1}=gca;
+            hold on
+            for f2=1:ds.franges(2)
+                for f3=1:ds.franges(3)
+                    gap=ds.get_gap(f2,f3);
+                    for s=1:ds.ss
+                        h=bar(s+gap,squeeze(ds.data(f1,f2,f3,s,1)),'FaceColor', ds.colors{f3}(s,:), 'BarWidth', 1);
+                        errorbar(s+gap,ds.data(f1,f2,f3,s,1),ds.data(f1,f2,f3,s,2),'k', 'linestyle','none', 'linewidth', 0.5);
+                    end
+                    %Store handle for later generate legend
+                    if do_legend==1 && f2==1
+                        legend_groups(f3)=h;
+                    end
+                end
+            end
+            do_cosmetics(ds,f1);
+        end
+        if do_legend
+            legend(legend_groups,get_legend(ds),'Location','Best');
+        end
+        if ~isempty(savepath) && exist(savepath,'dir')
+            title(vname)
+            figname = joinpath(savepath,vname);
+            if strcmp(ext,'fig')
+                hgsave(gcf,figname,'all');
+            else
+                saveas(gcf,figname,ext); close(gcf);
+            end
+        end
+    end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function create_subplots(vno,v,name)
+    global plot_type
+    scrsz = get(0,'ScreenSize');
+    %Create subplots depending on configuration
+    if ~isempty(strfind(plot_type,'tight')) 
+        subplottight(vno,1,v);
+    elseif ~isempty(strfind(plot_type,'subplot'))
+        subplot(vno,1,v);
+    elseif ~isempty(strfind(plot_type,'figure'))
+        figure('Position',[1 scrsz(4)/2 scrsz(3)/1 scrsz(4)/3])
+        set(gcf,'name',name);
+    end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%       
+function set_figtype(rootname)
+    global plot_type
+    global savepath
+    scrsz = get(0,'ScreenSize');
+    if ~isempty(savepath)
+        figure('name',rootname,'visible','off')
+    elseif ~isempty(strfind(plot_type,'subplot')) || ~isempty(strfind(plot_type,'tight'))
+        figure('Position',[1 scrsz(4)/2 scrsz(3)/1 scrsz(4)/3])
+        set(gcf,'name',rootname);
+    else
+        figure('Position',[1 scrsz(4)/2 scrsz(3)/1 scrsz(4)/3],'name',rootname);
+    end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function subplottight(n,m,i)
+    [c,r] = ind2sub([m n], i);
+    subplot('Position', [(c-1)/m, 1-(r)/n, 1/m, 1/n])
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function leg = get_legend(ds)
+    leg={};
+    for i=1:length(ds.names)
+        leg{i}=ds.names{i};
+    end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function do_cosmetics(ds,f1)
+    %Plot guiding lines and remove useless ticks      
+    hline([0.5,1],{'k--','k--'}) %,{'0.5s','1s'})
+    hline(1,'k-')
+    set(gca,'XTick',[]);
+    set(gca,'ylim',[ds.ymin-abs(ds.ymin/10),ds.ymax+abs(ds.ymax/10)]);
+    set(gca,'box','off');
+    grid on;
+    ylabh=ylabel(ds.ylabels(f1),'rot',0,'EdgeColor','black','BackgroundColor',[.7 .9 .7],'FontSize',12,'FontWeight','bold');
+    s = struct(handle(ylabh));
+    s.Position=s.Position - [1 0 0 ];
+    for i=1:ds.franges(2)
+        xlabh=text(ds.xlabels_pos(i,1),ds.ymax,ds.xlabels{i},'EdgeColor','black','BackgroundColor',[.7 .9 .7],'FontSize',12,'FontWeight','bold');
+        s = struct(handle(xlabh));
+        s.Position=s.Position - [0 1 0 ];
     end
 end
                     

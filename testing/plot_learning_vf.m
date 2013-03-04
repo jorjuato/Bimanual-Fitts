@@ -1,19 +1,14 @@
-function arr = plot_learning_vf(obj,graphPath)
+function arr = plot_learning_vf(pp,graphPath)
     if nargin<2, graphPath=getuserdir(); end    
-    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+    if ~exist(graphPath,'dir') & pp.conf.interactive==0
         mkdir(graphPath);
     end
     
-    S= obj.sessions;
-    session=S(1);
-    blk=S(1).bimanual.data_set;
-    [IDL IDR rep]=size(blk);
-    %vfSize = size(data(1).bimanual{1,1,end}.Lva{1},2);    
-    arr = cell([IDL, IDR, 6]);   
+    [IDL IDR rep]=size(pp(1).bimanual.data_set);
+    arr = cell([IDL, IDR, 6]);
     
-    for n=1:3
-        s=3*(n-1)+1;
-        DSB = S(s).bimanual.data_set;
+    for s=1:3
+        DSB = pp(s).bimanual.data_set;
         %DSL = data(s).uniLeft;
         %DSR = data(s).uniRight;
         for r=1:IDR
@@ -25,14 +20,14 @@ function arr = plot_learning_vf(obj,graphPath)
                tmp=DSB{l,r,end}.vfR.angles{2};
                tmp(isnan(tmp))=0;
                tmp(tmp<pi/2)=0;
-               arr{l,r,n+3}=max(tmp);
+               arr{l,r,s+3}=max(tmp);
             end
         end
     end
     %return
     %Now plot all the stuff
     rootname = sprintf('Learning-vf');
-    if obj.conf.interactive==0
+    if pp.conf.interactive==0
         fig = figure('visible','off');
     else
         fig = figure();
@@ -78,7 +73,7 @@ function arr = plot_learning_vf(obj,graphPath)
             if r==IDR, xlabel('Right Hand'); end
         end
     end
-    if exist(graphPath,'dir') & obj.conf.interactive==0
+    if exist(graphPath,'dir') & pp.conf.interactive==0
         filename = sprintf('%s-BlockVectorAngles',rootname);
         figname = [joinpath(graphPath,filename),'.',obj.conf.ext];
         saveas(fig,figname);

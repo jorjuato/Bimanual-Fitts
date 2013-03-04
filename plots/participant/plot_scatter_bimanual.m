@@ -90,7 +90,9 @@ function [mindata, maxdata]=get_limits(data)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function set_limits(mindata,maxdata)
-    if mindata>0
+    if isempty(mindata) || isempty(maxdata)
+        return        
+    elseif mindata>0
         ylim([0,maxdata+maxdata/10]);
     else
         ylim([mindata,maxdata+maxdata/10]);
@@ -98,6 +100,9 @@ function set_limits(mindata,maxdata)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function plot_idl(idr,idl,maxdata)
+    if isempty(maxdata)
+        return;
+    end
     labels={'LD','LE'};
     for r=1:idr
         for l=1:idl
@@ -107,6 +112,9 @@ function plot_idl(idr,idl,maxdata)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function plot_idr(idr,maxdata)
+    if isempty(maxdata)
+        return;
+    end
     labels={'Right Difficult','Right Medium','Right Easy'};
     %labels={'RD','RM','RE'};
     for r=1:idr

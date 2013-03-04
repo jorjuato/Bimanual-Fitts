@@ -1,99 +1,139 @@
-function plot_IDregression2D(IDown,IDother,MTown,grp,kk,merge_sessions,pp)
-    if nargin<6, merge_sessions=1; end
-    if nargin<5, kk='pca';end
-    if nargin<4, grp=1;end
-    
-    sep_figs=1;
+function plot_IDregression2D(biData,biNames,plot_mode,fit_mode,eff_grp)
+    if nargin<5, eff_grp=1;end
+    if nargin<4, fit_mode='power1';end
+    if nargin<3, plot_mode='grp';end %all,grp,ss,ppXX,grp-ss,ss-grp,ppXX-ss
+    if nargin<2, error('need bimanual data and variable names');end    
 
-    mode=4-length(size(IDown));
-    switch mode
-        case 1
-            if merge_sessions == 1
-                if sep_figs==0
-                    figure;
+    %Parse participant related plots
+    if strcmp(plot_mode(1:2),'pp')
+        if length(plot_mode)==7
+            pp=str2double(plot_mode(3:4));
+        elseif length(plot_mode)==6
+            pp=str2double(plot_mode(3));
+        else
+            pp=str2double(plot_mode(3:end));
+        end
+        plot_mode='pp';
+    end
+    
+    %Get data in a suitable form for plotting (a bit of a mess, but works)
+    [IDown,IDother,MTown,rho] = get_ID_data(biData,biNames,plot_mode);
+    
+    switch plot_mode
+        case 'all'
+            figure
+            do_plot(gca(),IDown',IDother',MTown',fit_mode);
+        case 'grp'
+            figure
+            if eff_grp
+                %Filter variables
+                x=IDown(:);
+                y=IDother(:);
+                z=MTown(:);
+                r=rho(:);
+                %Plot it
+                idx=r==1;
+                ax=subplot(1,2,1);
+                do_plot(ax,x(idx),y(idx),z(idx),fit_mode);
+                idx=r~=1;
+                ax=subplot(1,2,2);
+                do_plot(ax,x(idx),y(idx),z(idx),fit_mode);
+            else
+                for g=1:2
+                    ax=subplot(1,2,g);
+                    do_plot(ax,squeeze(IDown(g,:))',squeeze(IDother(g,:))',squeeze(MTown(g,:))',fit_mode);
                 end
-                if grp==1
-                    for g=1:2
-                        if sep_figs==1
-                            figure;
-                            ax=gca();
+            end
+        case 'ss'
+            figure;
+            for s=1:3
+                ax=subplot(1,3,s);
+                fprintf('computing session %d\n',s)
+                do_plot(ax,squeeze(IDown(s,:))',squeeze(IDother(s,:))',squeeze(MTown(s,:))',fit_mode);
+            end
+        case 'pp'
+            figure;
+            do_plot(gca(),IDown(pp,:)',IDother(pp,:)',MTown(pp,:)',fit_mode);          
+        case 'grp-ss'
+            if eff_grp
+                for g=1:2
+                    figure
+                    for s=1:3
+                        x=squeeze(IDown(:,s,:));
+                        x=x(:);
+                        y=squeeze(IDother(:,s,:));
+                        y=y(:);
+                        z=squeeze(MTown(:,s,:));
+                        z=z(:);
+                        r=squeeze(rho(:,s,:));
+                        r=r(:);
+                        %Plot it
+                        fprintf('computing session %d and eff group %d\n',s,g)
+                        if g==1
+                            idx=r==1;
+                            ax=subplot(1,3,s);
+                            do_plot(ax,x(idx),y(idx),z(idx),fit_mode);
                         else
-                            ax=subplot(1,2,g);
+                            idx=r~=1;
+                            ax=subplot(1,3,s);
+                            do_plot(ax,x(idx),y(idx),z(idx),fit_mode);
                         end
-                        x=IDown(g,:,:);x=x(x~=0);
-                        y=IDother(g,:,:);y=y(y~=0);
-                        z=MTown(g,:,:);z=z(z~=0);
-                        do_plot(ax,x(:),y(:),z(:),kk);
                     end
-                else
-                    ax=subplot(1,1,1);
-                    x=IDown(:,:,:);x=x(x~=0);
-                    y=IDother(:,:,:);y=y(y~=0);
-                    z=MTown(:,:,:);z=z(z~=0);
-                    do_plot(ax,x,y,z,kk);
                 end
-            else                
-                for s=1:3
+            else
+                for g=1:2
                     figure;
-                    if grp==1
-                        for g=1:2
-                            ax=subplot(1,2,g);
-                            x=IDown(g,s,:);x=x(x~=0);
-                            y=IDother(g,s,:);y=y(y~=0);
-                            z=MTown(g,s,:);z=z(z~=0);
-                            do_plot(ax,x(:),y(:),z(:),kk);
-                        end
-                    else
-                        ax=subplot(1,1,1);
-                        x=IDown(:,s,:);x=x(x~=0);
-                        y=IDother(:,s,:);y=y(y~=0);
-                        z=MTown(:,s,:);z=z(z~=0);
-                        do_plot(ax,x,y,z,kk);
+                    for s=1:3
+                        
+                        ax=subplot(1,3,s);
+                        fprintf('computing session %d and group %d\n',s,g)
+                        do_plot(ax,squeeze(IDown(g,s,:)),squeeze(IDother(g,s,:)),squeeze(MTown(g,s,:)),fit_mode);
+                        
                     end
                 end
             end
-            
-        case 2
+        case 'ss-grp'
             for s=1:3
                 figure;
-                if grp==1
-                    do_plot(subplot(1,1,1),IDown(s,:)',IDother(s,:)',MTown(s,:)',kk);
-                else
-                    do_plot(subplot(1,1,1),IDown(pp,s,:)',IDother(pp,s,:)',MTown(pp,s,:)',kk);
+                for g=1:2
+                    ax=subplot(1,2,g);
+                    fprintf('computing session %d and group %d',s,g)
+                    do_plot(ax,IDown(g,s,:)',IDother(g,s,:)',MTown(g,s,:)',fit_mode);
                 end
-            end
-        case 3
+            end            
+        case 'pp-ss'
             figure;
-            if grp==1
-                do_plot(subplot(111),IDown',IDother',MTown',kk);
-            else
-                do_plot(subplot(111),IDown(pp,:,:)',IDother(pp,:,:)',MTown(pp,:,:)',kk);
+            for s=1:3
+                ax=subplot(1,3,s);
+                fprintf('computing session %d and participant %d',s,pp)
+                do_plot(ax,IDown(pp,s,:)',IDother(pp,s,:)',MTown(pp,s,:)',fit_mode);
             end
         otherwise
             return
     end
 end
-function do_plot(ax,x,y,z,mode)
-    if nargin<5, mode='pca'; end
-    switch mode
+
+function do_plot(ax,x,y,z,fit_mode)
+    if nargin<5, fit_mode='pca'; end
+    switch fit_mode
         case 'pca'
             do_plot_PCA(ax,x,y,z);
-        case 'polynfit'
-            do_plot_polyfit(ax,x,y,z);
-        case 'polynfit_3rd'
-            do_plot_polyfit_3rd(ax,x,y,z);
-        case 'polynfit_nl'
-            do_plot_polyfit_nl(ax,x,y,z);
-        case 'polynfit_power'
+        case 'poly'
+            do_plot_polynfit(ax,x,y,z);
+        case 'poly_3rd'
+            do_plot_polynfit_3rd(ax,x,y,z);
+        case 'poly_nl'
+            do_plot_polynfit_nl(ax,x,y,z);
+        case 'power2'
             x=log2((2.^(1-x))*0.1);
             y=log2((2.^(1-y))*0.1);
             z=log2(z);
-            do_plot_polyfit_power(ax,x,y,z);
-        case 'polynfit_power1'
+            do_plot_polynfit_power2(ax,x,y,z);
+        case 'power1'
             x=log2((2.^(1-x))*0.1);
             y=log2((2.^(1-y))*0.1);
             z=log2(z);
-            do_plot_polyfit_power1(ax,x,y,z);
+            do_plot_polynfit_power1(ax,x,y,z);
         case 'algebra'
             do_plot_algebra(ax,x,y,z);
         case 'normal'
@@ -147,7 +187,7 @@ function do_plot_PCA(ax,x,y,z)
 
 end
 
-function do_plot_polyfit(ax,x,y,z)
+function do_plot_polynfit(ax,x,y,z)
     p=polyfitn([x,y],z,'constant u v')
     % Evaluate on a grid and plot:
     [xg,yg]=meshgrid(linspace(min(x),max(x),30), ...
@@ -162,7 +202,7 @@ function do_plot_polyfit(ax,x,y,z)
     hold off
 end
 
-function do_plot_polyfit_3rd(ax,x,y,z)
+function do_plot_polynfit_3rd(ax,x,y,z)
     p=polyfitn([x,y],z,'constant u v v^3')
     % Evaluate on a grid and plot:
     [xg,yg]=meshgrid(linspace(min(x),max(x),30), ...
@@ -177,7 +217,7 @@ function do_plot_polyfit_3rd(ax,x,y,z)
     hold off
 end
 
-function do_plot_polyfit_nl(ax,x,y,z)
+function do_plot_polynfit_nl(ax,x,y,z)
     p=polyfitn([x,y],z,2)
     polyn2sympoly(p)
     % Evaluate on a grid and plot:
@@ -193,16 +233,20 @@ function do_plot_polyfit_nl(ax,x,y,z)
     hold off
 end
 
-function do_plot_polyfit_power(ax,x,y,z)
+function do_plot_polynfit_power2(ax,x,y,z)
     p=polyfitn([x,y],z,'constant u v')
     polyn2sympoly(p)
+    lm = LinearModel.fit([x,y],z,'linear')
+    anova(lm)
+    coefCI(lm)
+    mdl1 = step(lm,'NSteps',5)
     
     %Regenerate potencial form
     x=(2.^x);
     y=(2.^y);
     z=2.^z;
     c=p.Coefficients(:);
-    c1=2^c(1)
+    c1=2^c(1);
     powerLaw = @(x, y) (c1 * x.^c(2) .* y.^c(3));
     
     % Evaluate on a grid and plot:
@@ -216,11 +260,22 @@ function do_plot_polyfit_power(ax,x,y,z)
     ylabel('We/A Other');
     zlabel('MT');
     hold off
+    
+    
+%     anova(lm,'summary')
+%     anova(lm)
+%     coefCI(lm)
+%     [p,F,d] = coefTest(lm)
+    
 end
 
-function do_plot_polyfit_power1(ax,x,y,z)
+function do_plot_polynfit_power1(ax,x,y,z)
     p=polyfitn([x,y],z,'constant u')
     polyn2sympoly(p)
+    T = [0,0 0;1,0,0;0,0,0];
+    lm = LinearModel.fit([x,y],z,T)
+    anova(lm)
+    coefCI(lm)
     
     %Regenerate potencial form
     x=(2.^x);

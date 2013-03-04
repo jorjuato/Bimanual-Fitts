@@ -5,6 +5,7 @@ classdef TimeSeriesBimanual < handle
     end % properties
     
     properties (Dependent = true, SetAccess = private)
+        %Move IDef and Harmonicities to oscillations, (and add Rf and Lf)
         Lxraw
         Lvraw
         Laraw
@@ -21,6 +22,7 @@ classdef TimeSeriesBimanual < handle
         Lalpha
         Lamp
         Lpeaks
+        Lvpeaks
         LID
         LIDef
         Rxraw
@@ -39,6 +41,7 @@ classdef TimeSeriesBimanual < handle
         Ralpha
         Ramp
         Rpeaks
+        Rvpeaks
         RID
         RIDef
         idx
@@ -301,6 +304,16 @@ classdef TimeSeriesBimanual < handle
             [maxPeaks, minPeaks] = peakdet(obj.Rx, obj.conf.peak_size);
             Rpeaks = sort([maxPeaks(:,1);minPeaks(:,1);length(obj.Rx)]);
             %Rpeaks = sort([1;maxPeaks(:,1);minPeaks(:,1)]);
+        end
+        
+        function Lvpeaks = get.Lvpeaks(obj)
+            [maxPeaks, minPeaks] = peakdet(obj.Lv, obj.conf.peak_size);
+            Lvpeaks = sort([maxPeaks(:,1);minPeaks(:,1);length(obj.Lv)]);
+        end
+        
+        function Rvpeaks = get.Rvpeaks(obj)            
+            [maxPeaks, minPeaks] = peakdet(obj.Rv, obj.conf.peak_size);
+            Rvpeaks = sort([maxPeaks(:,1);minPeaks(:,1);length(obj.Rv)]);
         end
         
         function idx = get.idx(obj)

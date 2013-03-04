@@ -1,18 +1,13 @@
-function update_vf(obj)
+function update_ls(obj)
     DS=obj.data_set;
-    if obj.unimanual==1
-        [ID, rep] = size(DS);
-        for i=1:ID
-            for r=1:rep
-                DS{i,r}.ls.update();
-            end
-        end
+    if obj.conf.unimanual==1
+        disp('Nothing to update for Locking Strength variables in unimanual blocks')
     else
         [IDL, IDR, rep] = size(DS);
         for i=1:IDL
             for j=1:IDR
                 for r=1:rep
-                    DS{i,j,r}.ls.update()
+                    DS{i,j,r}.ls.update(DS{i,j,r}.ts)
                 end
             end
         end

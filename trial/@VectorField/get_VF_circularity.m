@@ -7,8 +7,6 @@ function ang=get_VF_circularity(vf, mode)
         ang=get_VF_circularity_2(vf);
     elseif mode==3
         ang=get_VF_circularity_3(vf);
-    elseif mode==4
-        ang=get_VF_circularity_4(vf);
     else
         display(['Mode',num2str(mode),' not implemented!'])
     end
@@ -67,6 +65,3 @@ function ang=get_VF_circularity_3(vf)
     I = abs(fdata - ydata) > 1.5*std(ydata);     
 end
 
-function ang=get_VF_circularity_4(vf)
-
-end

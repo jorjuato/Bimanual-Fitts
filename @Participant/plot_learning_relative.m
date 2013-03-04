@@ -6,7 +6,7 @@
 
 function  plot_learning_relative(obj,graphPath)     
     if nargin<2, graphPath=''; end    
-    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+    if ~exist(graphPath,'dir') && obj.conf.interactive==0
         mkdir(graphPath);
     end
     

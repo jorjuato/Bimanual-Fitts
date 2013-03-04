@@ -1,34 +1,32 @@
-function [dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn] = get_data(xp,grp,avg,eff)
+function [dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn] = get_data(xp,grp,avg,rel)
     if nargin<1,xp=Experiment();end
     if nargin<2,grp=0;end
     if nargin<3,avg=1;end
-    if nargin<4,eff=0;end
+    if nargin<4,rel=0;end
 
     %Set some globals for data fetching
     global vtypes
     global C
     vtypes={'ts','osc','vf','ls'};
-    %vtypes={'ts','osc','ls'};
     C=[2,3,6,8,9];
     max_raw_data=1000;
-    
 
     %Define arrays
     [varnamesBi, vartypesBi, varnamesUn, vartypesUn] = get_variables();
     if grp==1, g=2; else g=10; end
     if avg==1, r=0; else r=3; end
     hands=2; idl=2; idr=3; ss=3; 
-
-
+    
+    %Do the real thing!
     tic
-    if avg==1 && eff==0
+    if rel==1 % always average data for relative measures
+        dataUn=zeros(length(varnamesBi),hands,g,ss,idr,r)*NaN;
+        dataBi=zeros(length(varnamesUn),hands,g,ss,idl,idr,r)*NaN;
+        dataBi=get_data_rel(xp,dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn);
+    elseif avg==1
         dataUn=zeros(length(varnamesBi),hands,g,ss,idr,r);
         dataBi=zeros(length(varnamesUn),hands,g,ss,idl,idr,r);
         [dataBi,dataUn] = get_data_averaged(xp,dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn);
-    elseif eff==1
-        dataUn=zeros(length(varnamesBi),hands,g,ss,idr,max_raw_data)*NaN;
-        dataBi=zeros(length(varnamesUn),hands,g,ss,idl,idr,max_raw_data)*NaN;
-        [dataBi,dataUn] = get_data_eff(xp,dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn);
     elseif avg==0 
         dataUn=zeros(length(varnamesBi),hands,g,ss,idr,max_raw_data);
         dataBi=zeros(length(varnamesUn),hands,g,ss,idl,idr,max_raw_data);
@@ -56,12 +54,16 @@ function [dataBi,dataUn] = get_data_averaged(xp,dataBi,dataUn,varnamesBi,varname
         pp=xp(p);
         display(['Now processing participant ' num2str(p)])
         %Choose between group-based or participant-based sorting. 
-        if grp==10 %Participant-based sorting
+        if grp==10 
+            %Participant-based sorting
             g=p;
-        else       %Group based sorting
-            if any(C==p) %Coupled group has index 1
+        else       
+            %Group based sorting
+            if any(C==p) 
+                %Coupled group = 1
                 g=1;
-            else         %Uncoupled group has  index 2
+            else         
+                %Uncoupled group = 2
                 g=2;
             end
         end
@@ -79,20 +81,15 @@ function [dataBi,dataUn] = get_data_averaged(xp,dataBi,dataUn,varnamesBi,varname
                         %Bimanual trials
                         for v=1:length(varnamesBi)
                             if strcmp(vartypesBi{v},'ts')
-                                if strcmp(varnamesBi{v},'Harmonicity') || strcmp(varnamesBi{v},'Circularity') || strcmp(varnamesBi{v},'IDef') || strcmp(varnamesBi{v},'f')
-                                    dataBi(v,1,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ts.(['L' varnamesBi{v}]));
-                                    dataBi(v,2,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ts.(['R' varnamesBi{v}]));
-                                else
-                                    dataBi(v,1,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ts.(varnamesBi{v}));
-                                    dataBi(v,2,g,s,a,b,idx)=-nanmedian(pp(s).bimanual{a,b,c}.ts.(varnamesBi{v}));
-                                end
+                                dataBi(v,1,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ts.(['L' varnamesBi{v}]));
+                                dataBi(v,2,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ts.(['R' varnamesBi{v}]));
                             elseif strcmp(vartypesBi{v},'osc')
                                 dataBi(v,1,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.oscL.(varnamesBi{v}));
                                 dataBi(v,2,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.oscR.(varnamesBi{v}));
                             elseif strcmp(vartypesBi{v},'vf')
                                 dataBi(v,1,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.vfL.(varnamesBi{v}));
                                 dataBi(v,2,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.vfR.(varnamesBi{v}));
-                            else
+                            else % vartype=ls
                                 dataBi(v,1,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ls.(varnamesBi{v}));
                                 dataBi(v,2,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ls.(varnamesBi{v}));
                             end
@@ -121,17 +118,21 @@ function [dataBi,dataUn] = get_data_raw(xp,dataBi,dataUn,varnamesBi,varnamesUn, 
     cntBi=zeros(vno,h,grp,ss,idl,idr);
     cntUn=zeros(length(varnamesUn),h,grp,ss,idr);
 
-    for p=1:10     % participant number
+    for p=1:10
         %Load participant p from disk
         pp=xp(p);
         display(['Now processing participant ' num2str(p)])
         %Choose between group-based or participant-based sorting. 
-        if grp==10 %Participant-based sorting
+        if grp==10 
+            %Participant-based sorting
             g=p;
-        else       %Group based sorting
-            if any(C==p) %Coupled group has index 1
+        else       
+            %Group based sorting
+            if any(C==p) 
+                %Coupled group
                 g=1;
-            else         %Uncoupled group has  index 2
+            else         
+                %Uncoupled group
                 g=2;
             end
         end
@@ -144,57 +145,51 @@ function [dataBi,dataUn] = get_data_raw(xp,dataBi,dataUn,varnamesBi,varnamesUn, 
                         %Bimanual trials
                         for v=1:vno
                             if strcmp(vartypesBi{v},'ts')
-                                if strcmp(varnamesBi{v},'Harmonicity') || strcmp(varnamesBi{v},'Circularity') || strcmp(varnamesBi{v},'IDef') || strcmp(varnamesBi{v},'f')
-                                    
-                                    d=pp(s).bimanual{a,b,c}.ts.(['L' varnamesBi{v}]);
-                                    oldi=cntBi(v,1,g,s,a,b);
-                                    newi=oldi+length(d);
-                                    cntBi(v,1,g,s,a,b)=newi;
-                                    dataBi(v,1,g,s,a,b,oldi+1:newi)=d(:);
-                                    
-                                    d=pp(s).bimanual{a,b,c}.ts.(['R' varnamesBi{v}]);
-                                    oldi=cntBi(v,2,g,s,a,b);
-                                    newi=oldi+length(d);
-                                    cntBi(v,2,g,s,a,b)=newi;
-                                    dataBi(v,2,g,s,a,b,oldi+1:newi)=d(:);
-                                else
-                                    d=pp(s).bimanual{a,b,c}.ts.(varnamesBi{v});
-                                    oldi=cntBi(v,1,g,s,a,b);
-                                    newi=oldi+length(d);
-                                    cntBi(v,1,g,s,a,b)=newi;
-                                    dataBi(v,1,g,s,a,b,oldi+1:newi)=d(:);
-                                    
-                                    d=pp(s).bimanual{a,b,c}.ts.(varnamesBi{v});
-                                    oldi=cntBi(v,2,g,s,a,b);
-                                    newi=oldi+length(d);
-                                    cntBi(v,2,g,s,a,b)=newi;
-                                    dataBi(v,2,g,s,a,b,oldi+1:newi)=d(:);
-                                end
+                                %Left hand variables
+                                d=pp(s).bimanual{a,b,c}.ts.(['L' varnamesBi{v}]);
+                                oldi=cntBi(v,1,g,s,a,b);
+                                newi=oldi+length(d);
+                                cntBi(v,1,g,s,a,b)=newi;
+                                dataBi(v,1,g,s,a,b,oldi+1:newi)=d(:);
+                                %Right hand variables
+                                d=pp(s).bimanual{a,b,c}.ts.(['R' varnamesBi{v}]);
+                                oldi=cntBi(v,2,g,s,a,b);
+                                newi=oldi+length(d);
+                                cntBi(v,2,g,s,a,b)=newi;
+                                dataBi(v,2,g,s,a,b,oldi+1:newi)=d(:);
                             elseif strcmp(vartypesBi{v},'osc')
+                                %Avoid single valued functions in non-averaged data
+                                if strcmp(varnamesBi{v},'IDOwn')   || strcmp(varnamesBi{v},'IDOther') || ...
+                                   strcmp(varnamesBi{v},'IDOwnEf') || strcmp(varnamesBi{v},'IDOtherEf')
+                                    continue
+                                end
+                                %Left hand variables
                                 d=pp(s).bimanual{a,b,c}.oscL.(varnamesBi{v});
                                 oldi=cntBi(v,1,g,s,a,b);
                                 newi=oldi+length(d);
                                 cntBi(v,1,g,s,a,b)=newi;
                                 dataBi(v,1,g,s,a,b,oldi+1:newi)=d(:);
-                                
+                                %Right hand variables
                                 d=pp(s).bimanual{a,b,c}.oscR.(varnamesBi{v});
                                 oldi=cntBi(v,2,g,s,a,b);
                                 newi=oldi+length(d);
                                 cntBi(v,2,g,s,a,b)=newi;
                                 dataBi(v,2,g,s,a,b,oldi+1:newi)=d(:);
                             elseif strcmp(vartypesBi{v},'vf')
+                                %Left hand variables
                                 d=pp(s).bimanual{a,b,c}.vfL.(varnamesBi{v});
                                 oldi=cntBi(v,1,g,s,a,b);
                                 newi=oldi+length(d);
                                 cntBi(v,1,g,s,a,b)=newi;
                                 dataBi(v,1,g,s,a,b,oldi+1:newi)=d(:);
-                                
+                                %Right hand variables
                                 d=pp(s).bimanual{a,b,c}.vfR.(varnamesBi{v});
                                 oldi=cntBi(v,2,g,s,a,b);
                                 newi=oldi+length(d);
                                 cntBi(v,2,g,s,a,b)=newi;
                                 dataBi(v,2,g,s,a,b,oldi+1:newi)=d(:);
                             else
+                                %Dual handed variables
                                 d=pp(s).bimanual{a,b,c}.ls.(varnamesBi{v});
                                 oldi=cntBi(v,1,g,s,a,b);
                                 newi=oldi+length(d);
@@ -206,6 +201,11 @@ function [dataBi,dataUn] = get_data_raw(xp,dataBi,dataUn,varnamesBi,varnamesUn, 
                         end
                         %Unimanual Trials
                         for v=1:length(varnamesUn)
+                            %Avoid single valued functions in non-averaged data
+                            if strcmp(varnamesUn{v},'IDOwn')   || strcmp(varnamesUn{v},'IDOther') || ...
+                               strcmp(varnamesUn{v},'IDOwnEf') || strcmp(varnamesUn{v},'IDOtherEf')
+                                    continue
+                            end
                             if b==1
                                 d=pp(s).uniLeft{a,c}.(vartypesUn{v}).(varnamesUn{v});
                                 oldi=cntUn(v,1,g,s,a);
@@ -215,9 +215,9 @@ function [dataBi,dataUn] = get_data_raw(xp,dataBi,dataUn,varnamesBi,varnamesUn, 
                             end
                             if a==1
                                 d=pp(s).uniRight{b,c}.(vartypesUn{v}).(varnamesUn{v});
-                                oldi=cntUn(v,1,g,s,b);
+                                oldi=cntUn(v,2,g,s,b);
                                 newi=oldi+length(d);
-                                cntUn(v,1,g,s,b)=newi;
+                                cntUn(v,2,g,s,b)=newi;
                                 dataUn(v,2,g,s,b,oldi+1:newi)=d(:);
                             end
                         end                                    
@@ -228,14 +228,14 @@ function [dataBi,dataUn] = get_data_raw(xp,dataBi,dataUn,varnamesBi,varnamesUn, 
     end
 end
 
-function [dataBi,dataUn] = get_data_eff(xp,dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn)
+function [dataBi,dataUn] = get_data_rel(xp,dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn)
     %Get global properties
     [~,h,grp,ss,idl,idr,r]=size(dataBi);
 
     %Prepare indexes for group-based or participant-based sorting. 
     i=zeros(2,ss,idl,idr);        
 
-    for p=1:10     % participant number
+    for p=1:10
         %Load participant p from disk
         pp=xp(p);
         display(['Now processing participant ' num2str(p)])
@@ -256,13 +256,8 @@ function [dataBi,dataUn] = get_data_eff(xp,dataBi,dataUn,varnamesBi,varnamesUn, 
                         %Bimanual trials
                         for v=1:length(varnamesBi)
                             if strcmp(vartypesBi{v},'ts')
-                                if strcmp(varnamesBi{v},'Harmonicity') || strcmp(varnamesBi{v},'Circularity') || strcmp(varnamesBi{v},'IDef') || strcmp(varnamesBi{v},'f')
-                                    dataBi(v,1,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ts.(['L' varnamesBi{v}]));
-                                    dataBi(v,2,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ts.(['R' varnamesBi{v}]));
-                                else
-                                    dataBi(v,1,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ts.(varnamesBi{v}));
-                                    dataBi(v,2,g,s,a,b,idx)=-nanmedian(pp(s).bimanual{a,b,c}.ts.(varnamesBi{v}));
-                                end
+                                 dataBi(v,1,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ts.(['L' varnamesBi{v}]));
+                                 dataBi(v,2,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.ts.(['R' varnamesBi{v}]));
                             elseif strcmp(vartypesBi{v},'osc')
                                 dataBi(v,1,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.oscL.(varnamesBi{v}));
                                 dataBi(v,2,g,s,a,b,idx)=nanmedian(pp(s).bimanual{a,b,c}.oscR.(varnamesBi{v}));

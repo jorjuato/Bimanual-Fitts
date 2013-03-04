@@ -1,4 +1,4 @@
+        RandStream.setDefaultStream(RandStream('mt19937ar','seed',sum(100*clock)));
         conf=Config();
-        conf.parallelMode=0;
-        p=Participant(6,conf);
-        p.save(); exit
+        [dataBi,dataUn,varnamesBi,varnamesUn,vartypesBi, vartypesUn] = get_data_pp(6);
+        save(joinpath(conf.save_path,'pp06_data.mat')); exit
