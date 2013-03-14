@@ -26,7 +26,8 @@ TEMPLATE_GET_DATA,\
 TEMPLATE_ANALYSIS,\
 TEMPLATE_PLOT_ANALYSIS,\
 TEMPLATE_LOAD_PLOT,\
-TEMPLATE_PLOT = range(9)
+TEMPLATE_PLOT, \
+TEMPLATE_PLOT_VF = range(10)
 
 def write_scripts(pp):    
     #Open file to write script
@@ -100,6 +101,12 @@ def get_script_from_template(tpl,pp):
         conf.parallelMode=0;
         p=Participant.load(%d,conf);
         p.plot();exit""" % pp
+    elif tpl==TEMPLATE_PLOT_VF:
+        msg="""\
+        conf=Config();
+        conf.parallelMode=0;
+        p=Participant.load(%d,conf);
+        p.plot_va();exit""" % pp
     else:
         return "Wrong template type"
     return msg

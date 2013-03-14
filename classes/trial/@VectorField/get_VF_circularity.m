@@ -2,7 +2,7 @@ function ang=get_VF_circularity(vf, mode)
     if nargin==1, mode=2; end
     
     if mode==1
-        ang=get_VF_circularity_1(vf);
+        ang=get_VF_circularity_1bis(vf);
     elseif mode==2
         ang=get_VF_circularity_2(vf);
     elseif mode==3
@@ -36,6 +36,30 @@ function ang=get_VF_circularity_1(vf)
                 else
                     ang(i,j)=a2;
                 end
+            end
+        end
+    end
+end
+
+function ang=get_VF_circularity_1bis(vf)
+    rot90=[0,1;-1,0];
+    rot_90=[0,-1;1,0];
+    vfx=vf.vectors{1};
+    vfy=vf.vectors{2};
+    c=vf.xo{1};
+    ang=zeros(length(c))*nan;
+    for i=1:length(c)
+        for j=1:length(c)
+            x=vfx(i,j);
+            y=vfy(i,j);
+            if ~isnan(x) & ~isnan(y)
+                v=[x;y];
+                r=rot90*[c(i);c(j)];
+                %costheta = dot(v,r)/(norm(v)*norm(r));                
+                %ang(i,j) = acos(costheta);
+                %See http://www.cs.berkeley.edu/~wkahan/Mindless.pdf
+                ang(i,j) = 2 * atan(norm(v*norm(r) - norm(v)*r) / norm(v * norm(r) + norm(v) * r));
+
             end
         end
     end

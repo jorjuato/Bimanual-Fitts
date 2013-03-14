@@ -54,8 +54,8 @@ classdef Config < handle
         step = 1
         minValsToComputeCondProb = 15
         use_norm=1
-        maxAngle_localenv=0.15
-        fitorder=3
+        maxAngle_localenv=0
+        fitorder=0
         samplerate=250
         
     end % properties

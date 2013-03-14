@@ -17,9 +17,9 @@ function  plot(obj)
         mkdir(obj.conf.plot_learning_path);
     end
     
-    obj.plot_learning_oscillations(oscillations_dir);
-    obj.plot_learning_relative(relative_dir);    
-    obj.plot_learning_lockingStrength(lockingStrength_dir);
+    %obj.plot_learning_oscillations(oscillations_dir);
+    %obj.plot_learning_relative(relative_dir);    
+    %obj.plot_learning_lockingStrength(lockingStrength_dir);
     %obj.plot_learning_vf(vf_dir,ext);
 	%obj.plot_vf(vf_dir);
 	obj.plot_va(vf_dir);

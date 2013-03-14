@@ -10,7 +10,7 @@ function plot_groups(biData,unData,biNames,unNames,factors,savepath_)
     savepath=savepath_;
     do_legend=1;
     plot_type='subplot'; %'tight' 'figure' 'subplot'    
-    
+    do_relative=1;
     vars={'MT','accTime','decTime','accQ','IPerfEf',...
           'maxangle','d3D','d4D','Circularity',...
           'vfCircularity','vfTrajCircularity','Harmonicity',...
@@ -52,7 +52,7 @@ function plot_groups(biData,unData,biNames,unNames,factors,savepath_)
         plot_bars(DataSeries(bi,factors),titles{v});
 
         %Relative plots
-        if any(v2)
+        if any(v2) && do_relative
             plot_bars(DataSeries(bi,un,factors),['Relative',titles{v}]);
         end
     end
@@ -200,16 +200,20 @@ function do_cosmetics(ds,f1)
     hline([0.5,1],{'k--','k--'}) %,{'0.5s','1s'})
     hline(1,'k-')
     set(gca,'XTick',[]);
-    set(gca,'ylim',[ds.ymin-abs(ds.ymin/10),ds.ymax+abs(ds.ymax/10)]);
+    if ~isnan(ds.ymin) && ~isnan(ds.ymin) && ds.ymin+ds.ymax~=0
+        set(gca,'ylim',[ds.ymin-abs(ds.ymin/10),ds.ymax+abs(ds.ymax/10)]);
+    end
     set(gca,'box','off');
     grid on;
     ylabh=ylabel(ds.ylabels(f1),'rot',0,'EdgeColor','black','BackgroundColor',[.7 .9 .7],'FontSize',12,'FontWeight','bold');
     s = struct(handle(ylabh));
     s.Position=s.Position - [1 0 0 ];
     for i=1:ds.franges(2)
-        xlabh=text(ds.xlabels_pos(i,1),ds.ymax,ds.xlabels{i},'EdgeColor','black','BackgroundColor',[.7 .9 .7],'FontSize',12,'FontWeight','bold');
-        s = struct(handle(xlabh));
-        s.Position=s.Position - [0 1 0 ];
+        if ~isnan(ds.ymin) && ~isnan(ds.ymin) && ds.ymin+ds.ymax~=0
+            xlabh=text(ds.xlabels_pos(i,1),ds.ymax,ds.xlabels{i},'EdgeColor','black','BackgroundColor',[.7 .9 .7],'FontSize',12,'FontWeight','bold');        
+            s = struct(handle(xlabh));
+            s.Position=s.Position - [0 1 0 ];
+        end
     end
 end
                     

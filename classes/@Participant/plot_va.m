@@ -1,12 +1,13 @@
 function plot_va(obj,graphPath)
-    if nargin<2, graphPath=''; end    
+    if nargin<2, graphPath=obj.conf.plot_participant_path; end    
     if ~exist(graphPath,'dir') & obj.conf.interactive==0
         mkdir(graphPath);
     end
     
     S= obj.sessions;
     [IDL, IDR, ~] = size(S(1).bimanual.data_set);
-
+    lnames={'Diff','Easy'};
+    rnames={'Diff','Med','Easy'};
     for i=1:IDL
         for j=1:IDR
             %Create figure and name it
@@ -49,7 +50,8 @@ function plot_va(obj,graphPath)
                 end
                                 
             end
-            name=sprintf('LearningVectorAnglesIDL%1dIDR%1d',round(DSl{i,1}.info.ID),round(DSr{j,1}.info.ID));
+            %name=sprintf('LearningVectorAnglesIDL%1dIDR%1d',round(DSl{i,1}.info.ID),round(DSr{j,1}.info.ID));
+            name=sprintf('LearningVectorAngles_L-%s_R-%s',lnames{i},rnames{j});
             if obj.conf.interactive==1
                 suplabel(name,'t',[.1 .1 .84 .84]);
             end
