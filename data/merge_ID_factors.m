@@ -7,6 +7,8 @@ function data = merge_ID_factors(bidata,mode)
         deltaID=[0,1,2];
     elseif strcmp(mode,'6levels')
         deltaID=-2:2;
+    elseif strcmp(mode,'4levels')
+        deltaID=[-2,-1,1,2];        
     end
     [vno, hno, pp, ss, idl, idr, reps]=size(bidata);
     
@@ -15,6 +17,32 @@ function data = merge_ID_factors(bidata,mode)
     end
     
     switch mode
+        case '4levels'
+            data=zeros(vno,hno,pp, ss, length(deltaID), reps);
+            for v=1:vno
+                for h=1:hno
+                    for p=1:pp
+                        for s=1:ss
+                            for l=1:idl
+                                for r=1:idr
+                                    if h==1
+                                        i=llevels(l);
+                                        j=r;
+                                    else
+                                        i=r;
+                                        j=llevels(l);
+                                    end     
+                                    did=i-j;
+                                    idx=find(deltaID==did);  
+                                    if idx
+                                        data(v,h,p,s,idx,:)=squeeze(bidata(v,h,p,s,l,r,:));
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end           
         case '3levels'
             data=zeros(vno,hno, pp, ss, length(deltaID), reps);
             for v=1:vno

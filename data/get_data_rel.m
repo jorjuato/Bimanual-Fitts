@@ -1,4 +1,3 @@
-
 function dataRel = get_data_rel(dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi)
     %Get global properties
     [v,h,pp,ss,idl,idr,r]=size(dataBi);
@@ -17,8 +16,8 @@ function dataRel = get_data_rel(dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi)
                             else
                                 vu=strcmp(varnamesBi{v},varnamesUn);
                                 if any(vu)
-                                    dataRel(v,1,p,s,a,b,c)=squeeze(dataBi(v,1,p,s,a,b,c))/squeeze(dataUn(vu,1,p,s,a,c)); 
-                                    dataRel(v,2,p,s,a,b,c)=squeeze(dataBi(v,2,p,s,a,b,c))/squeeze(dataUn(vu,2,p,s,b,c));
+                                    dataRel(v,1,p,s,a,b,c)=squeeze(dataBi(v,1,p,s,a,b,c))/nanmean(squeeze(dataUn(vu,1,p,s,a,:))); 
+                                    dataRel(v,2,p,s,a,b,c)=squeeze(dataBi(v,2,p,s,a,b,c))/nanmean(squeeze(dataUn(vu,2,p,s,b,:)));
                                 end
                             end
                         end                                    

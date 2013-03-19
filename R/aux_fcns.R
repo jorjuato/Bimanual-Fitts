@@ -1,3 +1,29 @@
+
+
+generate.relative.vars <- function(bidata,uLdata,uRdata){
+    vnames=names(uLdata)[-(1:4)]         
+    #foreach (vname=vnames) %dopar% {
+    for (vname in vnames) {        
+        for (hand in c('R','L')) {
+            bivname=paste(vname,hand,sep='')
+            for (i in 1:nrow(bidata)) {            
+                pp<- as.numeric(bidata[i,'pp'])            
+                S <- as.numeric(levels(bidata$S)[bidata[i,'S']])
+                ID<- as.numeric(bidata[i,paste('ID',hand,sep='')])
+                form=sprintf("val<-mean( u%sdata$%s[ u%sdata$pp==%d & u%sdata$S==%d & u%sdata$ID==%d ] )", hand,vname,hand,pp,hand,S,hand,ID)
+                eval(parse(text=form))
+                form=sprintf("bidata$%srel[[i]]<-bidata$%s[[i]]/val",bivname,bivname)
+                eval(parse(text=form))
+            }
+        }
+    }
+#    bidata$MTBiAll<-bidata$MTL+bidata$MTR
+#    bidata$MTUniAll<-uLdata$MT+uRdata$MT
+#    bidata$MTAllRel<-bidata$MTBiAll+bidata$MTUniAll
+    return(bidata)
+}
+
+
 bimanual_fcns <- function(bidata,vname,vpath){
 	if (do_summary == TRUE) do.summary(bidata,vname,vpath)
 	

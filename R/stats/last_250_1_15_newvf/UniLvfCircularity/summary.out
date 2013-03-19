@@ -1,0 +1,49 @@
+[1] "Summary by group"
+  grp vfCircularity.m vfCircularity.s
+1   C        1.389134       0.3524540
+2   U        1.401165       0.2336183
+[1] "Summary by session\n"
+  S vfCircularity.m vfCircularity.s
+1 1        1.351442       0.2267114
+2 2        1.394362       0.2535873
+3 3        1.439643       0.3875131
+[1] "Summary by ID\n"
+  ID vfCircularity.m vfCircularity.s
+1  D        1.220910       0.1975444
+2  E        1.569388       0.2800897
+[1] "Summary by group + Session\n"
+  grp S vfCircularity.m vfCircularity.s
+1   C 1        1.318475       0.2352648
+2   C 2        1.368608       0.2305783
+3   C 3        1.480317       0.5084495
+4   U 1        1.384408       0.2167264
+5   U 2        1.420117       0.2762099
+6   U 3        1.398969       0.2087277
+[1] "Summary by Session + ID\n"
+  S ID vfCircularity.m vfCircularity.s
+1 1  D        1.189827       0.1728277
+2 1  E        1.513057       0.1437319
+3 2  D        1.226535       0.1955106
+4 2  E        1.562190       0.1852877
+5 3  D        1.246370       0.2235309
+6 3  E        1.632917       0.4222079
+[1] "Summary by group + ID\n"
+  grp ID vfCircularity.m vfCircularity.s
+1   C  D        1.192620       0.2098308
+2   C  E        1.585647       0.3581225
+3   U  D        1.249200       0.1823965
+4   U  E        1.553129       0.1728902
+[1] "Summary by group + Session + ID\n"
+   grp S ID vfCircularity.m vfCircularity.s
+1    C 1  D        1.154083       0.1938058
+2    C 1  E        1.482867       0.1384992
+3    C 2  D        1.215257       0.2113409
+4    C 2  E        1.521960       0.1227693
+5    C 3  D        1.208521       0.2318189
+6    C 3  E        1.752113       0.5687426
+7    U 1  D        1.225570       0.1468808
+8    U 1  E        1.543247       0.1471674
+9    U 2  D        1.237813       0.1850449
+10   U 2  E        1.602420       0.2292921
+11   U 3  D        1.284218       0.2160822
+12   U 3  E        1.513720       0.1238478

@@ -1,8 +1,9 @@
-function showholmbyfactor(holmmat,data,factors)
+function [f1mat,f2mat]=showholmbyfactor(holmmat,data,factors)
     flen=size(data);
     reps=flen(end);
-
     
+
+    disp(repmat('=',1,80))
     switch length(factors)
         case 1
             disp('Not necessary to do a cross level analysis');
@@ -131,8 +132,7 @@ function showholmbyfactor(holmmat,data,factors)
             end
             
     end
-    f1mat
-    f2mat
+    disp(repmat('=',1,80))
 end
 function hval = get_holm(holmmat,p1,p2,flen)
    switch length(flen)

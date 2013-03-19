@@ -1,0 +1,33 @@
+Post-hoc Tukey comparisons[1] "grp Tukey test"
+
+	Pairwise comparisons using paired t tests 
+
+data:  mdata$minPeakDelayNorm and mdata$grp 
+
+  C      
+U 6.6e-07
+
+P value adjustment method: bonferroni 
+[1] "S Tukey test"
+
+	Pairwise comparisons using paired t tests 
+
+data:  mdata$minPeakDelayNorm and mdata$S 
+
+  1    2   
+2 0.80 -   
+3 1.00 0.52
+
+P value adjustment method: bonferroni 
+[1] "IDR Tukey test"
+
+	Pairwise comparisons using paired t tests 
+
+data:  mdata$minPeakDelayNorm and mdata$IDR 
+
+  D       M      
+M 1.00000 -      
+E 0.06527 0.00098
+
+P value adjustment method: bonferroni 
+[1] "IDL Tukey test"

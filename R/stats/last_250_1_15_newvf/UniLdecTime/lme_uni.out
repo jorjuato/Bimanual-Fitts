@@ -1,0 +1,35 @@
+Linear mixed-effects model fit by REML
+ Data: mdata 
+        AIC       BIC   logLik
+  -313.0153 -290.8618 163.5077
+
+Random effects:
+ Formula: ~1 | pp
+        (Intercept)   Residual
+StdDev:  0.04932367 0.08465684
+
+Fixed effects: decTime ~ S + ID + grp 
+                 Value   Std.Error  DF  t-value p-value
+(Intercept)  0.4646611 0.016825513 167 27.61646  0.0000
+S1           0.0585722 0.008923614 167  6.56373  0.0000
+S2          -0.0082611 0.008923614 167 -0.92576  0.3559
+ID1          0.2797833 0.006309948 167 44.34004  0.0000
+grp1        -0.0289833 0.016825513   8 -1.72258  0.1233
+ Correlation: 
+     (Intr) S1   S2   ID1 
+S1    0.0                 
+S2    0.0   -0.5          
+ID1   0.0    0.0  0.0     
+grp1  0.0    0.0  0.0  0.0
+
+Standardized Within-Group Residuals:
+       Min         Q1        Med         Q3        Max 
+-2.8790766 -0.5980919 -0.0850679  0.6540048  2.9779024 
+
+Number of Observations: 180
+Number of Groups: 10 
+            numDF denDF   F-value p-value
+(Intercept)     1   167  762.6689  <.0001
+S               2   167   25.2421  <.0001
+ID              1   167 1966.0388  <.0001
+grp             1     8    2.9673  0.1233
