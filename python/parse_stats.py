@@ -22,35 +22,6 @@ header=['DFn','DFd','F','p','ges','W','p[Mal]','GGe','p[GG]','HFe','p[HF]']
 idx={vname:i for i,vname in enumerate(header)}
 line_length=160
 
-
-def print_var(results,vname,postp='p[HF]'):
-    s=[' ','*']
-    res=results[vname]
-    print "ANOVA Results for variable %s" % vname
-    print"-"*90
-    print "Factor\t\tpVal\tSGN\tSpher\tSGN\tp[GG]\tSGN\tp[HF]\tSGN"
-    print"-"*90
-    for i,factor in enumerate(factors):
-        if i%5==0 and not i==0:
-            print"-"*90
-        try:
-            r=res[factor]
-        except:
-            print("Unimanual variable")
-            return
-        pv=r[3]<0.05        
-        if len(r)==11:
-            sphv=r[6]<0.05
-            ggv=r[8]<0.05
-            hfv=r[10]<0.05            
-            if len(factor)>7:
-                print "%s\t%.3f\t%s\t%.3f\t%s\t%.3f\t%s\t%.3f\t%s" % (factor,r[3],s[pv],r[6],s[sphv],r[8],s[ggv],r[10],s[hfv])
-            else:
-                print "%s\t\t%.3f\t%s\t%.3f\t%s\t%.3f\t%s\t%.3f\t%s" % (factor,r[3],s[pv],r[6],s[sphv],r[8],s[ggv],r[10],s[hfv])
-        else:
-            print "%s\t\t%.3f\t%s" % (factor,r[3],s[pv])
-    print"-"*90
-
 def print_results(res,pvar='p',pval=0.05,sig=1):
     varsorted=sorted(res.keys())
     print_res(oneway,"ONE WAY EFFECTS",res,pvar,pval,sig)
@@ -181,8 +152,60 @@ def skip_to_estimate(fileObj):
     for line in fileObj:
         if line.strip().startswith('Estimate'):
             return
+            
+def print_var(results,vname,postp='p[HF]'):
+    s=[' ','*']
+    res=results[vname]
+    print "ANOVA Results for variable %s" % vname
+    print"-"*90
+    print "Factor\t\tpVal\tSGN\tSpher\tSGN\tp[GG]\tSGN\tp[HF]\tSGN"
+    print"-"*90
+    for i,factor in enumerate(factors):
+        if i%5==0 and not i==0:
+            print"-"*90
+        try:
+            r=res[factor]
+        except:
+            print("Unimanual variable")
+            return
+        pv=r[3]<0.05        
+        if len(r)==11:
+            sphv=r[6]<0.05
+            ggv=r[8]<0.05
+            hfv=r[10]<0.05            
+            if len(factor)>7:
+                print "%s\t%.3f\t%s\t%.3f\t%s\t%.3f\t%s\t%.3f\t%s" % (factor,r[3],s[pv],r[6],s[sphv],r[8],s[ggv],r[10],s[hfv])
+            else:
+                print "%s\t\t%.3f\t%s\t%.3f\t%s\t%.3f\t%s\t%.3f\t%s" % (factor,r[3],s[pv],r[6],s[sphv],r[8],s[ggv],r[10],s[hfv])
+        else:
+            print "%s\t\t%.3f\t%s" % (factor,r[3],s[pv])
+    print"-"*90
+    
+def save_results(results,fname='anova.out'):
+    sep=' '
+    f=open(fname,'w+')
+    for key,value in results.iteritems():
+        f.write(key)
+        for factor in factors:
+            try:
+                r=value[factor]
+            except:
+                break
+            pv=r[3]<0.05        
+            if len(r)==11:
+                sphv=r[6]<0.05
+                ggv=r[8]<0.05
+                hfv=r[10]<0.05
+                if (pv and not sphv) or (pv and hfv):
+                    f.write(sep+factor)
+            elif pv:
+                    f.write(sep+factor)
+        f.write('\n')
+    f.close()   
+                
         
 if __name__ == '__main__':    
     res=parse_results()
-    print_results(res,'p[Mal]',0.05,1)
+    #print_results(res,'p[Mal]',0.05,1)
+    save_results(res)
     sys.exit()

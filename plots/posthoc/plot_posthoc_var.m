@@ -1,9 +1,14 @@
-function plot_posthoc_var(vname, data, vnames,flist,rel)
+function plot_posthoc_var(vname, data, vnames,flist,rel,outdir)
+    if nargin<6, outdir=''; end
     if nargin<5, rel=0; end
     if nargin<4, error('need four input arguments'); end    
     
-    global ext    
-    ext='jpg';
+    global ext   
+    global dpi
+    global verbose 
+    verbose=0;
+    ext='png';
+    dpi=300;
     
     %Fix labels for relative plots
     if rel
@@ -13,8 +18,11 @@ function plot_posthoc_var(vname, data, vnames,flist,rel)
     end
     
     %Create directory to store plots if needed
-    if ~isempty(vstr) && ~exist(vstr,'dir') 
-        mkdir(vstr);
+    if ~isempty(outdir) 
+        savepath=joinpath(outdir,vstr);
+        if  ~isempty(savepath) && ~exist(savepath,'dir') 
+            mkdir(savepath);
+        end
     end
     
     %To plot ipsilateral variables always first in interactions
@@ -37,17 +45,23 @@ function plot_posthoc_var(vname, data, vnames,flist,rel)
     
     %Iterate over interactions
     for f=1:length(flist)
-       %Very custom sorting of groups
-       factors=sortgroups(flist{f},rfirst);
+       %Very customized and hard coded sorting of groups
+       factors=sort_postgroups(flist{f},rfirst);
        
        %Print some nice header
-       disp('')
-       disp(repmat('=',1,80))
-       disp('Post-hoc analysis using Holm-Sidak pairwise comparisons on factors')
-       disp(factors)
-       
+       if verbose
+           disp('')
+           disp(repmat('=',1,80))
+           disp('Post-hoc analysis using Holm-Sidak pairwise comparisons on factors')
+           disp(factors)
+       end
+
        %Rearrange data matrix to match that of factors
        vdata = rearrange_var_data(vname,data,vnames,factors);
+       if ~all(isfinite(vdata(:))) || ~all(isnumeric(vdata(:)))
+            disp(['Warning: all X values must be numeric and finite. vname= ',vname])
+            continue
+       end
        
        %Get post-hoc crosslevel comparisons for the interaction
        [f1mat,f2mat]=posthoc2(vname,data,vnames,factors);
@@ -55,69 +69,108 @@ function plot_posthoc_var(vname, data, vnames,flist,rel)
        %Choose plotting according to number and type of factors
        switch length(factors)
            case 1               
-               figure('name',factors{:},'numbertitle','off')
+               create_fig(factors,outdir);
                ax=subplot(1,1,1);
                plot_bw(vdata,factors{1},vstr,ax);
-               save_fig(vstr,factors)
+               if ~isempty(outdir), save_fig(savepath,factors); end
+                    
            case 2
-               figure('name',[factors{:}],'numbertitle','off')
+               create_fig(factors,outdir);
                ax=subplot(1,1,1);
                [bar_data,gp]=plot_interaction(vdata,factors,vstr,ax);
                add_anotations(bar_data,gp,f1mat,f2mat);
-               save_fig(vstr,factors)
+               if ~isempty(outdir), save_fig(savepath,factors); end
            case 3
-               figure('name',[factors{:}],'numbertitle','off')
+               create_fig(factors,outdir);
                if strcmp('grp',factors{1})
                    for g=1:2
+                       if g==1
+                           do_ylabel=1;
+                           do_legend=1;
+                       else
+                           do_ylabel=0;
+                           do_legend=0;
+                       end
                        ax=subplot(1,2,g);
-                       [bar_data,gp]=plot_interaction(squeeze(vdata(g,:,:,:)),factors(2:end),vstr,ax);
+                       [bar_data,gp]=plot_interaction(squeeze(vdata(g,:,:,:)),factors(2:end),vstr,ax,do_legend,do_ylabel);
                        title(sprintf('%s Coupling',cnames{g}));
-                       add_anotations(bar_data,gp,f1mat(g,:,:),f2mat(g,:,:));
+                       add_anotations(bar_data,gp,squeeze(f1mat(g,:,:)),squeeze(f2mat(g,:,:)));
                    end
-                   save_fig(vstr,factors)
+                   if ~isempty(outdir), save_fig(savepath,factors); end
                elseif strcmp('idl',factors{1})
                    for l=1:2
+                       if l==1
+                           do_ylabel=1;
+                           do_legend=1;
+                       else
+                           do_ylabel=0;
+                           do_legend=0;
+                       end
                        ax=subplot(1,2,l);
-                       [bar_data,gp]=plot_interaction(squeeze(vdata(l,:,:,:)),factors(2:end),vstr,ax);
+                       [bar_data,gp]=plot_interaction(squeeze(vdata(l,:,:,:)),factors(2:end),vstr,ax,do_legend,do_ylabel);
                        title(['IDL ',lnames{l}]);
-                       add_anotations(bar_data,gp,f1mat(l,:,:),f2mat(l,:,:));
+                       add_anotations(bar_data,gp,squeeze(f1mat(l,:,:)),squeeze(f2mat(l,:,:)));
                    end                   
-                   save_fig(vstr,factors)
+                   if ~isempty(outdir), save_fig(savepath,factors); end
                 elseif strcmp('idr',factors{1})
                    for r=1:3
+                       if r==1
+                           do_ylabel=1;
+                           do_legend=1;
+                       else
+                           do_ylabel=0;
+                           do_legend=0;
+                       end
                        ax=subplot(1,3,r);
-                       [bar_data,gp]=plot_interaction(squeeze(vdata(r,:,:,:)),factors(2:end),vstr,ax);
+                       [bar_data,gp]=plot_interaction(squeeze(vdata(r,:,:,:)),factors(2:end),vstr,ax,do_legend,do_ylabel);
                        title(['IDR ',rnames{r}]);
-                       add_anotations(bar_data,gp,f1mat(r,:,:),f2mat(r,:,:));
+                       add_anotations(bar_data,gp,squeeze(f1mat(r,:,:)),squeeze(f2mat(r,:,:)));
                    end
-                   save_fig(vstr,factors)
+                   if ~isempty(outdir), save_fig(savepath,factors); end
                end
            case 4
-               [f1mat,f2mat]=posthoc2(vname,data,vnames,factors);
-               figure('name',[factors{:}],'numbertitle','off')
+               create_fig(factors,outdir);
                for g=1:2
                    if rfirst
-                       for r=1:3
+                       for r=1:3                           
+                           if r==1
+                               do_ylabel=1;
+                           else
+                               do_ylabel=0;
+                           end
                            ax=subplot(2,3,r+(g-1)*3);
-                           [bar_data,gp]=plot_interaction(squeeze(vdata(g,r,:,:,:)),factors(3:end),vstr,ax);
-                           title(sprintf('%s Coupling - IDR %s',cnames{g},rnames{r}));
-                           add_anotations(bar_data,gp,f1mat(g,r,:,:),f2mat(g,r,:,:));
+                           [bar_data,gp]=plot_interaction(squeeze(vdata(g,r,:,:,:)),factors(3:end),vstr,ax,do_legend,do_ylabel);
+                           title(sprintf('%s Coupling - IDR %s',cnames{g},rnames{r}));                           
+                           add_anotations(bar_data,gp,squeeze(f1mat(g,r,:,:)),squeeze(f2mat(g,r,:,:)));
+                           %resize_fonts(5);
                        end
                    else
                        for l=1:2
+                           if l==1
+                               do_ylabel=1;
+                           else
+                               do_ylabel=0;
+                           end
                            ax=subplot(2,2,l+(g-1)*2);
-                           [bar_data,gp]=plot_interaction(squeeze(vdata(g,l,:,:,:)),factors(3:end),vstr,ax);
-                           title(sprintf('%s Coupling - IDL %s',cnames{g},lnames{l}));
-                           add_anotations(bar_data,gp,f1mat(g,l,:,:),f2mat(g,l,:,:));
+                           [bar_data,gp]=plot_interaction(squeeze(vdata(g,l,:,:,:)),factors(3:end),vstr,ax,0,do_ylabel);
+                           title(sprintf('%s Coupling - IDL %s',cnames{g},lnames{l}));                           
+                           add_anotations(bar_data,gp,squeeze(f1mat(g,l,:,:)),squeeze(f2mat(g,l,:,:)));
+                           %resize_fonts(5);
                        end  
                    end
                end          
-               save_fig(vstr,factors)
+               if ~isempty(outdir), save_fig(savepath,factors); end
        end
 
     end
 end
 
+function resize_fonts(fontsize)
+    textobj = findobj('type', 'text');
+    set(textobj, 'fontunits', 'points');
+    set(textobj, 'fontsize', fontsize);
+    set(textobj, 'fontweight', 'normal');
+end
 
 function plot_bw(data,factor,vname,ax)
     %Box and whiskers plot for 1D tests
@@ -130,8 +183,10 @@ function plot_bw(data,factor,vname,ax)
 end
 
 
-function [bar_data,gp]=plot_interaction(data,factors,vname,ax)
+function [bar_data,gp]=plot_interaction(data,factors,vname,ax,do_legend,do_ylabel)
     %Interaction plot for 2D tests
+    if nargin<6, do_ylabel=1; end
+    if nargin<5, do_legend=1; end
     if nargin<4, figure;ax=subplot(1,1,1); end
 
     %Get bar groups for plotting
@@ -152,10 +207,15 @@ function [bar_data,gp]=plot_interaction(data,factors,vname,ax)
         h{i}=errorbar(ax,gp.x,bar_data(i,:,1),bar_data(i,:,2),'Color',gp.colors{i});        
     end
     hold off
-    ylabel(vname);
-    set(ax,'XTick',gp.x,'XTicklabel',gp.xticklabels);    
-    legend(gp.labels')
-    title(sprintf('%s vs %s',factors{1},factors{2}));
+    
+    set(ax,'XTick',gp.x,'XTicklabel',gp.xticklabels);  
+    if do_ylabel
+        ylabel(vname);
+    end
+    if do_legend
+        legend(gp.labels')%,'Location','BestOutside')
+    end
+    %title(sprintf('%s vs %s',factors{1},factors{2}));
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -167,52 +227,68 @@ function add_anotations(bardata,gp,f1mat,f2mat)
     ymin=min(min(bardata(:,:,1)-bardata(:,:,2)));
     ymax=max(max(bardata(:,:,1)+bardata(:,:,2)));
     
+    %single out homogeneous cases
+    do_f1=1;
+    do_f2=1;
+    if f2==2
+        xmsg=0.9;
+    else
+        xmsg=0.55;
+    end
+    if ~any(f1mat(:)~=1)
+        msg=sprintf('All significant for %s',gp.f2name);
+        text(xmsg,ymax,msg)
+        do_f1=0;
+    elseif ~any(f1mat(:)~=0)
+        msg=sprintf('All non significant for %s',gp.f2name);
+        text(xmsg,ymax,msg)
+        do_f1=0;
+    end
+    if ~any(f2mat(:)~=1)
+        msg=sprintf('All significant for %s',gp.f1name);
+        text(xmsg,ymax-ymax/12,msg)
+        do_f2=0;
+    elseif ~any(f2mat(:)~=0)
+        msg=sprintf('All non significant for %s',gp.f1name);
+        text(xmsg,ymax-ymax/12,msg)
+        do_f2=0;
+    end
+    
     %Plot interaction of factor 1 across levels of factor 2
-    for i=1:f1
-        if ~any(f1mat(:)~=1)
-            msg=sprintf('All significant for %s',gp.f1name);
-            text(0.5,ymax,msg)
-        elseif ~any(f1mat(:)~=0)
-            msg=sprintf('All non significant for %s',gp.f1name);
-            text(0.5,ymax,msg)
-        else
+    if do_f1
+        for i=1:f1            
             for j=1:f1i
                 if f1mat(i,j)==0, continue; end
                 [g1,g2]=get_groups(j,f2);
                 if g1==1 && g2==3
-                    x=g1-g1/10;
+                    x=g1-g1/3;
                     y=bardata(i,g1,1);
                     msg=sprintf('%s-%s',gp.f2{g1},gp.f2{g2});
                     text(x,y,msg,'BackgroundColor',[.3 .9 .3]);
                 else
                     y=(bardata(i,g1,1)+bardata(i,g2,1))/2;
-                    x=(g1+g2)/2;
+                    x=(g1+g2)/2-0.1;
                     msg=sprintf('%s-%s',gp.f2{g1},gp.f2{g2});
                     text(x,y,msg,'BackgroundColor',[.3 .9 .3]);
                 end
             end
         end
     end
+    
     %Plot interaction of factor 2 across levels of factor 1
-    for i=1:f2
-        if ~any(f2mat(:)~=1)
-            msg=sprintf('All significant for %s',gp.f2name);
-            text(0.5,ymax,msg)        
-        elseif ~any(f2mat(:)~=0)
-            msg=sprintf('All non significant for %s',gp.f2name);
-            text(0.5,ymax,msg)
-        else
+    if do_f2
+        for i=1:f2
             for j=1:f2i
                 if f2mat(i,j)==0, continue; end
                 [g1,g2]=get_groups(j,f1);
                 if g1==1 && g2==3
-                    y=bardata(g1,i,1)-bardata(g1,i,1)/10;
-                    x=i;
+                    y=bardata(g1,i,1)-ymax/10;
+                    x=i-0.1;
                     msg=sprintf('%s|%s',gp.f1{g1},gp.f1{g2});
                     text(x,y,msg,'BackgroundColor',[.7 .9 .7]);
                 else
                     y=(bardata(g1,i,1)+bardata(g2,i,1))/2;
-                    x=i;
+                    x=i-0.1;
                     msg=sprintf('%s|%s',gp.f1{g1},gp.f1{g2});
                     text(x,y,msg,'BackgroundColor',[.7 .9 .7]);
                 end
@@ -222,36 +298,67 @@ function add_anotations(bardata,gp,f1mat,f2mat)
 end
 
 function [g1,g2]=get_groups(j,flen)
-if flen==2
-    g1=1;
-    g2=2;
-    return
-end
-switch j
-    case 1
+    if flen==2
         g1=1;
         g2=2;
-    case 2
+    elseif j==1
+        g1=1;
+        g2=2;
+    elseif j==2
         g1=2;
         g2=3;
-    case 3
+    elseif j==3
         g1=1;
         g2=3;
-end
+    else
+        error('Something went wrong with posthoc matrices')
+    end
 end
 
 
 function save_fig(vstr,factors) 
-global ext
-figname = joinpath(vstr,[factors{:}]);
-if strcmp(ext,'fig')
-    hgsave(gcf,figname,'all');
-else
-    saveas(gcf,figname,ext);
+    global ext
+    global dpi
+    figname = joinpath(vstr,[factors{:}]);
+    if strcmp(ext,'fig')
+        hgsave(gcf,figname,'all');
+    else
+        set(gcf, 'PaperUnits', 'inches', 'PaperPosition', get_fig_position(factors)/dpi);
+        print(gcf,['-d',ext],sprintf('-r%d',dpi),figname);        
+        close gcf
+    end
 end
-end
-        
 
+function create_fig(factors,outdir)
+    global dpi
+    if ~isempty(outdir)
+        figure('name',[factors{:}],'numbertitle','off','PaperUnits', 'inches', 'PaperPosition', get_fig_position(factors)/dpi,'Visible','off');
+    else
+        figure('name',[factors{:}],'numbertitle','off');
+    end
+end
+
+function rect=get_fig_position(factors)
+   switch length(factors)
+       case 1
+           rect=[0,0,1200,1800];
+       case 2
+           rect=[0,0,1200,1800];
+       case 3
+           if strcmp('idr',factors{1})
+               rect=[0,0,7200,3600];
+           else
+               rect=[0,0,4800,3600];
+           end
+       case 4
+           if strcmp('idr',factors{2})
+               rect=[0,0,7200,3600];
+           else
+               rect=[0,0,4800,3600];
+           end
+   end
+end
+    
 function gp = get_props(factors)
     gp=struct();
     %Fill factor 1 related graphic properties

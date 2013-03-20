@@ -1,8 +1,9 @@
 function fout = sort_postgroups(fin,rfirst)
 %Extremely ugly hack to keep each group at a 
 %desired position. EXPLAIN DESIGN GOALS
-%rfirts is a switch that changes its behaviour giving precedence always to
+%rfirst is a switch that changes its behaviour giving precedence always to
 %idr factor over idl.
+
 fout=cell(1,length(fin));
 grp=strcmp('grp',fin);
 ss=strcmp('ss',fin);
