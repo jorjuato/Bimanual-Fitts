@@ -1,0 +1,70 @@
+[1] "grp Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfCircularityL ~ S + IDR + IDL + grp, data = mdata, 
+    random = ~1 | pp)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+U - C == 0  0.01551    0.01054   1.472    0.141
+(Adjusted p values reported -- single-step method)
+
+[1] "S Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfCircularityL ~ S + IDR + IDL + grp, data = mdata, 
+    random = ~1 | pp)
+
+Linear Hypotheses:
+            Estimate Std. Error z value Pr(>|z|)    
+2 - 1 == 0 -0.032601   0.005617  -5.804   <1e-04 ***
+3 - 1 == 0 -0.035837   0.005617  -6.380   <1e-04 ***
+3 - 2 == 0 -0.003236   0.005617  -0.576    0.833    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "IDR Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfCircularityL ~ S + IDR + IDL + grp, data = mdata, 
+    random = ~1 | pp)
+
+Linear Hypotheses:
+            Estimate Std. Error z value Pr(>|z|)    
+E - D == 0 -0.152821   0.004586  -33.32   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "IDL Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfCircularityL ~ S + IDR + IDL + grp, data = mdata, 
+    random = ~1 | pp)
+
+Linear Hypotheses:
+            Estimate Std. Error z value Pr(>|z|)    
+M - D == 0 -0.017148   0.005617  -3.053  0.00643 ** 
+E - D == 0 -0.047851   0.005617  -8.519  < 0.001 ***
+E - M == 0 -0.030703   0.005617  -5.466  < 0.001 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+

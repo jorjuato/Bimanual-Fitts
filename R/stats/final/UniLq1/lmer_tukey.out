@@ -1,0 +1,51 @@
+[1] "ID Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = q1 ~ (1 | pp) + (1 | pp/S) + (1 | pp/ID) + (1 | 
+    pp/S:ID) + grp * S * ID, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+E - D == 0 -0.04235    0.01193  -3.551 0.000383 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "S Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = q1 ~ (1 | pp) + (1 | pp/S) + (1 | pp/ID) + (1 | 
+    pp/S:ID) + grp * S * ID, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+2 - 1 == 0 0.005163   0.014436   0.358    0.932
+3 - 1 == 0 0.015170   0.014436   1.051    0.545
+3 - 2 == 0 0.010007   0.014436   0.693    0.767
+(Adjusted p values reported -- single-step method)
+
+[1] "grp Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = q1 ~ (1 | pp) + (1 | pp/S) + (1 | pp/ID) + (1 | 
+    pp/S:ID) + grp * S * ID, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)  
+U - C == 0  0.03020    0.01193   2.532   0.0113 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+

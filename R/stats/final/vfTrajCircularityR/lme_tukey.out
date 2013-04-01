@@ -1,0 +1,70 @@
+[1] "grp Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfTrajCircularityR ~ S + IDR + IDL + grp, 
+    data = mdata, random = ~1 | pp)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+U - C == 0 0.002442   0.022916   0.107    0.915
+(Adjusted p values reported -- single-step method)
+
+[1] "S Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfTrajCircularityR ~ S + IDR + IDL + grp, 
+    data = mdata, random = ~1 | pp)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+2 - 1 == 0 0.038946   0.005108   7.624   <1e-04 ***
+3 - 1 == 0 0.042263   0.005108   8.273   <1e-04 ***
+3 - 2 == 0 0.003317   0.005108   0.649    0.793    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "IDR Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfTrajCircularityR ~ S + IDR + IDL + grp, 
+    data = mdata, random = ~1 | pp)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+E - D == 0 0.053653   0.004171   12.86   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "IDL Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfTrajCircularityR ~ S + IDR + IDL + grp, 
+    data = mdata, random = ~1 | pp)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+M - D == 0 0.031451   0.005108   6.157   <1e-04 ***
+E - D == 0 0.040612   0.005108   7.950   <1e-04 ***
+E - M == 0 0.009161   0.005108   1.793    0.172    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+

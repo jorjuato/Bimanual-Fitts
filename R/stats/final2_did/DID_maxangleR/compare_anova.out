@@ -1,0 +1,45 @@
+[1] "Full vs no Session"
+Data: mdata
+Models:
+noS.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID + grp
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+full.mod:     S + DID + grp
+         Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)
+noS.mod   8 286.02 314.80 -135.01                         
+full.mod 14 291.96 342.34 -131.98 6.0525      6     0.4173
+[1] "Full vs no Group"
+Data: mdata
+Models:
+nogrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+nogrp.mod:     S + DID
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+full.mod:     S + DID + grp
+          Df    AIC    BIC  logLik Chisq Chi Df Pr(>Chisq)
+nogrp.mod 13 290.14 336.92 -132.07                        
+full.mod  14 291.96 342.34 -131.98 0.178      1     0.6731
+[1] "Full vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+full.mod:     S + DID + grp
+           Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)
+noSgrp.mod  7 286.21 311.40 -136.10                         
+full.mod   14 291.96 342.34 -131.98 8.2448      7     0.3115
+[1] "No Group vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID
+nogrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+nogrp.mod:     S + DID
+           Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)
+noSgrp.mod  7 286.21 311.40 -136.10                         
+nogrp.mod  13 290.14 336.92 -132.07 8.0667      6     0.2333
+[1] "No Session vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID
+noS.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID + grp
+           Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)
+noSgrp.mod  7 286.21 311.40 -136.10                         
+noS.mod     8 286.02 314.81 -135.01 2.1922      1     0.1387

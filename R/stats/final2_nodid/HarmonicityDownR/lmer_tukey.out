@@ -1,0 +1,72 @@
+[1] "IDR Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+M - D == 0  0.14675    0.06268   2.341   0.0503 .  
+E - D == 0  0.27851    0.06268   4.444   <0.001 ***
+E - M == 0  0.13176    0.06268   2.102   0.0895 .  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "IDL Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+E - D == 0  0.24510    0.06147   3.987 6.69e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "S Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+2 - 1 == 0  0.06781    0.05148   1.317    0.386
+3 - 1 == 0  0.08263    0.05148   1.605    0.243
+3 - 2 == 0  0.01482    0.05148   0.288    0.955
+(Adjusted p values reported -- single-step method)
+
+[1] "grp Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+U - C == 0  0.05324    0.08549   0.623    0.533
+(Adjusted p values reported -- single-step method)
+

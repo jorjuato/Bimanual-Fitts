@@ -1,0 +1,51 @@
+[1] "grp Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfCircularity ~ S + ID + grp, data = mdata, 
+    random = ~1 | pp)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+U - C == 0 -0.02146    0.02065  -1.039    0.299
+(Adjusted p values reported -- single-step method)
+
+[1] "S Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfCircularity ~ S + ID + grp, data = mdata, 
+    random = ~1 | pp)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+2 - 1 == 0 0.020074   0.025288   0.794    0.707
+3 - 1 == 0 0.026402   0.025288   1.044    0.549
+3 - 2 == 0 0.006327   0.025288   0.250    0.966
+(Adjusted p values reported -- single-step method)
+
+[1] "ID Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = vfCircularity ~ S + ID + grp, data = mdata, 
+    random = ~1 | pp)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+M - D == 0  0.20029    0.02529   7.920   <0.001 ***
+E - D == 0  0.26648    0.02529  10.538   <0.001 ***
+E - M == 0  0.06618    0.02529   2.617    0.024 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+

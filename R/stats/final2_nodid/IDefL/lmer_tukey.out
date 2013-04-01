@@ -1,0 +1,70 @@
+[1] "IDR Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+M - D == 0  0.01708    0.08974   0.190    0.980
+E - D == 0 -0.10919    0.08974  -1.217    0.443
+E - M == 0 -0.12628    0.08974  -1.407    0.337
+(Adjusted p values reported -- single-step method)
+
+[1] "IDL Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+E - D == 0 -1.93303    0.06309  -30.64   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "S Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+2 - 1 == 0  0.05196    0.10714   0.485    0.878
+3 - 1 == 0  0.07881    0.10714   0.736    0.742
+3 - 2 == 0  0.02684    0.10714   0.251    0.966
+(Adjusted p values reported -- single-step method)
+
+[1] "grp Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+U - C == 0  -0.1285     0.1193  -1.077    0.282
+(Adjusted p values reported -- single-step method)
+

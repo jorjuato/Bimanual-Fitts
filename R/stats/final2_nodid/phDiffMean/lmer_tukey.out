@@ -1,0 +1,68 @@
+[1] "IDR Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+            Estimate Std. Error z value Pr(>|z|)
+M - D == 0  0.030075   0.215186   0.140    0.989
+E - D == 0  0.000789   0.215186   0.004    1.000
+E - M == 0 -0.029286   0.215186  -0.136    0.990
+(Adjusted p values reported -- single-step method)
+
+[1] "IDL Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+E - D == 0  0.05688    0.20891   0.272    0.785
+(Adjusted p values reported -- single-step method)
+
+[1] "S Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+2 - 1 == 0 -0.01894    0.20621  -0.092    0.995
+3 - 1 == 0 -0.04006    0.20621  -0.194    0.979
+3 - 2 == 0 -0.02112    0.20621  -0.102    0.994
+(Adjusted p values reported -- single-step method)
+
+[1] "grp Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = get(vname) ~ (1 | pp) + (1 | pp/grp) + (1 | pp/S) + 
+    (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/S:IDR:IDL) + grp * 
+    S * IDR * IDL, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+U - C == 0  0.01317    0.22486   0.059    0.953
+(Adjusted p values reported -- single-step method)
+

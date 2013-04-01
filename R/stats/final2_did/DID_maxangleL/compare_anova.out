@@ -1,0 +1,47 @@
+[1] "Full vs no Session"
+Data: mdata
+Models:
+noS.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID + grp
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+full.mod:     S + DID + grp
+         Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)
+noS.mod   8 150.86 179.65 -67.429                         
+full.mod 14 152.79 203.16 -62.393 10.072      6     0.1216
+[1] "Full vs no Group"
+Data: mdata
+Models:
+nogrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+nogrp.mod:     S + DID
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+full.mod:     S + DID + grp
+          Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)
+nogrp.mod 13 152.87 199.65 -63.435                         
+full.mod  14 152.79 203.16 -62.393 2.0837      1     0.1489
+[1] "Full vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+full.mod:     S + DID + grp
+           Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)  
+noSgrp.mod  7 150.93 176.12 -68.467                           
+full.mod   14 152.79 203.16 -62.393 12.148      7    0.09578 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "No Group vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID
+nogrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+nogrp.mod:     S + DID
+           Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)
+noSgrp.mod  7 150.93 176.12 -68.467                         
+nogrp.mod  13 152.87 199.65 -63.435 10.065      6      0.122
+[1] "No Session vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID
+noS.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID + grp
+           Df    AIC    BIC  logLik Chisq Chi Df Pr(>Chisq)
+noSgrp.mod  7 150.93 176.12 -68.467                        
+noS.mod     8 150.86 179.65 -67.429 2.076      1     0.1496

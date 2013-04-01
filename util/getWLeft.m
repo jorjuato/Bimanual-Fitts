@@ -20,5 +20,5 @@ function W = getWLeft(data)
             W(end+1) = Wtmp(i);
         end
     end
-    W = sort(W);
+    W = sort(W,'descend');
 end

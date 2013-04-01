@@ -9,7 +9,7 @@ classdef Config < handle
         plot_path
         anal_path
         scripts_path = '/home/jorge/Dropbox/dev/Bimanual-Fitts'
-        branch_path  = 'last_250_1_15' % Unique name to identify this specific config
+        branch_path  = 'refactor_250_1_15' % Unique name to identify this specific config
         name=''         %Participant directory name
         number=1        %Session number
         blockpath=''    %Block path
@@ -29,12 +29,13 @@ classdef Config < handle
         replication_ts=4
         plot_onload = 1
         
-        %Fetch data
+        %Data fetch configuration
         fs = 1E3
         skip_osc=5
         filter_stds=3
         cutoff=12
         use_pc=0
+        storeidx=1
         store_ls=1
         compress_pc=0
         compress_ts=0

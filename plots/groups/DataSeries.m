@@ -1,6 +1,7 @@
 classdef DataSeries < handle
     properties
         data
+        vname
         names
         hnames
         factors
@@ -10,53 +11,93 @@ classdef DataSeries < handle
         xlabels
         ylabels
         xlabels_pos
+        ylabels_pos
         ymin
         ymax
+        yrange
+        ylim
         xmin
         xmax
-        ss        
+        ss
+    end
+    
+    properties (Dependent = true, SetAccess = private)
+        legends
     end
     
     methods
-        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function legends = get.legends(ds)
+            legends={};
+            for i=1:length(ds.names)
+                legends{i}=ds.names{i};
+            end            
+        end
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function ds = DataSeries(bi,un,factors)
-            if nargin==2
+        function ds = DataSeries(vname,bi,un,factors)
+            if nargin==3
                 ds.factors=un;
                 ds.get_properties(bi);
                 ds.fetch_data(bi);
-            elseif nargin==3
+                ds.ymin = nanmin(filterOutliers(bi(:)));
+                ds.ymax = nanmax(filterOutliers(bi(:)));
+                ds.yrange=ds.ymax-ds.ymin;
+                ds.ylim=[ds.ymin-ds.yrange/10,ds.ymax+ds.yrange/10];
+                if ds.ylim(1)<0 & ds.ymin>=0
+                    ds.ylim(1)=0;
+                end
+            elseif nargin==4
                 ds.factors=factors;
                 ds.get_properties(bi);
                 ds.fetch_relative_data(bi,un);
+                if strfind(vname,'{rel}')
+                    means=squeeze(ds.data(:,:,:,:,:,1));
+                    stdes=squeeze(ds.data(:,:,:,:,:,2));
+                    mmax=means+stdes;
+                    mmin=means-stdes;
+                    ds.ymin = min(mmin(:));
+                    ds.ymax = max(mmax(:));
+                    ds.yrange=ds.ymax-ds.ymin;
+                    ds.ylim=[ds.ymin,ds.ymax];     
+                    if (ds.ylim(1)<0 & ~any(means<0))
+                        ds.ylim(1)=0;
+                    end
+                else
+                    ds.ymin = nanmin(filterOutliers(bi(:)));
+                    ds.ymax = nanmax(filterOutliers(bi(:)));
+                    ds.yrange=ds.ymax-ds.ymin;
+                    ds.ylim=[ds.ymin-ds.yrange/10,ds.ymax+ds.yrange/10];
+                    if ds.ylim(1)<0 & ds.ymin>0
+                        ds.ylim(1)=0;
+                    end
+                end
+           
             end            
-            
-            ds.ymin = min(ds.data(:));
-            ds.ymax = max(ds.data(:));
+            ds.vname= vname;            
             ds.xmin = 0;
-            ds.xmax = (3*ds.franges(3)+1)*ds.franges(2)-1;
-            ds.get_xlabels_pos();
+            ds.xmax = (3*ds.franges(3)+1)*ds.franges(2)+2;
+            ds.get_labels_pos();            
             
             %Factor 3, determines legend names and coloring scheme
             if strcmp(ds.factors{end},'grp')
-                ds.names ={'Coupled','Uncoupled'};
-                ds.colors={[[0.6,0.2,0.2] ; [0.8,0.2,0.2];[1,0.2,0.2]],...
-                           [[0.2,0.2,1]   ; [0.2,0.2,0.8];[0.2,0.2,0.6]]};
+                ds.names ={'Strong','Weak'};
+                ds.colors={[[1,0.2,0.2]   ;[0.8,0.2,0.2];[0.6,0.2,0.2]],...
+                           [[0.2,0.2,1]   ;[0.2,0.2,0.8];[0.2,0.2,0.6]]};
             elseif strcmp(ds.factors{end},'idr')
                 ds.names ={'IDR-Difficult','IDR-Medium','IDR-Easy'};
-                ds.colors={[[0.6,0.2,0.2] ; [0.8,0.2,0.2];[1,0.2,0.2]],...
-                           [[0.2,0.2,1]   ; [0.2,0.2,0.8];[0.2,0.2,0.6]],...
-                           [[0.2,0.6,0.2] ; [0.2,0.8,0.2];[0.2,1,0.2]]};
+                ds.colors={[[1,0.2,0.2]   ;[0.8,0.2,0.2];[0.6,0.2,0.2]],...
+                           [[0.2,0.2,1]   ;[0.2,0.2,0.8];[0.2,0.2,0.6]],...
+                           [[0.2,1,0.2]   ;[0.2,0.8,0.2];[0.2,0.6,0.2]]};
             else
                 ds.names ={'IDL-Difficult','IDL-Easy'};
-                ds.colors={[[0.6,0.2,0.2] ; [0.8,0.2,0.2];[1,0.2,0.2]],...
-                           [[0.2,0.2,1]   ; [0.2,0.2,0.8];[0.2,0.2,0.6]]};
+                ds.colors={[[1,0.2,0.2]   ;[0.8,0.2,0.2];[0.6,0.2,0.2]],...
+                           [[0.2,0.2,1]   ;[0.2,0.2,0.8];[0.2,0.2,0.6]]};
             end
 
             %Factor 2 labels
             if strcmp(ds.factors{2},'grp')
-                ds.xlabels={'Coupled','Uncoupled'};
+                ds.xlabels={'Strong','Weak'};
             elseif strcmp(ds.factors{2},'idl')
                 ds.xlabels={'LD','LE'};
             else
@@ -65,7 +106,7 @@ classdef DataSeries < handle
 
             %Factor 1 labels
             if strcmp(ds.factors{1},'grp')
-                ds.ylabels={'Coupled','Uncoupled'};
+                ds.ylabels={'Strong','Weak'};
             elseif strcmp(ds.factors{1},'idl')
                 ds.ylabels={'LD','LE'};
             else
@@ -82,7 +123,7 @@ classdef DataSeries < handle
             else
                 [hno, grp, ds.ss, idl, idr, reps]=size(bi);
                 ds.two_hands=1;
-                ds.hnames={'LeftHand','RightHand'};
+                ds.hnames={'Left Hand','Right Hand'};
             end
             
             %Compute ranges of factors
@@ -179,15 +220,16 @@ classdef DataSeries < handle
             gap=(ds.ss+0.5)*(f3-1)+((ds.ss+0.5)*ds.franges(3)+2)*(f2-1);
         end
         
-        function get_xlabels_pos(ds)
+        function get_labels_pos(ds)
            ds.xlabels_pos = zeros(ds.franges(2),2);
+           ds.ylabels_pos = [ds.xmax+1,ds.ymax/2];
            for i=1:ds.franges(2)
                if ds.franges(3)==2
                    ds.xlabels_pos(i,1)=ds.get_gap(i,1)+3;
                else
                    ds.xlabels_pos(i,1)=ds.get_gap(i,2)+2;
                end
-               ds.xlabels_pos(i,2)=ds.ymax+ds.ymax/15;
+               ds.xlabels_pos(i,2)=ds.ymax+ds.ymax/10;
            end               
         end
     end

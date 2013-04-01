@@ -4,7 +4,7 @@ function flist = load_interactions(fname)
     flist={};
     % open the file
     fid = fopen(fname);
-    
+
     % read the file
     tline = fgetl(fid);
     while ischar(tline)

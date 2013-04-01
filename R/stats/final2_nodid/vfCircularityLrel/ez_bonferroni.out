@@ -1,0 +1,33 @@
+Post-hoc Tukey comparisons[1] "grp Tukey test"
+
+	Pairwise comparisons using paired t tests 
+
+data:  mdata$vfCircularityLrel and mdata$grp 
+
+  C     
+U 0.0033
+
+P value adjustment method: bonferroni 
+[1] "S Tukey test"
+
+	Pairwise comparisons using paired t tests 
+
+data:  mdata$vfCircularityLrel and mdata$S 
+
+  1    2   
+2 1.00 -   
+3 1.00 0.85
+
+P value adjustment method: bonferroni 
+[1] "IDR Tukey test"
+
+	Pairwise comparisons using paired t tests 
+
+data:  mdata$vfCircularityLrel and mdata$IDR 
+
+  D       M      
+M 9.2e-07 -      
+E 6.6e-13 2.0e-10
+
+P value adjustment method: bonferroni 
+[1] "IDL Tukey test"

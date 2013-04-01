@@ -87,9 +87,11 @@ function outmat=holm2(varargin)
 % comparisons.
 % http://www.mathworks.com/matlabcentral/fileexchange/12786
 
+%Globals
+global verbose
+global fid
 
 %Input Error handling
-verbose=0;
 args=cell(varargin);
 nu=numel(args);
 if isempty(nu)
@@ -158,15 +160,15 @@ Md=ones(1,k); %Means vector preallocation
 Sd=ones(1,k); %Standard deviations vector preallocation
 outmat=eye(length(grplabels))*-1;
 % Calculate mean and standard deviation of each group
-if verbose
-    disp('          Group               N          Mean            Standard Deviation')
+if verbose>1
+    fprintf(fid,'          Group               N          Mean            Standard Deviation\n');
 end
 for I=1:k
     Md(I)=mean(x(x(:,2)==I,1));
     Sd(I)=std(x(x(:,2)==I,1));
-    if verbose
-        fprintf(' %d - %12s         %d     %11.4f         %11.4f\n',I,grplabels{I},N(I),Md(I),Sd(I))
-        disp(' ')
+    if verbose>1
+        fprintf(fid,' %d - %12s         %d     %11.4f         %11.4f\n',I,grplabels{I},N(I),Md(I),Sd(I));
+        fprintf(fid,' \n');
     end
 end
 
@@ -176,9 +178,9 @@ s2=sum((N-1).*Sd.^2)/df; %combined variance
 
 clear n Sd %clear unnecessary variables
 
-if verbose
-    fprintf('Degrees of freedom: %d - Combined variance: %0.4f\n',df,s2)
-    disp(' ')
+if verbose>1
+    fprintf(fid,'Degrees of freedom: %d - Combined variance: %0.4f\n',df,s2);
+    fprintf(fid,' \n');
 end
 
 %if there is not a control group, the max number of comparisons are
@@ -221,26 +223,26 @@ alphacorr=1-((1-alpha).^(1./(c-J+1))); %Sidak alpha corrected values
 
 %Compare the p-values with alpha corrected values. 
 %If p<a reject Ho; else don't reject Ho: no more comparison are required.
-if verbose
-    disp('Test     p-value        alpha              Comment')
+if verbose>1
+    fprintf(fid,'Test     p-value        alpha              Comment\n');
 end
 comp=1; %compare checker
 for J=1:c
     if comp %Comparison is required
         if p(J)<alphacorr(J)
-            if verbose
-                fprintf('%s %11.4f    %11.4f             Reject Ho\n',pb{J},p(J),alphacorr(J))
+            if verbose>1
+                fprintf(fid,'%s %11.4f    %11.4f             Reject Ho\n',pb{J},p(J),alphacorr(J));
             end
             outmat(resmat{I(J)}(1),resmat{I(J)}(2))=1;
         else
-            if verbose
-                fprintf('%s %11.4f    %11.4f             Fail to reject Ho\n',pb{J},p(J),alphacorr(J))
+            if verbose>1
+                fprintf(fid,'%s %11.4f    %11.4f             Fail to reject Ho\n',pb{J},p(J),alphacorr(J));
             end
             comp=0; %no more comparison are required
         end
     else %comparison is unnecessary
-        if verbose
-            fprintf('%s %11.4f    No comparison made      Ho is accepted\n',pb{J},p(J))
+        if verbose>1
+            fprintf(fid,'%s %11.4f    No comparison made      Ho is accepted\n',pb{J},p(J));
         end
     end
 end

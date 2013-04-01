@@ -1,0 +1,51 @@
+[1] "Full vs no Session"
+Data: mdata
+Models:
+noS.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID + grp
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+full.mod:     S + DID + grp
+         Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)    
+noS.mod   8 293.76 322.55 -138.88                             
+full.mod 14 273.10 323.48 -122.55 32.655      6  1.222e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "Full vs no Group"
+Data: mdata
+Models:
+nogrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+nogrp.mod:     S + DID
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+full.mod:     S + DID + grp
+          Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)
+nogrp.mod 13 272.94 319.72 -123.47                         
+full.mod  14 273.10 323.48 -122.55 1.8339      1     0.1757
+[1] "Full vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+full.mod:     S + DID + grp
+           Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)    
+noSgrp.mod  7 293.59 318.77 -139.79                             
+full.mod   14 273.10 323.48 -122.55 34.482      7  1.399e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "No Group vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID
+nogrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + (1 | pp/S) + (1 | pp/S:DID) + 
+nogrp.mod:     S + DID
+           Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)    
+noSgrp.mod  7 293.59 318.77 -139.79                             
+nogrp.mod  13 272.94 319.72 -123.47 32.648      6  1.226e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "No Session vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID
+noS.mod: get(vname) ~ (1 | pp) + (1 | pp/DID) + DID + grp
+           Df    AIC    BIC  logLik  Chisq Chi Df Pr(>Chisq)
+noSgrp.mod  7 293.59 318.77 -139.79                         
+noS.mod     8 293.76 322.55 -138.88 1.8265      1     0.1765

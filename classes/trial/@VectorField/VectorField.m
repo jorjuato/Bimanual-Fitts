@@ -118,20 +118,22 @@ classdef VectorField < handle
        function maxangle = get.maxangle(obj)
            env=obj.conf.maxAngle_localenv;           
            if env==0
-               maxangle=max(max(obj.angles{2}));
+               maxangle=nanmax(nanmax(obj.angles{2}));               
            else
                dim=obj.conf.binnumber-1;
                fact=round(env*dim);
                center=dim/2;
                ang=obj.angles{2};
-               lmax=max(max(ang(1:fact,center-fact:center+fact)));
-               rmax=max(max(ang(dim-fact:dim,center-fact:center+fact)));
+               lmax=nanmax(nanmax(ang(1:fact,center-fact:center+fact)));
+               rmax=nanmax(nanmax(ang(dim-fact:dim,center-fact:center+fact)));
                maxangle=max(lmax,rmax);
            end
        end
        
        function circularity = get.vfCircularity(obj)
-           circularity=nanmedian(nanmedian(obj.get_VF_circularity(1)));
+           vfc=obj.get_VF_circularity(1);
+           circularity=median(vfc(~isnan(vfc)));
+           %circularity=nanmedian(nanmedian(obj.get_VF_circularity(1)));
        end
        
        function circularity = get.vfTrajCircularity(obj)

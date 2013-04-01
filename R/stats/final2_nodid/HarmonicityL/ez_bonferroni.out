@@ -1,0 +1,33 @@
+Post-hoc Tukey comparisons[1] "grp Tukey test"
+
+	Pairwise comparisons using paired t tests 
+
+data:  mdata$HarmonicityL and mdata$grp 
+
+  C      
+U 9.3e-07
+
+P value adjustment method: bonferroni 
+[1] "S Tukey test"
+
+	Pairwise comparisons using paired t tests 
+
+data:  mdata$HarmonicityL and mdata$S 
+
+  1       2   
+2 4.6e-05 -   
+3 3.5e-06 0.13
+
+P value adjustment method: bonferroni 
+[1] "IDR Tukey test"
+
+	Pairwise comparisons using paired t tests 
+
+data:  mdata$HarmonicityL and mdata$IDR 
+
+  D       M      
+M 2.3e-09 -      
+E < 2e-16 4.7e-09
+
+P value adjustment method: bonferroni 
+[1] "IDL Tukey test"

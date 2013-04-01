@@ -1,0 +1,60 @@
+[1] "Full vs no Session"
+Data: mdata
+Models:
+noS.mod: get(vname) ~ (1 | pp) + (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/IDR:IDL) + 
+noS.mod:     IDR * IDL * grp
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/S) + (1 | pp/IDR) + (1 | pp/IDL) + 
+full.mod:     (1 | pp/IDR:IDL) + (1 | pp/S:IDR:IDL) + S * IDR * IDL * grp
+         Df     AIC     BIC logLik  Chisq Chi Df Pr(>Chisq)    
+noS.mod  20 -1965.1 -1879.3 1002.5                             
+full.mod 48 -2026.3 -1820.3 1061.2 117.22     28  6.937e-13 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "Full vs no Group"
+Data: mdata
+Models:
+nogrp.mod: get(vname) ~ (1 | pp) + (1 | pp/S) + (1 | pp/IDR) + (1 | pp/IDL) + 
+nogrp.mod:     (1 | pp/IDR:IDL) + (1 | pp/S:IDR:IDL) + S * IDR * IDL
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/S) + (1 | pp/IDR) + (1 | pp/IDL) + 
+full.mod:     (1 | pp/IDR:IDL) + (1 | pp/S:IDR:IDL) + S * IDR * IDL * grp
+          Df     AIC     BIC logLik  Chisq Chi Df Pr(>Chisq)  
+nogrp.mod 30 -2033.8 -1905.1 1046.9                           
+full.mod  48 -2026.3 -1820.3 1061.2 28.512     18    0.05467 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "Full vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/IDR:IDL) + 
+noSgrp.mod:     IDR * IDL
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/S) + (1 | pp/IDR) + (1 | pp/IDL) + 
+full.mod:     (1 | pp/IDR:IDL) + (1 | pp/S:IDR:IDL) + S * IDR * IDL * grp
+           Df     AIC     BIC logLik  Chisq Chi Df Pr(>Chisq)    
+noSgrp.mod 14 -1966.0 -1905.9  997.0                             
+full.mod   48 -2026.3 -1820.3 1061.2 128.33     34  7.114e-13 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "No Group vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/IDR:IDL) + 
+noSgrp.mod:     IDR * IDL
+nogrp.mod: get(vname) ~ (1 | pp) + (1 | pp/S) + (1 | pp/IDR) + (1 | pp/IDL) + 
+nogrp.mod:     (1 | pp/IDR:IDL) + (1 | pp/S:IDR:IDL) + S * IDR * IDL
+           Df     AIC     BIC logLik  Chisq Chi Df Pr(>Chisq)    
+noSgrp.mod 14 -1966.0 -1905.9  997.0                             
+nogrp.mod  30 -2033.8 -1905.1 1046.9 99.813     16  3.755e-14 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "No Session vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/IDR:IDL) + 
+noSgrp.mod:     IDR * IDL
+noS.mod: get(vname) ~ (1 | pp) + (1 | pp/IDR) + (1 | pp/IDL) + (1 | pp/IDR:IDL) + 
+noS.mod:     IDR * IDL * grp
+           Df     AIC     BIC logLik  Chisq Chi Df Pr(>Chisq)  
+noSgrp.mod 14 -1966.0 -1905.9  997.0                           
+noS.mod    20 -1965.1 -1879.3 1002.5 11.103      6    0.08526 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 

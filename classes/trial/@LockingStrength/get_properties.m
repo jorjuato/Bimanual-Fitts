@@ -6,7 +6,7 @@ function get_properties(ls,ts)
     ls.Lf_=ts.Lf;
     ls.RPxx_=ts.RPxx;
     ls.LPxx_=ts.LPxx;
-    ls.freq_=ts.freq;
+    ls.freq_=ts.Lfreq;
     
     %Basic coordination measures
     [ls.p_,ls.q_]=get_p_q(ls);

@@ -1,24 +1,28 @@
-function plot_posthoc_var(vname, data, vnames,flist,rel,outdir)
+function plot_posthoc_var(vname, data, varnamesBi,flist,rel,outdir)
     if nargin<6, outdir=''; end
     if nargin<5, rel=0; end
     if nargin<4, error('need four input arguments'); end    
     
-    global ext   
-    global dpi
-    global verbose 
-    verbose=0;
-    ext='png';
-    dpi=300;
+    global fid
+    global verbose
     
-    %Fix labels for relative plots
+    %Proper figure labelling
+    cnames={'Strong','Weak'};
+    lnames={'Difficult','Easy'};
+    rnames={'Difficult','medium','Easy'};
+    snames={'pretest','test','posttest'};    
+    vnames={'MTL','MTR','accQL','accQR','HarmonicityL','HarmonicityR','IPerfEfL','IPerfEfR','vfCircularityL','vfCircularityR','maxangleL','maxangleR','rho','minPeakDelay','minPeakDelayNorm'};
+    vstrs={'MT_L','MT_R','AQ_L','AQ_R','H_L','H_R','IPE_L','IPE_R','VFC_L','VFC_R','MA_L','MA_R','rho','dpeaks','dpeaks_{norm}'};
+    
+    %Set label for the current variable name
+    vn=strcmp(vname,vnames);
+    vstr=vstrs{vn};
     if rel
-        vstr=[vname,'_relative']; 
-    else
-        vstr=vname;
+        vstr=[vstr(1:end-1),'{',vstr(end),'rel}']; 
     end
     
     %Create directory to store plots if needed
-    if ~isempty(outdir) 
+    if ~isempty(outdir)
         savepath=joinpath(outdir,vstr);
         if  ~isempty(savepath) && ~exist(savepath,'dir') 
             mkdir(savepath);
@@ -32,12 +36,6 @@ function plot_posthoc_var(vname, data, vnames,flist,rel,outdir)
         rfirst=0;
     end
     
-    %Proper figure labelling
-    cnames={'Strong','Weak'};
-    lnames={'Difficult','Easy'};
-    rnames={'Difficult','medium','Easy'};
-    snames={'pretest','test','posttest'};
-    
     %Sort factor interaction list by the order of the interaction
     elementLengths = cellfun(@(x) length(x),flist);
     [~,sortIdx] = sort(elementLengths);
@@ -50,21 +48,21 @@ function plot_posthoc_var(vname, data, vnames,flist,rel,outdir)
        
        %Print some nice header
        if verbose
-           disp('')
-           disp(repmat('=',1,80))
-           disp('Post-hoc analysis using Holm-Sidak pairwise comparisons on factors')
-           disp(factors)
+           fprintf(fid,'\n');
+           fprintf(fid,[repmat('=',1,80),'\n']);
+           fprintf(fid,'Post-hoc analysis using Holm-Sidak pairwise comparisons on factors\n');
+           fprintf(fid,factors{:});
        end
 
        %Rearrange data matrix to match that of factors
-       vdata = rearrange_var_data(vname,data,vnames,factors);
+       vdata = rearrange_var_data(vname,data,varnamesBi,factors);
        if ~all(isfinite(vdata(:))) || ~all(isnumeric(vdata(:)))
-            disp(['Warning: all X values must be numeric and finite. vname= ',vname])
+            fprintf(fid,'Warning: all X values must be numeric and finite. vname=%s\n ',vname);
             continue
        end
        
        %Get post-hoc crosslevel comparisons for the interaction
-       [f1mat,f2mat]=posthoc2(vname,data,vnames,factors);
+       [f1mat,f2mat]=posthoc2(vname,data,varnamesBi,factors);
        
        %Choose plotting according to number and type of factors
        switch length(factors)
@@ -215,7 +213,7 @@ function [bar_data,gp]=plot_interaction(data,factors,vname,ax,do_legend,do_ylabe
     if do_legend
         legend(gp.labels')%,'Location','BestOutside')
     end
-    %title(sprintf('%s vs %s',factors{1},factors{2}));
+    title(sprintf('%s vs %s',factors{1},factors{2}));
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -226,6 +224,7 @@ function add_anotations(bardata,gp,f1mat,f2mat)
     [f2,f2i]=size(f2mat);
     ymin=min(min(bardata(:,:,1)-bardata(:,:,2)));
     ymax=max(max(bardata(:,:,1)+bardata(:,:,2)));
+    yrange=ymax-ymin;
     
     %single out homogeneous cases
     do_f1=1;
@@ -246,11 +245,11 @@ function add_anotations(bardata,gp,f1mat,f2mat)
     end
     if ~any(f2mat(:)~=1)
         msg=sprintf('All significant for %s',gp.f1name);
-        text(xmsg,ymax-ymax/12,msg)
+        text(xmsg,ymax-yrange/12,msg)
         do_f2=0;
     elseif ~any(f2mat(:)~=0)
         msg=sprintf('All non significant for %s',gp.f1name);
-        text(xmsg,ymax-ymax/12,msg)
+        text(xmsg,ymax-yrange/12,msg)
         do_f2=0;
     end
     
@@ -282,7 +281,11 @@ function add_anotations(bardata,gp,f1mat,f2mat)
                 if f2mat(i,j)==0, continue; end
                 [g1,g2]=get_groups(j,f1);
                 if g1==1 && g2==3
-                    y=bardata(g1,i,1)-ymax/10;
+                    if bardata(g1,i,1)<bardata(g2,i,1)
+                        y=bardata(g1,i,1)-yrange/10;
+                    else
+                        y=bardata(g2,i,1)-yrange/10;
+                    end
                     x=i-0.1;
                     msg=sprintf('%s|%s',gp.f1{g1},gp.f1{g2});
                     text(x,y,msg,'BackgroundColor',[.7 .9 .7]);
@@ -341,9 +344,9 @@ end
 function rect=get_fig_position(factors)
    switch length(factors)
        case 1
-           rect=[0,0,1200,1800];
+           rect=[0,0,1200,1400];
        case 2
-           rect=[0,0,1200,1800];
+           rect=[0,0,1800,2200];
        case 3
            if strcmp('idr',factors{1})
                rect=[0,0,7200,3600];
@@ -364,7 +367,7 @@ function gp = get_props(factors)
     %Fill factor 1 related graphic properties
     if strcmp('grp',factors{1}) 
         gp.colors={[1,0.2,0.2],[0.2,0.2,1]};
-        gp.labels={'StrongCoupling','WeakCoupling'};
+        gp.labels={'Strong Coupling','Weak Coupling'};
         gp.f1={'ST','WK'};
         gp.f1name='group';
     elseif strcmp('ss',factors{1})
@@ -374,19 +377,19 @@ function gp = get_props(factors)
         gp.f1name='session';
     elseif strcmp('idl',factors{1})
         gp.colors={[1,0.2,0.2],[0.2,0.2,1]};
-        gp.labels={'IDL-Difficult','IDL-Easy'};
+        gp.labels={'IDL Difficult','IDL Easy'};
         gp.f1={'LD','LE'};
         gp.f1name='left id';
     else
         gp.colors={[1,0.2,0.2],[0.2,0.2,1],[0.2,1,0.2]};
-        gp.labels={'IDR-Difficult','IDR-Medium','IDR-Easy'};
+        gp.labels={'IDR Difficult','IDR Medium','IDR Easy'};
         gp.f1={'RD','RM','RE'};
         gp.f1name='rigth id';
     end
     %Fill factor 2 related graphic properties
     if strcmp('grp',factors{2}) 
         gp.x=[1,2];       
-        gp.xticklabels={'StrongCoupling','WeakCoupling'};
+        gp.xticklabels={'Strong Coupling','Weak Coupling'};
         gp.f2={'ST','WK'};
         gp.f2name='grp';
     elseif strcmp('ss',factors{2})
@@ -396,12 +399,12 @@ function gp = get_props(factors)
         gp.f2name='session';
     elseif strcmp('idl',factors{2})
         gp.x=[1,2];        
-        gp.xticklabels={'IDL-Diff','IDL-Easy'};
+        gp.xticklabels={'IDL Diff','IDL Easy'};
         gp.f2={'LD','LE'};
         gp.f2name='left id';
     else
         gp.x=[1,2,3];        
-        gp.xticklabels={'IDR-Diff','IDR-Medium','IDR-Easy'};
+        gp.xticklabels={'IDR Diff','IDR Medium','IDR Easy'};
         gp.f2={'RD','RM','RE'};
         gp.f2name='right id';
     end

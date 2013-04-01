@@ -1,0 +1,53 @@
+[1] "ID Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = IPerf ~ (1 | pp) + (1 | pp/S) + (1 | pp/ID) + 
+    (1 | pp/S:ID) + grp * S * ID, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+M - D == 0   1.7281     0.8511   2.030   0.1050    
+E - D == 0   3.5383     0.8511   4.157   <0.001 ***
+E - M == 0   1.8102     0.8511   2.127   0.0845 .  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "S Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = IPerf ~ (1 | pp) + (1 | pp/S) + (1 | pp/ID) + 
+    (1 | pp/S:ID) + grp * S * ID, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+2 - 1 == 0   1.1692     0.3956   2.955  0.00863 ** 
+3 - 1 == 0   1.7919     0.3956   4.529  < 1e-04 ***
+3 - 2 == 0   0.6227     0.3956   1.574  0.25694    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "grp Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = IPerf ~ (1 | pp) + (1 | pp/S) + (1 | pp/ID) + 
+    (1 | pp/S:ID) + grp * S * ID, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+U - C == 0  -0.3406     1.0603  -0.321    0.748
+(Adjusted p values reported -- single-step method)
+

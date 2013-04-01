@@ -13,53 +13,54 @@ function ang=get_VF_circularity(vf, mode)
     
 end
 
-function ang=get_VF_circularity_1(vf)
-    rot90=[0,1;-1,0];
-    rot_90=[0,-1;1,0];
-    vfx=vf.vectors{1};
-    vfy=vf.vectors{2};
-    c=vf.xo{1};
-    ang=zeros(length(c))*nan;
-    for i=1:length(c)
-        for j=1:length(c)
-            x=vfx(i,j);
-            y=vfy(i,j);
-            if ~isnan(x) & ~isnan(y)
-                v=[x;y];
-                r=[c(i);c(j)];
-                n1=rot90*r;
-                n2=rot_90*r;
-                a1=atan2(abs(det([v,n1])),dot(v,n1));
-                a2=atan2(abs(det([v,n2])),dot(v,n2));
-                if a1<a2
-                    ang(i,j)=a1;
-                else
-                    ang(i,j)=a2;
-                end
-            end
-        end
-    end
-end
+% function ang=get_VF_circularity_1(vf)
+%     rot90=[0,1;-1,0];
+%     rot_90=[0,-1;1,0];
+%     vfx=vf.vectors{1};
+%     vfy=vf.vectors{2};
+%     c=vf.xo{1};
+%     ang=zeros(length(c))*nan;
+%     for i=1:length(c)
+%         for j=1:length(c)
+%             x=vfx(i,j);
+%             y=vfy(i,j);
+%             if ~isnan(x) & ~isnan(y)
+%                 v=[x;y];
+%                 r=[c(i);c(j)];
+%                 n1=rot90*r;
+%                 n2=rot_90*r;
+%                 a1=atan2(abs(det([v,n1])),dot(v,n1));
+%                 a2=atan2(abs(det([v,n2])),dot(v,n2));
+%                 if a1<a2
+%                     ang(i,j)=a1;
+%                 else
+%                     ang(i,j)=a2;
+%                 end
+%             end
+%         end
+%     end
+% end
 
 function ang=get_VF_circularity_1bis(vf)
     rot90=[0,1;-1,0];
-    rot_90=[0,-1;1,0];
+    %rot_90=[0,-1;1,0];
     vfx=vf.vectors{1};
     vfy=vf.vectors{2};
-    c=vf.xo{1};
-    ang=zeros(length(c))*nan;
-    for i=1:length(c)
-        for j=1:length(c)
-            x=vfx(i,j);
-            y=vfy(i,j);
-            if ~isnan(x) & ~isnan(y)
+    c1=vf.xo{1};
+    c2=vf.xo{2};
+    ang=zeros(length(c1))*NaN;
+    for i=1:length(c1)
+        for j=1:length(c2)
+            x=vfx(j,i);
+            y=vfy(j,i);
+            if ~isnan(x) && ~isnan(y)
                 v=[x;y];
-                r=rot90*[c(i);c(j)];
+                r=rot90*[c1(i);c2(j)];
+                %Tipical method
                 %costheta = dot(v,r)/(norm(v)*norm(r));                
                 %ang(i,j) = acos(costheta);
                 %See http://www.cs.berkeley.edu/~wkahan/Mindless.pdf
                 ang(i,j) = 2 * atan(norm(v*norm(r) - norm(v)*r) / norm(v * norm(r) + norm(v) * r));
-
             end
         end
     end

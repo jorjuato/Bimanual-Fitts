@@ -1,10 +1,12 @@
-function [IDown,IDother,MTown,rho] = get_ID_data(biData,biNames,plot_mode)
-    if nargin<2, error('Not enough input arguments'); end
-    if nargin<3, plot_mode='grp'; end
+function [IDown,IDother,MTown,rho] = get_ID_data(obj,plot_mode)
+    if nargin<1, error('Not enough input arguments'); end
+    if nargin<2, plot_mode='grp'; end
     
     %Rearrange data matrices by group if needed
-    if isempty(findstr('pp', plot_mode)) && size(biData,3)==10
-        biData=group_participant_data(biData);
+    if isempty(findstr('pp', plot_mode)) && size(obj.dataB,3)==10
+        biData=group_participant_data(obj.dataB);
+    else
+        biData=obj.dataB;
     end
         
     switch plot_mode

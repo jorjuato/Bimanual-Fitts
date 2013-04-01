@@ -20,21 +20,14 @@ function [dataBi,dataUn,varnamesBi,varnamesUn,vartypesBi, vartypesUn] = get_data
     
     %Do the real thing!
     tic
-    if rel==1 
-        % always average data for relative measures
-        dataUn=zeros(length(varnamesBi),hands,ss,idr,r)*NaN;
-        dataBi=zeros(length(varnamesUn),hands,ss,idl,idr,r)*NaN;
-        dataBi=get_data_rel(pp,dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn);
-    elseif avg==1
+    if avg==1
         dataUn=zeros(length(varnamesBi),hands,ss,idr,r);
         dataBi=zeros(length(varnamesUn),hands,ss,idl,idr,r);
         [dataBi,dataUn] = get_data_averaged(pp,dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn);
-    elseif avg==0 
+    else
         dataUn=zeros(length(varnamesBi),hands,ss,idr,max_raw_data);
         dataBi=zeros(length(varnamesUn),hands,ss,idl,idr,max_raw_data);
         [dataBi,dataUn] = get_data_raw(pp,dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn);
-    else
-        error('There is something wrong with your options!')
     end
     toc
 end
@@ -166,45 +159,6 @@ for s=1:ss  % session number
                         newi=oldi+length(d);
                         cntUn(v,2,s,b)=newi;
                         dataUn(v,2,s,b,oldi+1:newi)=d(:);
-                    end
-                end
-            end
-        end
-    end
-end
-end
-
-function [dataBi,dataUn] = get_data_rel(pp,dataBi,dataUn,varnamesBi,varnamesUn, vartypesBi, vartypesUn)
-%Get global properties
-[~,h,ss,idl,idr,r]=size(dataBi);
-%Iterate over within factors
-for s=1:ss  % session number
-    for a=1:idl % left: difficult, easy
-        for b=1:idr   % right: difficult, medium, easy
-            for c=1:3 % replication number
-                %Bimanual trials
-                for v=1:length(varnamesBi)
-                    if strcmp(vartypesBi{v},'ts')
-                        dataBi(v,1,s,a,b,c)=nanmedian(pp(s).bimanual{a,b,c}.ts.(['L' varnamesBi{v}]));
-                        dataBi(v,2,s,a,b,c)=nanmedian(pp(s).bimanual{a,b,c}.ts.(['R' varnamesBi{v}]));
-                    elseif strcmp(vartypesBi{v},'osc')
-                        dataBi(v,1,s,a,b,c)=nanmedian(pp(s).bimanual{a,b,c}.oscL.(varnamesBi{v}));
-                        dataBi(v,2,s,a,b,c)=nanmedian(pp(s).bimanual{a,b,c}.oscR.(varnamesBi{v}));
-                    elseif strcmp(vartypesBi{v},'vf')
-                        dataBi(v,1,s,a,b,c)=nanmedian(pp(s).bimanual{a,b,c}.vfL.(varnamesBi{v}));
-                        dataBi(v,2,s,a,b,c)=nanmedian(pp(s).bimanual{a,b,c}.vfR.(varnamesBi{v}));
-                    else
-                        dataBi(v,1,s,a,b,c)=nanmedian(pp(s).bimanual{a,b,c}.ls.(varnamesBi{v}));
-                        dataBi(v,2,s,a,b,c)=nanmedian(pp(s).bimanual{a,b,c}.ls.(varnamesBi{v}));
-                    end
-                end
-                %Unimanual Trials
-                for v=1:length(varnamesUn)
-                    if b==1
-                        dataUn(v,1,s,a,c)=nanmedian(pp(s).uniLeft{a,c}.(vartypesUn{v}).(varnamesUn{v}));
-                    end
-                    if a==1
-                        dataUn(v,2,s,b,c)=nanmedian(pp(s).uniRight{b,c}.(vartypesUn{v}).(varnamesUn{v}));
                     end
                 end
             end

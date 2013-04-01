@@ -1,0 +1,51 @@
+[1] "Full vs no Session"
+Data: mdata
+Models:
+noS.mod: get(vname) ~ (1 | pp) + (1 | pp/ID) + ID + grp
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/ID) + (1 | pp/S) + (1 | pp/S:ID) + 
+full.mod:     S + ID + grp
+         Df    AIC     BIC logLik  Chisq Chi Df Pr(>Chisq)    
+noS.mod   7 -751.4 -729.05  382.7                             
+full.mod 13 -771.0 -729.49  398.5 31.598      6  1.949e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "Full vs no Group"
+Data: mdata
+Models:
+nogrp.mod: get(vname) ~ (1 | pp) + (1 | pp/ID) + (1 | pp/S) + (1 | pp/S:ID) + 
+nogrp.mod:     S + ID
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/ID) + (1 | pp/S) + (1 | pp/S:ID) + 
+full.mod:     S + ID + grp
+          Df     AIC     BIC logLik Chisq Chi Df Pr(>Chisq)
+nogrp.mod 12 -773.04 -734.72 398.52                        
+full.mod  13 -771.00 -729.49 398.50     0      1          1
+[1] "Full vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/ID) + ID
+full.mod: get(vname) ~ (1 | pp) + (1 | pp/ID) + (1 | pp/S) + (1 | pp/S:ID) + 
+full.mod:     S + ID + grp
+           Df     AIC     BIC logLik Chisq Chi Df Pr(>Chisq)    
+noSgrp.mod  6 -753.45 -734.29 382.73                            
+full.mod   13 -771.00 -729.49 398.50 31.55      7   4.92e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "No Group vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/ID) + ID
+nogrp.mod: get(vname) ~ (1 | pp) + (1 | pp/ID) + (1 | pp/S) + (1 | pp/S:ID) + 
+nogrp.mod:     S + ID
+           Df     AIC     BIC logLik  Chisq Chi Df Pr(>Chisq)    
+noSgrp.mod  6 -753.45 -734.29 382.73                             
+nogrp.mod  12 -773.04 -734.72 398.52 31.586      6  1.958e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+[1] "No Session vs no Session and no Group"
+Data: mdata
+Models:
+noSgrp.mod: get(vname) ~ (1 | pp) + (1 | pp/ID) + ID
+noS.mod: get(vname) ~ (1 | pp) + (1 | pp/ID) + ID + grp
+           Df     AIC     BIC logLik Chisq Chi Df Pr(>Chisq)
+noSgrp.mod  6 -753.45 -734.29 382.73                        
+noS.mod     7 -751.40 -729.05 382.70     0      1          1

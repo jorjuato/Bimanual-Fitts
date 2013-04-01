@@ -1,0 +1,53 @@
+[1] "ID Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = vfTrajCircularity ~ (1 | pp) + (1 | pp/S) + (1 | 
+    pp/ID) + (1 | pp/S:ID) + grp * S * ID, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)    
+M - D == 0 0.074450   0.015044   4.949   <1e-05 ***
+E - D == 0 0.081227   0.015044   5.399   <1e-05 ***
+E - M == 0 0.006777   0.015044   0.450    0.894    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "S Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = vfTrajCircularity ~ (1 | pp) + (1 | pp/S) + (1 | 
+    pp/ID) + (1 | pp/S:ID) + grp * S * ID, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)   
+2 - 1 == 0  0.01983    0.01344   1.475   0.3029   
+3 - 1 == 0  0.04361    0.01344   3.245   0.0033 **
+3 - 2 == 0  0.02378    0.01344   1.770   0.1799   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+(Adjusted p values reported -- single-step method)
+
+[1] "grp Tukey test"
+
+	 Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lmer(formula = vfTrajCircularity ~ (1 | pp) + (1 | pp/S) + (1 | 
+    pp/ID) + (1 | pp/S:ID) + grp * S * ID, data = mdata)
+
+Linear Hypotheses:
+           Estimate Std. Error z value Pr(>|z|)
+U - C == 0  0.01648    0.01199   1.374    0.169
+(Adjusted p values reported -- single-step method)
+

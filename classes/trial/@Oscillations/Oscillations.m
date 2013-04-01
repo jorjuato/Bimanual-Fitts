@@ -3,10 +3,15 @@ classdef Oscillations < handle
         hand
         conf
         ts
+        ID
         IDOwn
         IDOther
-        IDOwnEf
-        IDOtherEf
+        peaks
+        a
+        x
+        v
+        f
+        info
     end
     
     properties (Dependent = true, SetAccess = private)
@@ -14,187 +19,182 @@ classdef Oscillations < handle
         MT
         MTOwn
         MTOther
+        IDef
+        IDOwnEf
+        IDOtherEf
+        IPerf
+        IPerfEf
         accTime
         decTime
         accQ
-        IPerf
-        IPerfEf
+        Harmonicity
+        HarmonicityDown
+        HarmonicityUp
+        Circularity
     end
     
-   %%%%%%%%%%%%%%%%%%
-   % Public methods
-   %%%%%%%%%%%%%%%%%%      
+    %%%%%%%%%%%%%%%%%%
+    % Public methods
+    %%%%%%%%%%%%%%%%%%
     methods
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Prototypes of Public methods
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        plot(obj,graphPath,rootname,ext)
-        display(obj)
-        concatenate(obj,obj2)
+        plot(osc,graphPath,rootname,ext)
+        display(osc)
+        concatenate(osc,osc2)
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Properties getters and setter
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function MT = get.MT(obj)
-            if strcmp(obj.hand,'')
-                peaks = obj.ts.peaks;
-            elseif strcmp(obj.hand,'L')
-                %Left hand kinematics
-                peaks = obj.ts.Lpeaks;
-            elseif strcmp(obj.hand,'R')
-                %Right hand kinematics
-                peaks = obj.ts.Rpeaks;
-            end
-            MT=diff(peaks)./1000;
-        end 
         
-        function MTOwn = get.MTOwn(obj)
-            if strcmp(obj.hand,'')
-                MTOwn=[];
-                return
-            elseif strcmp(obj.hand,'L')
-                %Left hand kinematics
-                peaks = obj.ts.Lpeaks;
-            elseif strcmp(obj.hand,'R')
-                %Right hand kinematics
-                peaks = obj.ts.Rpeaks;
-            end
-            MTOwn=diff(peaks)./1000;
-        end 
-
-        function MTOther = get.MTOther(obj)
-            if strcmp(obj.hand,'')
-                MTOther=[];
-                return
-            elseif strcmp(obj.hand,'L')
-                %Right hand kinematics
-                peaks = obj.ts.Rpeaks;
-            elseif strcmp(obj.hand,'R')
-                %Left hand kinematics
-                peaks = obj.ts.Lpeaks;
-            end
-            MTOther=diff(peaks)./1000;
-        end 
-        
-        function peakVel = get.peakVel(obj)
-            if strcmp(obj.hand,'')
-                peaks = obj.ts.peaks;
-                peakNo = size(peaks,1)-1;
-                v= obj.ts.v;
-            elseif strcmp(obj.hand,'L')
-                %Left hand kinematics
-                peaks = obj.ts.Lpeaks;
-                peakNo = size(peaks,1)-1;
-                v= obj.ts.Lv;
-            elseif strcmp(obj.hand,'R')
-                %Right hand kinematics
-                peaks = obj.ts.Rpeaks;
-                peakNo = size(peaks,1)-1;
-                v= obj.ts.Rv;
-            end            
-            peakVel = zeros(peakNo,1);
-            for i=1:peakNo
-                x0 = peaks(i,1);
-                x1 = peaks(i+1,1);
-                peakVel(i)=max(abs(v(x0:x1)));
-            end
-        end 
-        
-        function accTime = get.accTime(obj)
-            if strcmp(obj.hand,'')
-                peaks = obj.ts.peaks;
-                peakNo = size(peaks,1)-1;
-                a=obj.ts.a;
-                v=obj.ts.v;
-            elseif strcmp(obj.hand,'L')
-                %Left hand kinematics
-                peaks = obj.ts.Lpeaks;
-                peakNo = size(peaks,1)-1;
-                a=obj.ts.La;
-                v=obj.ts.Lv;
-            elseif strcmp(obj.hand,'R')
-                %Right hand kinematics
-                peaks = obj.ts.Rpeaks;
-                peakNo = size(peaks,1)-1;
-                a=obj.ts.Ra;
-                v=obj.ts.Rv;
-            end
-            accTime = zeros(peakNo,1);
-            for i=1:peakNo
-                x0 = peaks(i,1);
-                x1 = peaks(i+1,1);
-                accTime(i) = length(find(a(x0:x1).*v(x0:x1)>0))/1000;
-            end
-        end 
-
-        function decTime = get.decTime(obj)
-            if strcmp(obj.hand,'')
-                peaks = obj.ts.peaks;
-                peakNo = size(peaks,1)-1;
-                a=obj.ts.a;
-                v=obj.ts.v;
-            elseif strcmp(obj.hand,'L')
-                %Left hand kinematics
-                peaks = obj.ts.Lpeaks;
-                peakNo = size(peaks,1)-1;
-                a=obj.ts.La;
-                v=obj.ts.Lv;
-            elseif strcmp(obj.hand,'R')
-                %Right hand kinematics
-                peaks = obj.ts.Rpeaks;
-                peakNo = size(peaks,1)-1;
-                a=obj.ts.Ra;
-                v=obj.ts.Rv;
-            end
-            decTime = zeros(peakNo,1);
-            for i=1:peakNo
-                x0 = peaks(i,1);
-                x1 = peaks(i+1,1);
-                decTime(i) = length(find(a(x0:x1).*v(x0:x1)<0))/1000;
-            end
-        end 
-        
-        function accQ = get.accQ(obj)
-            at=obj.accTime;
-            dt=obj.decTime;
-            accQ=at./(dt+at);
-        end 
-        
-
-        function IPerf = get.IPerf(obj)
-            if strcmp(obj.hand,'')
-                peaks = obj.ts.peaks;
-                ID=obj.ts.info.ID;
-            elseif strcmp(obj.hand,'L')
-                %Left hand kinematics
-                peaks = obj.ts.Lpeaks;
-                ID=obj.ts.info.LID;
-            elseif strcmp(obj.hand,'R')
-                %Right hand kinematics
-                peaks = obj.ts.Rpeaks;
-                ID=obj.ts.info.RID;
-            end
-            IPerf=ID*1000./diff(peaks);
-        end 
-        
-        
-        function IPerfEf = get.IPerfEf(obj)
-            if strcmp(obj.hand,'')
-                peaks = obj.ts.peaks;
-                IDef=obj.ts.IDef;
-            elseif strcmp(obj.hand,'L')
-                %Left hand kinematics
-                peaks = obj.ts.Lpeaks;
-                IDef=obj.ts.LIDef;
-            elseif strcmp(obj.hand,'R')
-                %Right hand kinematics
-                peaks = obj.ts.Rpeaks;
-                IDef=obj.ts.RIDef;
-            end
-            IPerfEf=IDef*1000./diff(peaks);
+        function MT = get.MT(osc)
+            MT=diff(osc.peaks)./1000;
         end
         
-  
+        
+        function MTOwn = get.MTOwn(osc)
+            MTOwn = osc.MT;
+        end
+        
+        
+        function MTOther = get.MTOther(osc)
+            if strcmp(osc.hand,'')
+                MTOther=[];
+                return
+            elseif strcmp(osc.hand,'L')
+                %Right hand kinematics
+                peaks = osc.ts.Rpeaks;
+            elseif strcmp(osc.hand,'R')
+                %Left hand kinematics
+                peaks = osc.ts.Lpeaks;
+            end
+            MTOther=diff(peaks)./1000;
+        end
+        
+        
+        function IDef = get.IDef(osc)
+            %Formula from McKenzie 1992
+            %endpts = abs(x(peaks));
+            %Wef = std(endpts)*4.133;
+            %IDef = log2(2*A/Wef);
+            IDef = log2(2*osc.ts.info.A/(std(abs(osc.x))*4.133));
+        end
+        
+        function IDOwnEf = get.IDOwnEf(osc)
+            IDOwnEf = osc.IDef;
+        end
+        
+        
+        function IDOtherEf = get.IDOtherEf(osc)
+            %Formula from McKenzie 1992
+            %endpts = abs(x(peaks));
+            %Wef = std(endpts)*4.133;
+            %IDef = log2(2*A/Wef);
+            if strcmp(osc.hand,'')
+                IDOtherEf=[];
+            elseif strcmp(osc.hand,'L')
+                %Left hand kinematics
+                peaks = osc.ts.Rpeaks;
+                x=osc.ts.Rxnorm(peaks);
+                IDOtherEf = log2(2*osc.ts.info.A/(std(abs(x))*4.133));
+            elseif strcmp(osc.hand,'R')
+                %Right hand kinematics
+                peaks = osc.ts.Lpeaks;
+                x=osc.ts.Lxnorm(peaks);
+                IDOtherEf = log2(2*osc.ts.info.A/(std(abs(x))*4.133));
+            end
+        end
+        
+        
+        function IPerf = get.IPerf(osc)
+            IPerf=osc.ID*1000./diff(osc.peaks);
+        end
+        
+        
+        function IPerfEf = get.IPerfEf(osc)
+            IPerfEf=osc.IDef*1000./diff(osc.peaks);
+        end
+        
+        
+        function peakVel = get.peakVel(osc)
+            peakNo = size(osc.peaks,1)-1;
+            peakVel = zeros(peakNo,1);
+            for i=1:peakNo
+                x0 = osc.peaks(i,1);
+                x1 = osc.peaks(i+1,1);
+                peakVel(i)=max(abs(osc.v(x0:x1)));
+            end
+        end
+        
+        
+        function accTime = get.accTime(osc)
+            peakNo = size(osc.peaks,1)-1;
+            accTime = zeros(peakNo,1);
+            for i=1:peakNo
+                x0 = osc.peaks(i,1);
+                x1 = osc.peaks(i+1,1);
+                accTime(i) = length(find(osc.a(x0:x1).*osc.v(x0:x1)>0))/1000;
+            end
+        end
+        
+        
+        function decTime = get.decTime(osc)    
+            peakNo = size(osc.peaks,1)-1;
+            decTime = zeros(peakNo,1);
+            for i=1:peakNo
+                x0 = osc.peaks(i,1);
+                x1 = osc.peaks(i+1,1);
+                decTime(i) = length(find(osc.a(x0:x1).*osc.v(x0:x1)<0))/1000;
+            end
+        end
+        
+        
+        function accQ = get.accQ(osc)
+            at=osc.accTime;
+            dt=osc.decTime;
+            accQ=at./(dt+at);
+        end
+        
+        
+        function Harmonicity = get.Harmonicity(osc)            
+            xc=crossings(osc.x);
+            Harmonicity=zeros(length(xc)-1,1);
+            for i=1:length(xc)-1
+                [Harmonicity(i),~]=get_Harmonicity(osc.x,osc.a,xc(i):xc(i+1));
+            end
+        end
+        
+        function HarmonicityDown = get.HarmonicityDown(osc)
+            xc=crossings(osc.x);
+            HarmonicityDown=[0];
+            for i=1:length(xc)-1
+                if osc.x(i+5)<0
+                    HarmonicityDown(i)=get_Harmonicity(osc.x,osc.a,xc(i):xc(i+1));
+                end
+            end
+        end
+        
+        
+        function HarmonicityUp = get.HarmonicityUp(osc)
+            xc=crossings(osc.x);
+            HarmonicityUp=[0];
+            for i=1:length(xc)-1
+                if osc.x(i+5)>0
+                    HarmonicityUp(i)=get_Harmonicity(osc.x,osc.a,xc(i):xc(i+1));
+                end
+            end
+        end
+        
+        
+        function Circularity = get.Circularity(osc)
+            %This method imposes a circle of R=1 and center=(0,0)
+            [~,modulus] = cart2pol(osc.x,osc.v);
+            Circularity = nanmean(modulus);
+        end
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -203,35 +203,49 @@ classdef Oscillations < handle
             osc.hand=hand;
             osc.ts=ts;
             if strcmp(osc.hand,'')
-                osc.IDOwn=ts.ID;
-                osc.IDOwnEf=ts.IDef;
+                osc.ID=ts.info.ID;
+                osc.IDOwn=osc.ID;
                 osc.IDOther=0;
-                osc.IDOtherEf=0;
+                osc.peaks=osc.ts.peaks;
+                osc.x=ts.xnorm;
+                osc.v=ts.vnorm;
+                osc.a=ts.anorm;      
+                osc.f=ts.f;
             elseif strcmp(osc.hand,'L')
                 %Left hand kinematics
-                osc.IDOwn=ts.LID;
-                osc.IDOwnEf=ts.LIDef;
-                osc.IDOther=ts.RID;
-                osc.IDOtherEf=ts.RIDef;
+                osc.ID=ts.info.LID;
+                osc.IDOwn=ts.info.LID;
+                osc.IDOther=ts.info.RID;
+                osc.peaks=osc.ts.Lpeaks;
+                osc.x=ts.Lxnorm;
+                osc.v=ts.Lvnorm;
+                osc.a=ts.Lanorm;  
+                osc.f=ts.Lf;
             elseif strcmp(osc.hand,'R')
                 %Right hand kinematics
-                osc.IDOwn=ts.RID;
-                osc.IDOwnEf=ts.RIDef;
-                osc.IDOther=ts.LID;
-                osc.IDOtherEf=ts.LIDef;
+                osc.ID=ts.info.RID;
+                osc.IDOwn=ts.info.RID;
+                osc.IDOther=ts.info.LID;
+                osc.peaks=osc.ts.Rpeaks;
+                osc.x=ts.Rxnorm;
+                osc.v=ts.Rvnorm;
+                osc.a=ts.Ranorm;  
+                osc.f=ts.Rf;
             end
-        end %Constructor     
+        end %Constructor
         
-        function update_conf(obj,conf)
-            %conf.hand=obj.conf.hand;
-            obj.conf=conf;
-            obj.ts.conf=conf;
+        
+        function update_conf(osc,conf)
+            %conf.hand=osc.conf.hand;
+            osc.conf=conf;
+            osc.ts.conf=conf;
         end
     end
     
-    methods(Static=true)  
+            
+    methods(Static=true)
         function anova_var = get_anova_variables()
-            anova_var = { 'peakVel' 'MT' 'MTOwn' 'MTOther' 'IDOwn' 'IDOther' 'IDOwnEf' 'IDOtherEf' 'accTime' 'decTime' 'accQ' 'IPerf' 'IPerfEf'};
-        end        
+            anova_var = { 'peakVel' 'MT' 'MTOwn' 'MTOther' 'IDOwn' 'IDOther' 'IDOwnEf' 'IDOtherEf' 'accTime' 'decTime' 'accQ' 'IPerf' 'IPerfEf' 'Harmonicity' 'f'};
+        end
     end
-end        
+end

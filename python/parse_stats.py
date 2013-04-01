@@ -3,8 +3,8 @@
 
 import os, sys
 
-did=0
-RES_DIR="/home/jorge/Dropbox/dev/Bimanual-Fitts/R/stats/last_250_1_15_newvf/"
+did=1
+RES_DIR="/home/jorge/Dropbox/dev/Bimanual-Fitts/R/stats/final2/"
 
 if did:
     factors=['S','DID','grp','grp:S','grp:DID','S:DID','grp:S:DID']

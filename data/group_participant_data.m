@@ -1,4 +1,7 @@
 function dataout=group_participant_data(datain)
+%Gives unconsistent results, recommeded to use merge_participant_data
+%Until debugging is done...
+
     C=[2,3,6,8,9];
     U=[1,4,5,7,10];
     

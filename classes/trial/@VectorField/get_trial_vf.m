@@ -16,6 +16,7 @@ function get_trial_vf(obj,ts)
     else
         return
     end
+    
     if obj.conf.use_pc==1
         %Get Conditional Probability Matrices
         [~, obj.xo, obj.pc]=obj.prob_2D(Y,obj.conf.bins,obj.conf.step,obj.conf.minValsToComputeCondProb);

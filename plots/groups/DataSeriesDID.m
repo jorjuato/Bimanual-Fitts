@@ -1,6 +1,7 @@
 classdef DataSeriesDID < handle
     properties
         data
+        vname
         names
         hnames
         factors
@@ -10,11 +11,18 @@ classdef DataSeriesDID < handle
         xlabels
         ylabels
         xlabels_pos
+        ylabels_pos
         ymin
         ymax
+        yrange
+        ylim
         xmin
         xmax
         ss        
+    end
+
+    properties (Dependent = true, SetAccess = private)
+        legends
     end
     
     methods
@@ -26,8 +34,13 @@ classdef DataSeriesDID < handle
             ds.get_properties(bi);
             ds.fetch_data(bi);
             
-            ds.ymin = min(ds.data(:));
-            ds.ymax = max(ds.data(:));
+            ds.ymin = nanmin(filterOutliers(bi(:)));
+            ds.ymax = nanmax(filterOutliers(bi(:)));
+            ds.yrange=ds.ymax-ds.ymin;
+            ds.ylim=[ds.ymin-ds.yrange/10,ds.ymax+ds.yrange/10];
+            if ds.ylim(1)<0 & ds.ymin>=0
+                ds.ylim(1)=0;
+            end
             ds.xmin = 0;
             ds.xmax = (3*ds.franges(2)+1)*ds.franges(1)-1;
             ds.get_xlabels_pos();
@@ -61,7 +74,7 @@ classdef DataSeriesDID < handle
             else
                 [hno, grp, ds.ss, did, reps]=size(bi);
                 ds.two_hands=1;
-                ds.hnames={'LeftHand','RightHand'};
+                ds.hnames={'Left Hand','Right Hand'};
             end
             
             %Compute ranges of factors

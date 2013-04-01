@@ -11,7 +11,7 @@ registerDoMC()
 
 #Prepare global paths
 rootpath='/home/jorge/Dropbox/dev/Bimanual-Fitts/R'
-Rname='last_250_1_15_newvf'
+Rname='final2'
 opath=paste(paste(rootpath,"stats",sep='/'),Rname,sep='/')
 dir.create(opath,showWarnings=FALSE)
 Rdatapath=paste(paste(rootpath,'dataframes',sep='/'),Rname,sep='/')
@@ -20,17 +20,17 @@ uRfile=paste(Rdatapath,"UniR_fitts.dat",sep='/')
 bfile=paste(Rdatapath,"Bi_fitts.dat",sep='/')
 bdfile=paste(Rdatapath,"BiDelta_fitts.dat",sep='/')
 #Select analysis to perform
-do_bimanualDelta=FALSE
-do_bimanual=TRUE
-do_unimanual=TRUE
-do_relative=TRUE
+do_bimanualDelta=TRUE
+do_bimanual=FALSE
+do_unimanual=FALSE
+do_relative=FALSE
 do_parallel=TRUE
 
 do_summary=TRUE
 do_aov=FALSE
-do_lme=TRUE
-do_lmer=TRUE
-do_lmer_tukey=TRUE
+do_lme=FALSE
+do_lmer=FALSE
+do_lmer_tukey=FALSE
 do_ANOVA=TRUE
 do_CompareANOVA=TRUE
 

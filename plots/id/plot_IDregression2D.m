@@ -1,8 +1,8 @@
-function plot_IDregression2D(biData,biNames,plot_mode,fit_mode,eff_grp)
-    if nargin<5, eff_grp=1;end
-    if nargin<4, fit_mode='power1';end
-    if nargin<3, plot_mode='grp';end %all,grp,ss,ppXX,grp-ss,ss-grp,ppXX-ss
-    if nargin<2, error('need bimanual data and variable names');end    
+function plot_IDregression2D(obj,plot_mode,fit_mode,eff_grp)
+    if nargin<4, eff_grp=1;end
+    if nargin<3, fit_mode='power1';end
+    if nargin<2, plot_mode='grp';end %all,grp,ss,ppXX,grp-ss,ss-grp,ppXX-ss
+    if nargin<1, error('need bimanual data and variable names');end    
 
     %Parse participant related plots
     if strcmp(plot_mode(1:2),'pp')
@@ -17,7 +17,7 @@ function plot_IDregression2D(biData,biNames,plot_mode,fit_mode,eff_grp)
     end
     
     %Get data in a suitable form for plotting (a bit of a mess, but works)
-    [IDown,IDother,MTown,rho] = get_ID_data(biData,biNames,plot_mode);
+    [IDown,IDother,MTown,rho] = get_ID_data(obj,plot_mode);
     
     switch plot_mode
         case 'all'

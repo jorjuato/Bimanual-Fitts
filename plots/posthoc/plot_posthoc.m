@@ -1,4 +1,4 @@
-function plot_posthoc(mfile,fname,vnames,rel,outdir)
+function plot_posthoc(mfile,fname,vnames,rel,outdir,outfile)
 %Plots posthoc analysis for all variables in anova.out file, or only those
 %selected in the argument vnames.
 %
@@ -11,20 +11,30 @@ function plot_posthoc(mfile,fname,vnames,rel,outdir)
 %
 %   OUTPUT ARGUMENTS
 %       none
-
+if nargin<6, outfile='kepasacontigo'; end
 if nargin<5, outdir='out'; end
 if nargin<4, rel=1; end
-if nargin<3, vnames={'MTL','MTR','accQL','accQR','HarmonicityL','HarmonicityR','IPerfEfR','IPerfEfL','vfCircularityR','vfCircularityL','rho','minPeakDelay'};end
-if nargin<2, fname='/home/jorge/Dropbox/anova.out'; end
-%vnames={'HarmonicityR','HarmonicityL'};
+if nargin<3, vnames={'MTL','MTR','accQL','accQR','HarmonicityL','HarmonicityR','IPerfEfR','IPerfEfL','vfCircularityR','vfCircularityL','maxangleL','maxangleR','rho','minPeakDelay'};end
+if nargin<2, fname='/home/jorge/Dropbox/WIP/last/anova.out'; end
+%vnames={'minPeakDelayNorm'};
+
+global ext;         ext='png';
+global dpi;         dpi=300; 
+global verbose;     verbose=1;
+global fid
+   
+if isempty(outfile)
+    fid=1;
+else
+    fid=fopen(outfile, 'w');
+end
+
 %Create out dir if needed
 if  ~isempty(outdir) && ~exist(outdir,'dir') 
     mkdir(outdir);
 end
 
 obj=load(mfile);
-[dataB,dataU,varnamesB,varnamesU,vartypesB,vartypesU]=struct2vars(obj);
-dataRel=get_data_rel(dataB,dataU,varnamesB,varnamesU, vartypesB);
 flists = load_interactions(fname);
 fvnames = cellfun(@(x) x(1),flists);
 
@@ -33,16 +43,19 @@ if isempty(vnames)
     for v=1:length(flists)
         flist=flists{v};
         vname=flist{1};
-        disp(['Analysis of variable ',vname])
+        fprintf(fid,'Analysis of variable %s\n',vname);
         if length(flist)==1
             continue;
         elseif length(vname)>3 && strcmp(vname(1:3),'Uni')
             continue
         elseif length(vname)>3 && strcmp(vname(end-2:end),'rel')
             vname=vname(1:end-3);
-            plot_posthoc_var(vname, dataRel, varnamesB,flist{2:end},1,outdir);
+            plot_posthoc_var(vname, obj.dataRel, obj.vnamesB,flist{2:end},1,outdir);
+        elseif length(vname)>3 && strcmp(vname(1:4),'DID_')
+            vname=vname(5:end);
+            plot_posthoc_didvar(vname, obj.dataD, obj.vnamesB,flist{2:end},outdir);            
         else
-            plot_posthoc_var(vname, dataB, varnamesB,flist{2:end},0,outdir);
+            plot_posthoc_var(vname, obj.dataB, obj.vnamesB,flist{2:end},0,outdir);
         end
     end
 else
@@ -50,14 +63,15 @@ else
     for v=1:length(vnames)
         vname=vnames{v};
         idx=strcmp(vname,fvnames);
-        disp(['Analysis of variable ',vname])
-        plot_posthoc_var(vname, dataB, varnamesB,flists{idx}{2},0,outdir)
+        fprintf(fid,'Analysis of variable %s\n',vname);
+        plot_posthoc_var(vname, obj.dataB, obj.vnamesB,flists{idx}{2},0,outdir)
         if rel
             idx=strcmp([vname,'rel'],fvnames);            
             if any(idx)
-                disp(['Analysis of variable ',vname,'rel'])
-                plot_posthoc_var(vname, dataRel, varnamesB,flists{idx}{2},rel,outdir);
+                fprintf(fid,'Analysis of variable %srel\n',vname);
+                plot_posthoc_var(vname, obj.dataRel, obj.vnamesB,flists{idx}{2},rel,outdir);
             end
         end
     end
+fclose(fid);    
 end
