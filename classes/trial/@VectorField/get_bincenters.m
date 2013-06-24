@@ -2,6 +2,7 @@ function xo = get_bincenters(obj,DS,dim)
     %Non normalized version
     rep=size(DS,length(dim)+1)-1;
     xmin=0; xmax=0;vmin=0;vmax=0;
+    
     for r=1:rep
         if length(dim)==1 && ~isempty(DS{dim,r})
             xmin = min([min(DS{dim,r}.x),xmin]);
@@ -20,6 +21,7 @@ function xo = get_bincenters(obj,DS,dim)
             vmax = max([max(DS{dim(1),dim(2),r}.Rv),vmax]);
         end
     end
+    
     if length(obj.conf.binnumber) == 1
         xo = {linspace(xmin,xmax,obj.conf.binnumber)'...
             linspace(vmin,vmax,obj.conf.binnumber)'};

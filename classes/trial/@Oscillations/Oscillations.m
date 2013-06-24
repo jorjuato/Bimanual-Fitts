@@ -60,7 +60,7 @@ classdef Oscillations < handle
         
         function MTOther = get.MTOther(osc)
             if strcmp(osc.hand,'')
-                MTOther=[];
+                MTOther=0;
                 return
             elseif strcmp(osc.hand,'L')
                 %Right hand kinematics
@@ -78,8 +78,20 @@ classdef Oscillations < handle
             %endpts = abs(x(peaks));
             %Wef = std(endpts)*4.133;
             %IDef = log2(2*A/Wef);
-            IDef = log2(2*osc.ts.info.A/(std(abs(osc.x))*4.133));
+            if strcmp(osc.hand,'')
+                x_=osc.ts.x(osc.ts.peaks);
+            elseif strcmp(osc.hand,'L')
+                %Left hand kinematics
+                x_=osc.ts.Lx(osc.ts.Lpeaks);
+            elseif strcmp(osc.hand,'R')
+                %Right hand kinematics
+                x_=osc.ts.Rxnorm(osc.ts.Rpeaks);
+            end
+            
+            Wef=std(abs(x_)) * 4.133;
+            IDef = log2(2*osc.ts.info.A/Wef);
         end
+        
         
         function IDOwnEf = get.IDOwnEf(osc)
             IDOwnEf = osc.IDef;
@@ -92,17 +104,15 @@ classdef Oscillations < handle
             %Wef = std(endpts)*4.133;
             %IDef = log2(2*A/Wef);
             if strcmp(osc.hand,'')
-                IDOtherEf=[];
+                IDOtherEf=0;
             elseif strcmp(osc.hand,'L')
                 %Left hand kinematics
-                peaks = osc.ts.Rpeaks;
-                x=osc.ts.Rxnorm(peaks);
-                IDOtherEf = log2(2*osc.ts.info.A/(std(abs(x))*4.133));
+                x_=osc.ts.Rx(osc.ts.Rpeaks);
+                IDOtherEf = log2(2*osc.ts.info.A/(std(abs(x_))*4.133));
             elseif strcmp(osc.hand,'R')
                 %Right hand kinematics
-                peaks = osc.ts.Lpeaks;
-                x=osc.ts.Lxnorm(peaks);
-                IDOtherEf = log2(2*osc.ts.info.A/(std(abs(x))*4.133));
+                x_=osc.ts.Lx(osc.ts.Lpeaks);
+                IDOtherEf = log2(2*osc.ts.info.A/(std(abs(x_))*4.133));
             end
         end
         

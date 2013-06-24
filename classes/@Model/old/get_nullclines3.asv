@@ -1,0 +1,11 @@
+function [phi1_null,phi2_null,phirange]=get_nullclines3(omega1,omega2,alpha,do_plot)
+show_model_byinitconditions()
+plot_toroidal_trajectories()
+[PH1,PH2,dPH1,dPH2]=get_vector_fields()
+syms phi omega
+
+plot(t,(atan((ot*tan(-ot*t)-1)/o)))
+t=[1:0.001:100];
+    
+
+end

@@ -4,7 +4,10 @@
 import os, sys
 
 did=1
-RES_DIR="/home/jorge/Dropbox/dev/Bimanual-Fitts/R/stats/final2/"
+RES_PATH="/home/jorge/Dropbox/dev/Bimanual-Fitts/R/stats"
+RES_STR="refactor"
+RES_DIR=os.path.join(RES_PATH,RES_STR)
+
 
 if did:
     factors=['S','DID','grp','grp:S','grp:DID','S:DID','grp:S:DID']
@@ -180,13 +183,21 @@ def print_var(results,vname,postp='p[HF]'):
         else:
             print "%s\t\t%.3f\t%s" % (factor,r[3],s[pv])
     print"-"*90
+
+def get_factors(vname):
+    if vname.startswith('UniL') or vname.startswith('UniR'):
+        return ['S','ID','grp','grp:S','grp:ID','S:ID','grp:S:ID']
+    elif vname.startswith('DID_'):
+        return ['S','DID','grp','grp:S','grp:DID','S:DID','grp:S:DID']
+    else:
+        return ['grp','S','IDR', 'IDL','grp:S','IDR:IDL','grp:IDR','grp:IDL', 'S:IDR','S:IDL','grp:IDR:IDL','S:IDR:IDL','grp:S:IDR','grp:S:IDL','grp:S:IDR:IDL']
     
 def save_results(results,fname='anova.out'):
     sep=' '
     f=open(fname,'w+')
     for key,value in results.iteritems():
-        f.write(key)
-        for factor in factors:
+        f.write(key)        
+        for factor in get_factors(key):
             try:
                 r=value[factor]
             except:

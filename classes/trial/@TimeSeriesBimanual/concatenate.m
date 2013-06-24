@@ -1,20 +1,12 @@
-function concatenate(obj,obj2)
-    %Now, ugly cat, needs cat close to peaks and
-    %smoothing around cat-points pka(1)
-    obj.Lxraw =  [ obj.Lxraw ; obj2.Lxraw ];
-    obj.Lvraw =  [ obj.Lvraw ; obj2.Lvraw ];
-    obj.Laraw =  [ obj.Laraw ; obj2.Laraw ];
+function concatenate(ts1,ts2)
+    idx=ts1.idx;
+    ts1.Lxraw =  [ ts1.Lxraw(idx) ; ts2.Lxraw(ts2.idx) ];
+    ts1.Lvraw =  [ ts1.Lvraw(idx) ; ts2.Lvraw(ts2.idx) ];
+    ts1.Laraw =  [ ts1.Laraw(idx) ; ts2.Laraw(ts2.idx) ];
 
-    obj.Rxraw =  [ obj.Rxraw ; obj2.Rxraw ];
-    obj.Rvraw =  [ obj.Rvraw ; obj2.Rvraw ];
-    obj.Raraw =  [ obj.Raraw ; obj2.Raraw ];
-    
-    %He borrado lo de los picos que hacía antes...
-%     %Get total peaks
-%     [tr.ts.maxPeaksL, tr.ts.minPeaksL] = peakdet(tr.ts.Lx, thr);
-%     [tr.ts.maxPeaksR, tr.ts.minPeaksR] = peakdet(tr.ts.Rx, thr);
-%     tr.ts.peaksL = sort([tr.ts.maxPeaksL(:,1);tr.ts.minPeaksL(:,1)]);
-%     tr.ts.peaksR = sort([tr.ts.maxPeaksR(:,1);tr.ts.minPeaksR(:,1)]);
-%     %Get effective ID
-%     tr.ts.IDefL = get_ID_effective(tr.ts.Lx,tr.ts.peaksL,tr.ts.ALeft);
-%     tr.ts.IDefR = get_ID_effective(tr.ts.Rx,tr.ts.peaksR,tr.ts.ARight);
+    ts1.Rxraw =  [ ts1.Rxraw(idx) ; ts2.Rxraw(ts2.idx) ];
+    ts1.Rvraw =  [ ts1.Rvraw(idx) ; ts2.Rvraw(ts2.idx) ];
+    ts1.Raraw =  [ ts1.Raraw(idx) ; ts2.Raraw(ts2.idx) ];    
+
+    ts1.compute_idx();
+    ts1.compute_fourier();

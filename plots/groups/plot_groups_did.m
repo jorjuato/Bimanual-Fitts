@@ -30,7 +30,7 @@ function plot_groups_did(obj,factors)
         v1=strcmp(vars{v}, obj.vnamesB);
         
         %Prepare matrices
-        bi=squeeze(obj.dataD(v1,1,:,:,:,:));
+        bi=squeeze(obj.dataD(v1,:,:,:,:));
 
         %Absolute plots
         plot_groups_did_var(DataSeriesDID(bi,factors),titles{v});

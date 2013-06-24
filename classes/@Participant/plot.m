@@ -22,7 +22,15 @@ function  plot(obj)
     %obj.plot_learning_lockingStrength(lockingStrength_dir);
     %obj.plot_learning_vf(vf_dir,ext);
 	%obj.plot_vf(vf_dir);
-	obj.plot_va(vf_dir);
+    obj.plot_va(vf_dir);
+    obj.plot_angphsp()
+    obj.plot_angvar('ph');
+    obj.plot_angvar('omega');
+    obj.plot_angvar('alpha');
+    obj.plot_angvar('xnorm');
+    obj.plot_angvar('vnorm');
+    obj.plot_angvar('anorm');
+    obj,plot_angvar('jerknorm');
 	
     %for s=1:obj.size
         %if obj.sessions(s).train == 0

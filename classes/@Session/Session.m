@@ -1,7 +1,9 @@
 classdef Session < handle
-   properties(SetObservable = true)
-      conf
-   end
+    
+    properties(SetObservable = true)
+        conf
+    end
+    
     properties(SetAccess = private)
         bimanual
         uniLeft
@@ -10,7 +12,10 @@ classdef Session < handle
     end % properties
     
     methods
-    
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %Methods prototypes (body in separate file)
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
         plot(obj,mode,graphPath,rootname,ext)
         
         plot_va(obj,mode,graphPath,rootname,ext)
@@ -28,16 +33,17 @@ classdef Session < handle
         update_conf(obj,src,evnt)
         
         B = subsref(obj,sth,S)
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Constructor
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function obj = Session(session_path,conf)
             if nargin<2, conf=Config(); end
             
-            blocks = dir2(session_path);            
+            blocks = dir2(session_path);
             obj.conf = conf;
             obj.conf.number=str2num(session_path(end));
-            confListener = addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
+            addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
             
             for b=1:length(blocks)
                 name = blocks(b).name;
@@ -49,6 +55,6 @@ classdef Session < handle
                 %Generate a Block instance
                 obj.(name) = Block(joinpath(session_path,name),copy(obj.conf));
             end
-        end        
+        end
     end % methods
 end% classdef

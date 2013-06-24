@@ -20,12 +20,18 @@ classdef Participant < handle
         %plot_vf(obj,graphPath)
         
         plot_va(obj,graphPath)
+        
+        plot_angphsp(obj,graphPath)
+        
+        plot_angvar(obj,vname,graphPath)
             
         plot_learning_oscillations(obj,graphPath)
         
         plot_learning_relative(obj,graphPath)
          
         plot_learning_lockingStrength(obj,graphPath)
+        
+        ylimits = get_ylimits(obj,i,j,v)
         
         %plot_learning_vf(obj,graphPath)
         

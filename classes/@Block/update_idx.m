@@ -1,14 +1,14 @@
 function update_idx(obj)
     DS=obj.data_set;
     if obj.conf.unimanual==1
-        [ID, rep] = size(DS);
+        [ID, rep] = obj.size{:};
         for i=1:ID
             for r=1:rep-1
                 DS{i,r}.update_idx();
             end
         end
     else
-        [IDL, IDR, rep] = size(DS);
+        [IDL, IDR, rep] = obj.size{:};
         for i=1:IDL
             for j=1:IDR
                 for r=1:rep-1

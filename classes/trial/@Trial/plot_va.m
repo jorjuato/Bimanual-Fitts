@@ -28,6 +28,7 @@ function plot_va(tr,graphPath,rootname,ext)
     vf.plot_va(ax);
     
     if ischar(graphPath) & ~isempty(graphPath)
+        figname=joinpath(graphPath,[rootname,'vectorangles.',ext]);
         hgsave(fig,figname); close fig;
     end
 end

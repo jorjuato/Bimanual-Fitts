@@ -48,12 +48,32 @@ end
 function  plot_time_series(ts,ax)
     hold('on');
     if nargin==1, 
-        plot(ts.Lx, 'r'); 
-        plot(ts.Rx, 'b');
-        scatter(ts.Lpeaks,ts.Lx(ts.Lpeaks),'r+');
-        scatter(ts.Rpeaks,ts.Rx(ts.Rpeaks),'b+');
-        line([0 length(ts.Rx)] , [0 0 ]);
-        axis([0 length(ts.Lx) -0.1 0.1]);
+        %subplot(2,1,1);hold on
+        figure; hold on;
+        plot(detrend(ts.Lxraw(ts.idx)), 'b'); 
+        plot(detrend(ts.Lvraw(ts.idx)), 'r');
+        plot(ts.Lanorm, 'm');
+        plot(ts.Ljerknorm, 'c');        
+        plot(mod(ts.Lph,2*pi)/pi-1,'k--');
+        plot(2*ts.Lomega/max(ts.Lomega)-1,'g')
+        plot(ts.Lalpha/max(ts.Lalpha), 'k');
+        legend({'xnorm','vnorm','anorm','jerknorm','phnorm','omeganorm''alphanorm'})
+        scatter(ts.Lpeaks,ts.Lxnorm(ts.Lpeaks),'r+');
+        hline(0,'k-');
+        
+        return
+        %subplot(2,1,2);hold on
+        figure; hold on;
+        plot(ts.Rxnorm, 'b');        
+        plot(ts.Rvnorm, 'r');
+        plot(ts.Ranorm, 'm');
+        plot(mod(ts.Rph,2*pi)/pi-1,'k');
+        plot(2*ts.Romega/max(ts.Romega)-1,'g')
+        scatter(ts.Rpeaks,ts.Rxnorm(ts.Rpeaks),'r+');
+        hline(0);
+        %line([0 length(ts.Rx)] , [0 0 ]);
+        
+        %axis([0 length(ts.Lx) -0.1 0.1]);
         
     else
         plot(ax,ts.Lx, 'r'); 

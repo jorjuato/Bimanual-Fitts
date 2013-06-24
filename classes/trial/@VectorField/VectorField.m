@@ -43,9 +43,9 @@ classdef VectorField < handle
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        %Prototypes of public methods
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-       concatenate(obj,obj1)
+       ang = get_VF_circularity(vf,mode)
        
-       get_trial_vf(obj,ts)
+       concatenate(obj,obj1)
        
        get_combined_vf(obj,DS)
        
@@ -58,6 +58,8 @@ classdef VectorField < handle
        [P,B,PC]=prob_2D(obj,x,b,step,minValsToComputeCondProb)
        
        [Dfit]=KM_Fit(obj,B,D,i)
+       
+       obj = copy(obj)
        
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        %Properties getters
@@ -73,7 +75,7 @@ classdef VectorField < handle
        end
        
        function angles = get.angles(obj)
-           if obj.conf.use_pc==0
+           if obj.conf.store_vf
                angles=obj.angles_;
            else
                absAngles = atan2(obj.vectors{1},obj.vectors{2});
@@ -83,7 +85,7 @@ classdef VectorField < handle
        end
        
        function angles_unfiltered = get.angles_unfiltered(obj)
-           if obj.conf.use_pc==0
+           if obj.conf.store_vf
                angles_unfiltered=obj.angles_unfiltered_;
            else
                absAngles = atan2(obj.vectors_unfiltered{1},obj.vectors_unfiltered{2});
@@ -95,8 +97,8 @@ classdef VectorField < handle
        function vectors = get.vectors(obj)
            if obj.conf.fitorder==0
                vectors=obj.vectors_unfiltered;
-           elseif obj.conf.use_pc==0               
-                vectors=obj.vectors_;                   
+           elseif obj.conf.store_vf
+                vectors=obj.vectors_;
            else
                nf_vect=obj.vectors_unfiltered;
                vectors{1}=obj.KM_Fit(obj.xo,nf_vect,1);
@@ -107,7 +109,7 @@ classdef VectorField < handle
        
        function vectors_unfiltered = get.vectors_unfiltered(obj)
            %Get Kramers-Moyal coefficients
-           if obj.conf.use_pc==0
+           if obj.conf.store_vf
                vectors_unfiltered=obj.vectors_unfiltered_;               
            else
                [vectors_unfiltered, xo, ~]=obj.KMcoef_2D(obj.xo,obj.pc,1/obj.conf.samplerate,obj.conf.KMorder);
@@ -187,20 +189,19 @@ classdef VectorField < handle
            obj.conf = conf;
            obj.conf.hand = hand;
            disp('Wait while computing conditional probabilites...')
-           obj.get_trial_vf(ts);
+           obj.get_trial_pc(ts);
        end
        
-        function update_conf(obj,conf)
-            %conf.hand=obj.conf.hand;
-            obj.conf=conf;
-        end
-        
-        function update(obj,ts)
-            disp('Wait while computing conditional probabilites...')
-            obj.get_trial_vf(ts);
-        end
-        
-        ang = get_VF_circularity(vf,mode)
+       function update_conf(obj,conf)
+           %conf.hand=obj.conf.hand;
+           obj.conf=conf;
+       end
+       
+       function update(obj,ts)
+           disp('Wait while computing conditional probabilites...')
+           obj.get_trial_pc(ts);
+       end
+       
    end % methods
    
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

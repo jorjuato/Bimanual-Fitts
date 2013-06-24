@@ -1,8 +1,8 @@
 function plot_groups(obj,factors,savepath_,idx)
-    if nargin<7, idx=[6,13,14,15,17,18]; end
-    if nargin<6, savepath_='';end
-    if nargin<5, factors={'idr','idl','grp'}; end
-    if nargin<4, error('Not enough input arguments'); end
+    if nargin<4, idx=[6,13,14,15,17,18]; end
+    if nargin<3, savepath_='';end
+    if nargin<2, factors={'idr','idl','grp'}; end
+    if nargin<1, error('Not enough input arguments'); end
     
     %Define or fetch some globals
     global do_legend;     do_legend=0;
@@ -47,8 +47,8 @@ function plot_groups(obj,factors,savepath_,idx)
     
     %Rearrange data matrices by group if needed
     if size(obj.dataB,3)==10
-        obj.dataB=group_participant_data(obj.dataB);
-        obj.dataU=group_participant_data(obj.dataU);
+        obj.dataB=merge_pp_data(obj.dataB);
+        obj.dataU=merge_pp_data(obj.dataU);
     end
     
     %Create out dir if passed as argument
@@ -77,9 +77,9 @@ function plot_groups(obj,factors,savepath_,idx)
         %Relative plots
         if any(v_un) && do_relative
             if strcmp(vstrs{v}(end),'}')
-                vname=[vstrs{v}(1:end-1),'rel}',units{v}];
+                vname=[vstrs{v}(1:end-1),'rel} ',units{v}];
             else
-                vname=[vstrs{v},'_{rel}',units{v}];
+                vname=[vstrs{v},'_{rel} ',units{v}];
             end
             fprintf('Plotting variable Relative %s\n',titles{v})
             plot_groups_var(DataSeries(vname,bi,un,factors),['Relative ',titles{v}]);

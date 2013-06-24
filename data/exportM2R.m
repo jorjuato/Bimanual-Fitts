@@ -8,113 +8,114 @@ function exportM2R(mfile,filename,savepath)
     excludeVars={'MTOwn','MTOther','IDOwn','IDOther','IDOwnEf','IDOtherEf'};
     pp_by_groups=[[2,3,6,8,9];[1,4,5,7,10]];
     
-    obj=load(mfile);
-    if length(fields(obj)) == 3
-        [dataB,varnamesB,vartypesB]=struct2vars(obj);
-        [headerB, varnamesB2, ~, ~] = build_headers(varnamesB,vartypesB); 
-        outB = get_rowdata_deltaID(dataB,varnamesB,varnamesB2,vartypesB,headerB);
-        is_delta=1;
-    else    
-        [dataB,dataU,varnamesB,varnamesU,vartypesB,vartypesU]=struct2vars(obj);
-        [headerB, varnamesB2, headerU, varnamesU2] = build_headers(varnamesB,varnamesU,vartypesB); 
-        [outB, outUL, outUR] = get_rowdata_bimanual(dataB,dataU,varnamesB,varnamesU,varnamesB2,varnamesU2,vartypesB,headerB,headerU);        
-        is_delta=0;
-    end
-    
-    %Save bimanual data
-    if is_delta
-        filepath=joinpath(savepath,['BiDelta_' filename]);
+    if ischar(mfile)
+        obj=load(mfile,'obj');
     else
-        filepath=joinpath(savepath,['Bi_' filename]);
+        obj=mfile;
     end
-    %Open file and print header
-    outfd = fopen(filepath, 'w+');
-    fprintf(outfd, '%s,',headerB{:});
-    fseek(outfd, -1, 0);
-    fprintf(outfd,'\n');
-    fclose(outfd);
-    %Print the real data, much faster this way
-    dlmwrite (filepath,outB,'-append');
 
-    if ~is_delta
-        %Save unimanual Left data
-        filepath=joinpath(savepath,['UniL_' filename]);
-        outfd = fopen(filepath, 'w+');
-        fprintf(outfd, '%s,',headerU{:});
-        fseek(outfd, -1, 0); %removes last comma
-        fprintf(outfd,'\n');
-        fclose(outfd);
-        %Print the real data, much faster this way
-        dlmwrite (filepath,outUL,'-append');
-
-        %Save unimanual Right data
-        filepath=joinpath(savepath,['UniR_' filename]);
-        outfd = fopen(filepath, 'w+');
-        fprintf(outfd, '%s,',headerU{:});
-        fseek(outfd, -1, 0); %removes last comma
-        fprintf(outfd,'\n');
-        fclose(outfd);
-        %Print the real data, much faster this way
-        dlmwrite(filepath,outUR,'-append');
-    end
+    %Fetch and export Bimanual header and matrix
+    [header,vnames2]=build_headers({'grp' 'pp' 'S' 'IDL' 'IDR'},obj.vnamesB,obj.vtypesB);
+    out = get_rowdata(obj.dataB,obj.vtypesB,obj.vnamesB,vnames2,header);  
+    export_matrix(out,header,joinpath(savepath,['Bi_' filename]));
+    
+    %Fetch and export Bimanual Delta ID header and matrix
+    [header,vnames2]=build_headers({'grp' 'pp' 'S' 'DID'},obj.vnamesB,obj.vtypesB);
+    out = get_rowdata(obj.dataD,obj.vtypesB,obj.vnamesB,vnames2,header);  
+    export_matrix(out,header,joinpath(savepath,['BiDelta_' filename]));
+    
+    %Fetch and export Unimanual header and matrix
+    [header,vnames2]=build_headers({'grp' 'pp' 'S' 'ID'},obj.vnamesU,obj.vtypesU);
+    out = get_rowdata(obj.dataL,obj.vtypesU,obj.vnamesU,vnames2,header);  
+    export_matrix(out,header,joinpath(savepath,['UniL_' filename]));
+    out = get_rowdata(obj.dataR,obj.vtypesU,obj.vnamesU,vnames2,header);  
+    export_matrix(out,header,joinpath(savepath,['UniR_' filename]));
 end
 
-function [outB, outUL, outUR] = get_rowdata_bimanual(dataB,dataU,varnamesB,varnamesU,varnamesB2,varnamesU2,vartypesB,headerB,headerU)    
+function export_matrix(matrix,header,filepath)    
+    %Open file
+    fd = fopen(filepath, 'w+');
+    %Print header
+    fprintf(fd, '%s,',header{:});
+    fseek(fd, -1, 0);
+    fprintf(fd,'\n');
+    fclose(fd);
+    %Print the real data, much faster this way
+    dlmwrite (filepath,matrix,'-append');
+end
+
+function out = get_rowdata(data,vartypes,varnames1,varnames2,header)    
     global pp_by_groups
        
     %Build output data frames
     grp=size(pp_by_groups,1);
-    [varBno,h,pp,ss,idl,idr,reps]=size(dataB);
-    outB =zeros(grp*ss*idl*idr*reps,length(headerB));
-    outUL=zeros(grp*ss*idl*reps,length(headerU));
-    outUR=zeros(grp*ss*idr*reps,length(headerU));
-
-    %Prepare indexes
-    idx=0;
-    idxR=0;
-    idxL=0;
-
+    
+    if length(size(data))==7
+        [vno,h,pp,ss,idl,idr,reps]=size(data);
+        out =zeros(grp*ss*idl*idr*reps,length(header));
+        bimanual=1;
+    elseif length(size(data))==6
+        [vno,h,pp,ss,id,reps]=size(data);
+        out =zeros(grp*ss*id*reps,length(header));
+        bimanual=1;
+        idl=0;
+    else 
+        [vno,pp,ss,id,reps]=size(data);
+        out =zeros(grp*ss*id*reps,length(header));
+        bimanual=0;
+        idl=0;
+    end
+    
     %Iterate!!
+    idx=0;
     for g=1:grp
         for p=pp_by_groups(g,:)
             for s=1:ss
-                for l=1:idl
-                    for r=1:idr
-                        for rep=1:reps
+                %Unimanual and ID diff blocks
+                if ~idl
+                    for i=1:id
+                       for rep=1:reps
                             idx=idx+1;
                             %Fetch bimanual data
-                            row=[g,p,s,l,r];
-                            for v=1:length(varnamesB2)
-                                v2=strmatch(varnamesB2{v},varnamesB,'exact');
-                                if strcmp(vartypesB{v2},'ls')
-                                    %only one meaningful data per variable
-                                    row=[row,dataB(v2,1,p,s,l,r,rep)];
+                            row=[g,p,s,i];
+                            for v=1:length(varnames2)
+                                v2=strmatch(varnames2{v},varnames1,'exact');
+                                %ID diff blocks
+                                if bimanual
+                                    if strcmp(vartypes{v2},'ls')
+                                        %only one meaningful data per magnitude
+                                        row=[row,data(v2,1,p,s,i,rep)];
+                                    else
+                                        %two meaningful data per magnitude
+                                        row=[row,squeeze(data(v2,:,p,s,i,rep))];
+                                    end
+                                %Unimanual blocks
                                 else
-                                    %Each hand has a value per variable
-                                    row=[row,squeeze(dataB(v2,:,p,s,l,r,rep))];
+                                   row=[row,squeeze(data(v2,p,s,i,rep))];
                                 end
                             end
-                            outB(idx,:)=row;
-
-                            %Store left unimanual only once per loop
-                            if r==1
-                                idxL=idxL+1;
-                                row=[g,p,s,l];
-                                for v=1:length(varnamesU2)
-                                    v2=strmatch(varnamesU2{v},varnamesU,'exact');
-                                    row=[row,dataU(v2,1,p,s,l,rep)];
+                            out(idx,:)=row;
+                       end
+                    end
+                %Bimanual blocks
+                else
+                    for l=1:idl
+                        for r=1:idr
+                            for rep=1:reps
+                                idx=idx+1;
+                                %Fetch bimanual data
+                                row=[g,p,s,l,r];
+                                for v=1:length(varnames2)
+                                    v2=strmatch(varnames2{v},varnames1,'exact');
+                                    if strcmp(vartypes{v2},'ls')
+                                        %only one meaningful data per variable
+                                        row=[row,data(v2,1,p,s,l,r,rep)];
+                                    else
+                                        %Each hand has a value per variable
+                                        row=[row,squeeze(data(v2,:,p,s,l,r,rep))];
+                                    end
                                 end
-                                outUL(idxL,:)=row;
-                            end
-                            %Store right unimanual only once per loop
-                            if l==1
-                                idxR=idxR+1;
-                                row=[g,p,s,r];
-                                for v=1:length(varnamesU2)
-                                    v2=strmatch(varnamesU2{v},varnamesU,'exact');
-                                    row=[row,dataU(v2,2,p,s,r,rep)];
-                                end
-                                outUR(idxR,:)=row;
+                                out(idx,:)=row;
                             end
                         end
                     end
@@ -122,97 +123,26 @@ function [outB, outUL, outUR] = get_rowdata_bimanual(dataB,dataU,varnamesB,varna
             end
         end
     end
-
-    %Remove NAN's
-    outB=remove_NaNs(outB);
-    outUL=remove_NaNs(outUL);
-    outUR=remove_NaNs(outUR);
+    out=remove_NaNs(out);
 end
 
-function outB=get_rowdata_deltaID(dataB,varnamesB,varnamesB2,vartypesB,headerB)    
-    global pp_by_groups  
-
-    %Build output data frames
-    grp=size(pp_by_groups,1);
-    [varBno,h,pp,ss,did,reps]=size(dataB);
-    outB =zeros(grp*ss*did*reps,length(headerB));
-
-    %Prepare indexes
-    idx=0;
-    %Iterate!!
-    for g=1:grp
-        for p=pp_by_groups(g,:)
-            for s=1:ss
-                for i=1:did
-                    for rep=1:reps
-                        idx=idx+1;
-                        %Fetch bimanual data
-                        row=[g,p,s,i];
-                        for v=1:length(varnamesB2)
-                            v2=strmatch(varnamesB2{v},varnamesB,'exact');
-                            if strcmp(vartypesB{v2},'ls')
-                                %only one meaningful data per variable
-                                row=[row,dataB(v2,1,p,s,i,rep)];
-                            else
-                                %Each hand has a value per variable
-                                row=[row,squeeze(dataB(v2,:,p,s,i,rep))];
-                            end
-                        end
-                        outB(idx,:)=row;
-                    end
-                end
-            end
-        end
-    end    
-    %Remove NAN's
-    outB=remove_NaNs(outB);
-end
-
-function [headerB, varnamesB2, headerU, varnamesU2] = build_headers(varnamesB,varnamesU,vartypesB)  
-    if nargin == 2
-        headerU= {};
-        varnamesU2={};
-        is_delta=1;
-        vartypesB=varnamesU;
-    else
-        is_delta=0;
-    end
-    
+function [header,varnames2]=build_headers(factors,varnames,vartypes)
     global excludeVars
-    
-    if is_delta
-        %Build bimanual header with delta ID
-        headerB={'grp' 'pp' 'S' 'DID'};
-        varnamesB2 = varnamesB(~ismember(varnamesB,excludeVars));
-        for v=1:length(varnamesB2)
-            v2=strmatch(varnamesB2{v},varnamesB,'exact');
-            if strcmp(vartypesB{v2},'ls')
-                %only one meaningful data per variable
-                headerB{end+1}=varnamesB{v2};
-            else
-                %Each hand has a value per variable
-                headerB{end+1}=[varnamesB{v2} 'L'];
-                headerB{end+1}=[varnamesB{v2} 'R'];
-            end
+    header=factors;
+    varnames2 = varnames(~ismember(varnames,excludeVars));
+    for v=1:length(varnames2)
+        v2=strmatch(varnames2{v},varnames,'exact');
+        if strcmp(vartypes{v2},'ls')
+            %only one meaningful data per variable
+            header{end+1}=varnames{v2};
+        elseif any(strcmp('IDL',factors)) || any(strcmp('DID',factors))
+            %Each hand has a value per variable
+            header{end+1}=[varnames{v2} 'L'];
+            header{end+1}=[varnames{v2} 'R'];            
+        else
+            header{end+1}=varnames{v2};
         end
-    else
-        headerB={'grp' 'pp' 'S' 'IDL' 'IDR'};
-        varnamesB2 = varnamesB(~ismember(varnamesB,excludeVars));
-        for v=1:length(varnamesB2)
-            v2=strmatch(varnamesB2{v},varnamesB,'exact');
-            if strcmp(vartypesB{v2},'ls')
-                %only one meaningful data per variable
-                headerB{end+1}=varnamesB{v2};
-            else
-                %Each hand has a value per variable
-                headerB{end+1}=[varnamesB{v2} 'L'];
-                headerB{end+1}=[varnamesB{v2} 'R'];
-            end
-        end
-        %Build unimanual header
-        varnamesU2 = varnamesU(~ismember(varnamesU,excludeVars));
-        headerU={'grp' 'pp' 'S' 'ID' varnamesU2{:}};
-    end   
+    end
 end
 
 function data = remove_NaNs(data)

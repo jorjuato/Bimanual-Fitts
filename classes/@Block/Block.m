@@ -12,7 +12,7 @@ classdef Block < handle
     methods%Constructor
         function obj = Block(blockpath,conf)
             if nargin < 1
-                obj.size = size(obj.data_set);
+                obj.size = num2cell(size(obj.data_set));
                 if length(obj.size)==2, obj.conf.unimanual=1; end
                 obj.concatenate();  
             else
@@ -33,10 +33,10 @@ classdef Block < handle
                 else
                     obj.get_bimanual();            
                 end               
-                obj.size = size(obj.data_set);
+                obj.size = num2cell(size(obj.data_set));
                 obj.concatenate();
             end
-            confListener = addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
+            addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
         end
     end
     

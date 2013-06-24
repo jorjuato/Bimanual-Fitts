@@ -3,7 +3,10 @@ function plot_va(obj,graphPath,rootname,ext)
     if nargin<3, rootname='nosession';end
     if nargin<2, graphPath='';end
 
-    if ischar(graphPath)
+    if isempty(graphPath)
+        fig=figure();
+        ax=subplot(1,1,1); hold on;
+    elseif ischar(graphPath)
         fig=figure();
         ax=subplot(1,1,1);
     else
@@ -14,7 +17,7 @@ function plot_va(obj,graphPath,rootname,ext)
     set(ax, 'XTick',[], 'XTickLabel',[]);
     set(ax, 'YTick',[], 'YTickLabel',[]);
     
-    if ischar(graphPath)
+    if ischar(graphPath) && ~isempty(graphPath)
         %Generate random sequence and append to the end (based on seconds or whatever)
         filename = 'VectorAngles';
         figname = joinpath(joinpath(graphPath,rootname),filename);

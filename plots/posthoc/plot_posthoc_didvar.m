@@ -1,24 +1,35 @@
-function plot_posthoc_didvar(vname, data, vnames,flist,outdir)
-    if nargin<5, outdir=''; end
+function plot_posthoc_didvar(vname,data,vnamesin,flist,savepath_)
+    if nargin<5, savepath_=''; end
     if nargin<4, error('need four input arguments'); end    
     
+    global globals_def
+    if isempty(globals_def)
+        define_plot_globals();
+    end
+    
+    
+	%Data output configuration
     global fid
     global verbose
+	global savepath; savepath=savepath_;
     
     %Proper figure labelling
-    cnames={'Strong','Weak'};
-    dnames={'Zero','Small','Large'};
-    snames={'pretest','test','posttest'};    
-    vnames2={'MTL','MTR','accQL','accQR','HarmonicityL','HarmonicityR','IPerfEfL','IPerfEfR','vfCircularityL','vfCircularityR','maxangleL','maxangleR','rho','minPeakDelay','minPeakDelayNorm'};
-    vstrs={'MT_L','MT_R','AQ_L','AQ_R','H_L','H_R','IPE_L','IPE_R','VFC_L','VFC_R','MA_L','MA_R','rho','dpeaks','dpeaks_{norm}'};
-    
+	global cnames
+	global vnames
+	global vstrns
+	
     %Set label for the current variable name
-    vn=strcmp(vname,vnames2);
-    vstr=vstrs{vn};
-    
+    vn=strcmp(vname,vnames);
+    if any(vn)        
+        vstr=vstrns{vn};
+    else
+        disp(['Unknown variable: ',vname])
+        return
+    end
+	
     %Create directory to store plots if needed
-    if ~isempty(outdir)
-        savepath=joinpath(outdir,vstr);
+    if ~isempty(savepath)
+        savepath=joinpath(savepath,['DID_',remove_backslash(vstr)]);
         if  ~isempty(savepath) && ~exist(savepath,'dir') 
             mkdir(savepath);
         end
@@ -32,7 +43,7 @@ function plot_posthoc_didvar(vname, data, vnames,flist,outdir)
     %Iterate over interactions
     for f=1:length(flist)
        %Very customized and hard coded sorting of groups
-       factors=sort_postgroups_did(flist{f},rfirst);
+       factors=sort_postgroups_did(flist{f});
        
        %Print some nice header
        if verbose
@@ -43,31 +54,35 @@ function plot_posthoc_didvar(vname, data, vnames,flist,outdir)
        end
 
        %Rearrange data matrix to match that of factors
-       vdata = rearrange_var_data(vname,data,vnames,factors);
+       vdata = rearrange_var_data(vname,data,vnamesin,factors);
+	   yrange=get_yrange(vdata);
+       
+	   %Check all returned data is numeric, catches errors in the input
        if ~all(isfinite(vdata(:))) || ~all(isnumeric(vdata(:)))
             fprintf(fid,'Warning: all X values must be numeric and finite. vname=%s\n ',vname);
             continue
        end
        
        %Get post-hoc crosslevel comparisons for the interaction
-       [f1mat,f2mat]=posthoc2(vname,data,vnames,factors);
+       [f1mat,f2mat]=posthoc2(vname,data,vnamesin,factors);
        
        %Choose plotting according to number and type of factors
        switch length(factors)
            case 1               
-               create_fig(factors,outdir);
+               create_fig(factors);
                ax=subplot(1,1,1);
                plot_bw(vdata,factors{1},vstr,ax);
-               if ~isempty(outdir), save_fig(savepath,factors); end
+               save_fig(factors);
                     
            case 2
-               create_fig(factors,outdir);
+               create_fig(factors);
                ax=subplot(1,1,1);
                [bar_data,gp]=plot_interaction(vdata,factors,vstr,ax);
-               add_anotations(bar_data,gp,f1mat,f2mat);
-               if ~isempty(outdir), save_fig(savepath,factors); end
+               add_anotations(bar_data,gp,f1mat,f2mat,yrange);
+               save_fig(factors);
+			   
            case 3
-               create_fig(factors,outdir);
+               create_fig(factors);
                for g=1:2
                    if g==1
                        do_ylabel=1;
@@ -79,13 +94,15 @@ function plot_posthoc_didvar(vname, data, vnames,flist,outdir)
                    ax=subplot(1,2,g);
                    [bar_data,gp]=plot_interaction(squeeze(vdata(g,:,:,:)),factors(2:end),vstr,ax,do_legend,do_ylabel);
                    title(sprintf('%s Coupling',cnames{g}));
-                   add_anotations(bar_data,gp,squeeze(f1mat(g,:,:)),squeeze(f2mat(g,:,:)));
+                   add_anotations(bar_data,gp,squeeze(f1mat(g,:,:)),squeeze(f2mat(g,:,:)),yrange);
                end
-               if ~isempty(outdir), save_fig(savepath,factors); end
+               save_fig(factors)
+			   
        end
 
     end
 end
+
 
 function resize_fonts(fontsize)
     textobj = findobj('type', 'text');
@@ -143,21 +160,24 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %AUXILIAR FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function add_anotations(bardata,gp,f1mat,f2mat)
+function add_anotations(bardata,gp,f1mat,f2mat,ylimits)
     [f1,f1i]=size(f1mat);
     [f2,f2i]=size(f2mat);
-    ymin=min(min(bardata(:,:,1)-bardata(:,:,2)));
-    ymax=max(max(bardata(:,:,1)+bardata(:,:,2)));
+    ymin=ylimits(1);
+    ymax=ylimits(2);
     yrange=ymax-ymin;
     
-    %single out homogeneous cases
-    do_f1=1;
-    do_f2=1;
+    %horizontal location of messages varies with number of levels
     if f2==2
         xmsg=0.9;
     else
         xmsg=0.55;
     end
+	
+	%Check for homogeneous matrices to avoid overcrowding plots
+	
+	%Factor 1
+	do_f1=1;    
     if ~any(f1mat(:)~=1)
         msg=sprintf('All significant for %s',gp.f2name);
         text(xmsg,ymax,msg)
@@ -167,6 +187,9 @@ function add_anotations(bardata,gp,f1mat,f2mat)
         text(xmsg,ymax,msg)
         do_f1=0;
     end
+	
+	%Factor2
+	do_f2=1;
     if ~any(f2mat(:)~=1)
         msg=sprintf('All significant for %s',gp.f1name);
         text(xmsg,ymax-yrange/12,msg)
@@ -243,22 +266,28 @@ function [g1,g2]=get_groups(j,flen)
 end
 
 
-function save_fig(vstr,factors) 
+function save_fig(factors) 
     global ext
     global dpi
-    figname = joinpath(vstr,[factors{:}]);
-    if strcmp(ext,'fig')
-        hgsave(gcf,figname,'all');
-    else
-        set(gcf, 'PaperUnits', 'inches', 'PaperPosition', get_fig_position(factors)/dpi);
-        print(gcf,['-d',ext],sprintf('-r%d',dpi),figname);        
-        close gcf
-    end
+	global savepath
+	
+	if ~isempty(savepath)
+		figname = joinpath(savepath,[factors{:}]);
+		if strcmp(ext,'fig')
+			hgsave(gcf,figname,'all');
+		else
+			set(gcf, 'PaperUnits', 'inches', 'PaperPosition', get_fig_position(factors)/dpi);
+			print(gcf,['-d',ext],sprintf('-r%d',dpi),figname);        
+			close gcf
+		end
+	end
 end
 
-function create_fig(factors,outdir)
+function create_fig(factors)
     global dpi
-    if ~isempty(outdir)
+	global savepath
+	
+    if ~isempty(savepath)
         figure('name',[factors{:}],'numbertitle','off','PaperUnits', 'inches', 'PaperPosition', get_fig_position(factors)/dpi,'Visible','off');
     else
         figure('name',[factors{:}],'numbertitle','off');
@@ -314,3 +343,46 @@ function gp = get_props(factors)
     end
 end
 
+function yrange=get_yrange(vdata)
+    vsize=size(vdata);
+    yrange=[];
+    switch length(vsize)
+       case 2    
+            for i=1:vsize(1)
+                d=squeeze(vdata(i,:));
+                yrange=compare_range(d,yrange);
+            end
+        case 3
+            for i=1:vsize(1)
+                for j=1:vsize(2)
+                    d=squeeze(vdata(i,j,:));
+                    yrange=compare_range(d,yrange);
+                end
+            end
+            
+        case 4
+            for i=1:vsize(1)
+                for j=1:vsize(2)
+                    for k=1:vsize(3)
+                        d=squeeze(vdata(i,j,k,:));
+                        yrange=compare_range(d,yrange);
+                    end
+                end
+            end            
+    end
+end
+
+function yrange = compare_range(data,yrange)
+    ymin=mean(data(:))-std(data(:));    
+    ymax=mean(data(:))+std(data(:));    
+    if isempty(yrange)
+        yrange=[ymin,ymax];
+    else
+        if yrange(1)>ymin
+            yrange(1)=ymin;
+        end
+        if yrange(2)<ymax
+            yrange(2)=ymax;
+        end
+    end
+end

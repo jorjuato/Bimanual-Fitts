@@ -1,17 +1,16 @@
 
 function plot_lockingStrength(obj)
+    if obj.conf.unimanual==1, return; end
+    
+    %Prepare paths for plotting
     graphPath=joinpath(obj.conf.plot_block_path,'lockingStrength');
-    if ~exist(graphPath,'dir') & obj.conf.interactive==0
+    if ~exist(graphPath,'dir') && obj.conf.interactive==0
         mkdir(graphPath);
     end
     
-    if obj.conf.unimanual==1
-        return
-    end
-    
-    DS = obj.data_set;    
-        
-    [IDL, IDR, rep] = size(DS);
+    %Local instantiate important variables
+    DS = obj.data_set;
+    [IDL, IDR, rep] = obj.size{:};
     [fields, names, labels, ylims] = get_ls_plots();
     
 

@@ -3,7 +3,7 @@ function vdata = rearrange_var_data(vname,data,vnames,factors)
     
     %Rearrange data matrices by group if needed
     if size(data,3)==10
-        data=group_participant_data(data);
+        data=merge_pp_data(data);
     end
     
     if length(size(data))==6

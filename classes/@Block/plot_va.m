@@ -13,7 +13,7 @@ function plot_va(obj)
     end
     
     if obj.conf.unimanual
-        [ID ~] = size(DS);
+        [ID ~] = obj.size{:};
         for i=1:ID
             ax=subplot(1,ID,i);
             tr=DS{i,1};
@@ -28,7 +28,7 @@ function plot_va(obj)
             title(sprintf('\t ID=%1.2f %s',DS{i,1}.info.ID, hand),'fontsize',12,'fontweight','b');  
         end
     else
-        [IDL IDR ~] = size(DS);
+        [IDL IDR ~] =obj.size{:};
         for i=1:IDL
             for j=1:IDR
                 tr=DS{i,j,1};
@@ -50,7 +50,7 @@ function plot_va(obj)
             end
         end    
     end
-    if exist(graphPath) & obj.conf.interactive==0
+    if exist(graphPath,'dir') && obj.conf.interactive==0
         figname = joinpath(graphPath,'BlockVectorAngles');
         saveas(fig,figname,obj.conf.ext);
         close(fig);

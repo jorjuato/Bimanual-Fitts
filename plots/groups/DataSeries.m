@@ -85,12 +85,12 @@ classdef DataSeries < handle
                 ds.colors={[[1,0.2,0.2]   ;[0.8,0.2,0.2];[0.6,0.2,0.2]],...
                            [[0.2,0.2,1]   ;[0.2,0.2,0.8];[0.2,0.2,0.6]]};
             elseif strcmp(ds.factors{end},'idr')
-                ds.names ={'IDR-Difficult','IDR-Medium','IDR-Easy'};
+                ds.names ={'ID_R Easy','ID_R Medium','ID_R Difficult'};
                 ds.colors={[[1,0.2,0.2]   ;[0.8,0.2,0.2];[0.6,0.2,0.2]],...
                            [[0.2,0.2,1]   ;[0.2,0.2,0.8];[0.2,0.2,0.6]],...
                            [[0.2,1,0.2]   ;[0.2,0.8,0.2];[0.2,0.6,0.2]]};
             else
-                ds.names ={'IDL-Difficult','IDL-Easy'};
+                ds.names ={'ID_L Easy','ID_L Difficult'};
                 ds.colors={[[1,0.2,0.2]   ;[0.8,0.2,0.2];[0.6,0.2,0.2]],...
                            [[0.2,0.2,1]   ;[0.2,0.2,0.8];[0.2,0.2,0.6]]};
             end
@@ -99,18 +99,18 @@ classdef DataSeries < handle
             if strcmp(ds.factors{2},'grp')
                 ds.xlabels={'Strong','Weak'};
             elseif strcmp(ds.factors{2},'idl')
-                ds.xlabels={'LD','LE'};
+                ds.xlabels={'LE','LD'};
             else
-                ds.xlabels={'RD','RM','RE'};
+                ds.xlabels={'RE','RM','RD'};
             end
 
             %Factor 1 labels
             if strcmp(ds.factors{1},'grp')
                 ds.ylabels={'Strong','Weak'};
             elseif strcmp(ds.factors{1},'idl')
-                ds.ylabels={'LD','LE'};
+                ds.ylabels={'LE','LD'};
             else
-                ds.ylabels={'RD','RM','RE'};
+                ds.ylabels={'RE','RM','RD'};
             end
         end
 

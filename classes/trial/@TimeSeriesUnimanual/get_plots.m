@@ -1,5 +1,5 @@
 function [fcns, names, xlabels, ylabels] = get_plots(obj)
-    idx=[1,2,3];
+    idx=[1];
     fcns = {...
          @plot_time_series...
         ,@plot_phase_plane...
@@ -7,7 +7,7 @@ function [fcns, names, xlabels, ylabels] = get_plots(obj)
         ,@plot_jerk_vs_x...
         ,@plot_jerk_vs_v...
         ,@plot_jerk_vs_a...        
-        }; %fcns=fcns{idx};
+        }; fcns=fcns(idx);
 
     names = {...
         'time_series'...
@@ -16,7 +16,7 @@ function [fcns, names, xlabels, ylabels] = get_plots(obj)
         ,'jerk_vs_x'...
         ,'jerk_vs_v'...
         ,'jerk_vs_a'...        
-        }; %names=names{idx};
+        }; names=names(idx);
 
     ylabels = {...
         'Position/Speed(m;m/s)'...
@@ -25,7 +25,7 @@ function [fcns, names, xlabels, ylabels] = get_plots(obj)
         ,'Jerk (m/s^3)'...
         ,'Jerk (m/s^3)'...
         ,'Jerk (m/s^3)'...        
-        }; %ylabels=ylabels{idx};
+        }; ylabels=ylabels(idx);
 
     xlabels = {...
         'Time (ms)'...
@@ -34,17 +34,29 @@ function [fcns, names, xlabels, ylabels] = get_plots(obj)
         ,'Position (m)'...
         ,'Speed(m/s)'...
         ,'Accel (m/s^2)'...        
-        }; %xlabels=xlabels{idx};
+        }; xlabels=xlabels(idx);
 end
 
 function  plot_time_series(ts,ax)
     hold('on');
     if nargin==1,        
-        plot(ts.x, 'b');
-        plot(ts.v, 'r');
-        plot(ts.a, 'g');
-        plot(ts.jerk, 'k');
-        axis([0 length(ts.x) -0.2 0.2]);
+%         plot(ts.x, 'b');
+%         plot(ts.v, 'r');
+%         plot(ts.a, 'g');
+%         plot(ts.jerk, 'k');
+%         axis([0 length(ts.x) -0.2 0.2]);
+        figure; hold on;
+        plot(ts.xnorm, 'b'); 
+        plot(ts.vnorm, 'r');
+        %plot(ts.anorm, 'm');
+        %plot(ts.jerknorm, 'c');
+        plot(ts.ph/pi,'k--');
+        plot(2*ts.omega/max(abs(ts.omega))+1,'g')
+        %plot(ts.alpha/max(ts.alpha), 'k');        
+        %legend({'xnorm','vnorm','anorm','jerknorm','phnorm','omeganorm','alphanorm'})
+        legend({'xnorm','vnorm','phnorm','omeganorm'})
+        scatter(ts.peaks,ts.xnorm(ts.peaks),'r+');
+        hline(0,'k-');
     else
         plot(ax,ts.x, 'b');
         plot(ax,ts.v, 'r');

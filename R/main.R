@@ -11,7 +11,7 @@ registerDoMC()
 
 #Prepare global paths
 rootpath='/home/jorge/Dropbox/dev/Bimanual-Fitts/R'
-Rname='final2'
+Rname='refactor'
 opath=paste(paste(rootpath,"stats",sep='/'),Rname,sep='/')
 dir.create(opath,showWarnings=FALSE)
 Rdatapath=paste(paste(rootpath,'dataframes',sep='/'),Rname,sep='/')
@@ -21,9 +21,9 @@ bfile=paste(Rdatapath,"Bi_fitts.dat",sep='/')
 bdfile=paste(Rdatapath,"BiDelta_fitts.dat",sep='/')
 #Select analysis to perform
 do_bimanualDelta=TRUE
-do_bimanual=FALSE
-do_unimanual=FALSE
-do_relative=FALSE
+do_bimanual=TRUE
+do_unimanual=TRUE
+do_relative=TRUE
 do_parallel=TRUE
 
 do_summary=TRUE

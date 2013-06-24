@@ -7,13 +7,13 @@ function plot(obj,graphPath,rootname,ext)
     
     [fcns, names, xlabels, ylabels] = obj.get_plots();
     %Create figure for this function
-    if single_figure==1
-        if ischar(graphPath) 
-            fig = figure('visible','off');
-        elseif ~iscell(graphPath)
-            fig = figure();
-        end
-    end
+%     if single_figure==1
+%         if ischar(graphPath) 
+%             fig = figure('visible','off');
+%         elseif ~iscell(graphPath)
+%             fig = figure();
+%         end
+%     end
     %Apply plotting methods
     for f=1:length(fcns)
         %Create subplot and call plotting function
@@ -40,11 +40,11 @@ function plot(obj,graphPath,rootname,ext)
         end
         
     end
-    if ischar(graphPath)
-        %Generate random sequence and append to the end (based on seconds or whatever)
-        filename = 'TimeSeriesBimanual';
-        figname = joinpath(joinpath(graphPath,rootname),filename);
-        saveas(fig,figname,ext);
-        close(fig);
-    end
+%     if ischar(graphPath)
+%         %Generate random sequence and append to the end (based on seconds or whatever)
+%         filename = 'TimeSeriesBimanual';
+%         figname = joinpath(joinpath(graphPath,rootname),filename);
+%         saveas(fig,figname,ext);
+%         close(fig);
+%     end
 end

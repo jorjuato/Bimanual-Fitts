@@ -27,7 +27,20 @@ classdef Trial < handle
                 
             %Call apropiate get_results function, output stored in DS.name
             obj.conf=conf;
-            if obj.conf.unimanual==1
+            if isa(data,'TimeSeriesBimanual')
+                obj.info=data.info;
+                obj.ts=data;
+                obj.oscL = Oscillations(obj.ts,'L',copy(conf));
+                obj.oscR = Oscillations(obj.ts,'R',copy(conf));
+                obj.ls   = LockingStrength(obj.ts,copy(conf));
+                obj.vfL  = []; %Fill vf object from Block concatenation
+                obj.vfR  = []; %To avoid recomputation of VF                 
+            elseif isa(data,'TimeSeriesUnimanual')
+                obj.info=data.info;
+                obj.ts=data;
+                obj.osc  = Oscillations(obj.ts,'',copy(conf));
+                obj.vf   = [];                
+            elseif  obj.conf.unimanual==1
                 obj.info = obj.get_trial_info_uni(data);
                 obj.ts   = TimeSeriesUnimanual(data,obj.info,copy(conf));
                 obj.osc  = Oscillations(obj.ts,'',copy(conf));
@@ -41,7 +54,7 @@ classdef Trial < handle
                 obj.vfL  = VectorField(obj.ts,'L',copy(conf));
                 obj.vfR  = VectorField(obj.ts,'R',copy(conf));                
             end
-            confListener = addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
+            addlistener(obj,'conf','PostSet',@(src,evnt)update_conf(obj,src,evnt));
         end
 
         [fcns, names, xlabels, ylabels] = get_plots(obj)
@@ -52,9 +65,11 @@ classdef Trial < handle
         
         plot_vf(obj,graphPath,rootname,ext)
         
-        new=copy(obj)
+        plot_angvar(tr,graphPath,vname,rootname,ext)
         
-        concatenate(obj,obj2)
+        plot_hists(tr)
+        
+        new=copy(obj)
         
         set_concatenated(obj)
         

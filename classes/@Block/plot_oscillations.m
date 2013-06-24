@@ -15,11 +15,11 @@ function  plot_oscillations(obj)
         
     if obj.conf.unimanual==1
         oscData = properties(DS{1,end}.osc);
-        [f1, ~] = size(DS);
+        [f1, ~] = obj.size{:};
         [names, labels, ylims] = DS{1,1,end}.osc.get_plots();
     else
         oscData = properties(DS{1,1,end}.oscL);
-        [f1, f2, ~] = size(DS);
+        [f1, f2, ~] = obj.size{:};
         [names, labels, ylims] = DS{1,1,end}.oscL.get_plots();
     end
     
@@ -90,7 +90,7 @@ function  plot_oscillations(obj)
                 hold off;
             end
          
-            if exist(graphPath) & obj.conf.interactive==0
+            if exist(graphPath,'dir') && obj.conf.interactive==0
                 figname = joinpath(graphPath,oscData{f});
                 saveas(fig,figname,obj.conf.ext); close(fig);
             end

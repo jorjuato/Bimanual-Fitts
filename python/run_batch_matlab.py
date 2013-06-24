@@ -12,9 +12,9 @@ if not os.path.exists(BATCH_DIR):
     os.makedirs(BATCH_DIR)
 
 
-WRKs=5
+WRKs=1
 PPno=10
-PPs=range(1,PPno+1)
+PPs=range(1,11)
 #PPs=[9]
 #PPno=len(PPs)
 
@@ -25,9 +25,11 @@ TEMPLATE_LOAD_SAVE_PLOT,\
 TEMPLATE_GET_DATA,\
 TEMPLATE_ANALYSIS,\
 TEMPLATE_PLOT_ANALYSIS,\
-TEMPLATE_LOAD_PLOT,\
+TEMPLATE_PLOT_ANGULAR,\
 TEMPLATE_PLOT, \
 TEMPLATE_PLOT_VF = range(10)
+
+template=TEMPLATE_FULL2
 
 def write_scripts(pp):    
     #Open file to write script
@@ -36,9 +38,9 @@ def write_scripts(pp):
     f=open(filepath,'w')
     
     #Write text to file and close
-    f.write(get_script_from_template(TEMPLATE_GET_DATA,pp))
+    f.write(get_script_from_template(template,pp))
     f.close()
-    return "nohup /opt/matlab/bin/matlab -nodesktop -nosplash -r %s > ~/%s.out" % (filename[:-2],filename[:-2])
+    return "sleep %d; nohup /opt/matlab2012/bin/matlab -nodesktop -nosplash -r %s > ~/%s.out" % (pp,filename[:-2],filename[:-2])
 
 def get_script_from_template(tpl,pp):
     if tpl==TEMPLATE_FULL:
@@ -55,8 +57,8 @@ def get_script_from_template(tpl,pp):
         conf.parallelMode=0;
         p=Participant(%d,conf);
         p.save(); 
-        [dataBi,dataUn,varnamesBi,varnamesUn,vartypesBi, vartypesUn] = get_data_pp(p);
-        save(joinpath(conf.save_path,'pp%02d_data.mat'),'dataBi','dataUn','varnamesBi','varnamesUn','vartypesBi','vartypesUn'); exit""" % (pp,pp) 
+        obj = get_pp_data(p);
+        save(joinpath(conf.save_path,'pp%02d_data.mat'),'obj'); exit""" % (pp,pp) 
     elif tpl==TEMPLATE_LOAD_SAVE:
         msg="""\
         conf=Config();
@@ -71,10 +73,10 @@ def get_script_from_template(tpl,pp):
         p.save(); p.plot(); exit""" % pp        
     elif tpl==TEMPLATE_GET_DATA:
         msg="""\
-        RandStream.setDefaultStream(RandStream('mt19937ar','seed',sum(100*clock)));
+        RandStream.setGlobalStream(RandStream('mt19937ar','seed',sum(100*clock)));
         conf=Config();
-        [dataBi,dataUn,varnamesBi,varnamesUn,vartypesBi, vartypesUn] = get_data_pp(%d);
-        save(joinpath(conf.save_path,'pp%02d_data.mat')); exit""" % (pp,pp)
+        obj = get_pp_data(%d);
+        save(joinpath(conf.save_path,'pp%02d_data.mat'),'obj'); exit""" % (pp,pp)
     elif tpl==TEMPLATE_ANALYSIS:
         msg="""\
         an=Analysis(%d);
@@ -89,17 +91,25 @@ def get_script_from_template(tpl,pp):
         an=Analysis(p,conf);
         an.save(%d);
         exit""" % (pp,pp)
-    elif tpl==TEMPLATE_LOAD_PLOT:
+    elif tpl==TEMPLATE_PLOT_ANGULAR:
         msg="""\
         conf=Config();
         conf.parallelMode=0;
         p=Participant(%d,conf);
-        p.plot();exit""" % pp
+        p.plot_angphsp()	
+	p.plot_angvar('ph');
+        p.plot_angvar('omega');
+        p.plot_angvar('alpha');
+        p.plot_angvar('xnorm');
+        p.plot_angvar('vnorm');
+        p.plot_angvar('anorm');
+	p,plot_angvar('jerknorm')
+        exit""" % pp
     elif tpl==TEMPLATE_PLOT:
         msg="""\
         conf=Config();
         conf.parallelMode=0;
-        p=Participant.load(%d,conf);
+        p=Participant(%d,conf);
         p.plot();exit""" % pp
     elif tpl==TEMPLATE_PLOT_VF:
         msg="""\

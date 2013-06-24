@@ -1,7 +1,7 @@
 function update_vf(obj)
     DS=obj.data_set;
     if obj.unimanual==1
-        [ID, rep] = size(DS);
+        [ID, rep] = obj.size{:};
         for i=1:ID
             for r=1:rep-1
                 DS{i,r}.vf=VectorField(DS{i,r}.ts);
@@ -9,7 +9,7 @@ function update_vf(obj)
             DS{i,end}.vf.pc = (DS{i,1}.vf.pc+DS{i,2}.vf.pc+DS{i,3}.vf.pc)/3;
         end
     else
-        [IDL, IDR, rep] = size(DS);
+        [IDL, IDR, rep] = obj.size{:};
         for i=1:IDL
             for j=1:IDR
                 for r=1:rep-1

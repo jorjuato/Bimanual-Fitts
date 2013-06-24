@@ -2,7 +2,7 @@ function update_conf(obj,src,evnt)
     if nargin==2
         obj.conf=src;
     elseif nargin==1
-        src=copy(obj.conf);
+        src=deepcopy(obj.conf,obj.conf.name);
     end
     %elseif strcmp(evnt.EventName,'PostSet')
         %display('updated Trial configuration')
